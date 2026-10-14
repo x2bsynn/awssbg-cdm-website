@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AWSSBG-CDM | AWS Student Builder Group</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/script.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>AWS Student Builder Group - Colegio de Muntinlupa</h1>
+      <p>Welcome to the AWS Student Builder Group at Colegio de Muntinlupa!</p>
+
+      <nav>
+        <a href="#about">About</a>
+        <a href="#events">Events</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="about">
+        <h2>Build. Learn. Grow.</h2>
+        <p>
+          Explore cloud computing, build projects, and grow with our student
+          technology community.
+        </p>
+        <button id="joinButton">Join Our Community</button>
+        <p id="message"></p>
+      </section>
+
+      <section id="events">
+        <h2>Upcoming Events</h2>
+        <form id="eventForm">
+          <label for="eventTitle">Event Title</label>
+          <input type="text" id="eventTitle" required />
+
+          <label for="eventDate">Event Date</label>
+          <input type="date" id="eventDate" required />
+
+          <label for="eventVenue">Venue</label>
+          <input type="text" id="eventVenue" required />
+
+          <button type="submit">Add Event</button>
+        </form>
+        <div id="eventList"></div>
+      </section>
+
+      <section id="contact">
+        <h2>Contact Us</h2>
+        <p>Interested in a partnership? Get in touch with our organization.</p>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 AWSSBG-CDM</p>
+    </footer>
+  </body>
+</html>

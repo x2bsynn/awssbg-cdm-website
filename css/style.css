@@ -1,0 +1,96 @@
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f7fb;
+  color: #172554;
+  line-height: 1.6;
+}
+
+header {
+  background-color: #663776;
+  color: white;
+  padding: 24px;
+  text-align: center;
+}
+
+nav {
+  margin-top: 20px;
+}
+
+nav a {
+  color: white;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+section {
+  background-color: white;
+  margin-bottom: 20px;
+  padding: 24px;
+  border-radius: 12px;
+}
+
+button {
+  background-color: #16a34a;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+footer {
+  text-align: center;
+  padding: 16px;
+}
+
+#eventList article {
+  background-color: #f4f7fb;
+  border: 1px solid #dbe3ef;
+  padding: 16px;
+  margin-top: 12px;
+  border-radius: 8px;
+}
+
+.event-card {
+  background-color: #f4f7fb;
+  border: 1px solid #dbe3ef;
+  padding: 20px;
+  margin-top: 16px;
+  border-radius: 10px;
+}
+
+.event-card h3 {
+  margin-top: 0;
+  color: #232f3e;
+}
+
+.event-card button {
+  background-color: #146eb4;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  main {
+    padding: 12px;
+  }
+
+  .event-card {
+    padding: 14px;
+  }
+
+  .event-card button {
+    width: 100%;
+  }
+}
