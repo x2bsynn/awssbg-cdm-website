@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | AWSSBG-CDM</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="login-container">
+    <h1>AWSSBG-CDM</h1>
+    <p>Administration Portal</p>
+
+    <p id="status">Sign in with your authorized administrator account.</p>
+
+    <button id="login-button" type="button">
+      Sign in with Cognito
+    </button>
+  </main>
+
+  <script type="module">
+    import { signIn } from "./auth.js";
+
+    document.getElementById("login-button").addEventListener("click", async () => {
+      const status = document.getElementById("status");
+      status.textContent = "Redirecting to secure sign-in...";
+
+      try {
+        await signIn();
+      } catch (error) {
+        console.error("Sign-in error:", error);
+        status.textContent = "Unable to start sign-in. Please try again.";
+      }
+    });
+  </script>
+</body>
+</html>

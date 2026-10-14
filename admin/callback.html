@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signing In | AWSSBG-CDM</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="login-container">
+    <h1>AWSSBG-CDM</h1>
+    <p>Administrator Authentication</p>
+    <p id="status">Completing secure sign-in. Please wait...</p>
+  </main>
+
+  <script type="module">
+    import { handleSignInCallback } from "./auth.js";
+
+    const status = document.getElementById("status");
+
+    try {
+      await handleSignInCallback();
+      status.textContent = "Sign-in successful. Redirecting...";
+      window.location.replace("./dashboard.html");
+    } catch (error) {
+      console.error("Sign-in callback error:", error);
+      status.textContent =
+        "Sign-in could not be completed. Return to the admin login page and try again.";
+    }
+  </script>
+</body>
+</html>
