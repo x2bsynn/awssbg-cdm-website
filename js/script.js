@@ -1,6 +1,8 @@
+const API_URL = "https://xxbmakdu4d.execute-api.us-east-1.amazonaws.com/prod/events";
 const joinButton = document.getElementById("joinButton");
 const message = document.getElementById("message");
 const eventForm = document.getElementById("eventForm");
+
 
 function showMessage(text) {
   message.textContent = text;
@@ -35,30 +37,39 @@ eventForm.addEventListener("submit", function (event) {
   eventForm.reset();
 });
 
-const events = [
-  {
-    title: "AWS Workshop",
-    date: "2026-11-15",
-    venue: "TBA",
-  },
-  {
-    title: "Cloud Learning Session",
-    date: "2026-11-22",
-    venue: "Colegio de Muntinlupa",
-  },
-  {
-    title: "AWS Hackathon",
-    date: "2026-12-05",
-    venue: "TBA",
-  },
-  {
-    title: "AWS Certification Exam",
-    date: "2026-12-12",
-    venue: "TBA",
-  },
-];
+let events = [];
 
 const eventList = document.getElementById("eventList");
+
+async function loadEvents() {
+  try {
+    const response = await fetch(API_URL);
+
+    if (!response.ok) {
+      throw new Error("Failed to load events");
+    }
+
+    const data = await response.json();
+
+    events = (data.events || [])
+      .filter(function (event) {
+        return event.status === "published";
+      })
+      .map(function (event) {
+        return {
+          title: event.title,
+          date: event.date,
+          venue: event.location,
+        };
+      });
+
+    renderEvents();
+  } catch (error) {
+    console.error("Error loading events:", error);
+    eventList.textContent = "Unable to load events. Please try again later.";
+  }
+}
+
 
 function renderEvents() {
   eventList.innerHTML = "";
@@ -97,4 +108,4 @@ function renderEvents() {
     eventList.appendChild(card);
   });
 }
-renderEvents();
+loadEvents();
