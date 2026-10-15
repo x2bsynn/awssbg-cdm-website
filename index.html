@@ -1,61 +1,254 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AWSSBG-CDM | AWS Student Builder Group</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <script src="js/script.js" defer></script>
-  </head>
-  <body>
-    <header>
-      <h1>AWS Student Builder Group - Colegio de Muntinlupa</h1>
-      <p>Welcome to the AWS Student Builder Group at Colegio de Muntinlupa!</p>
 
-      <nav>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Discover cloud computing, AI, hands-on projects, and technology community events with the AWS Student Builder Group at Colegio de Muntinlupa." />
+  <meta name="theme-color" content="#0b1020" />
+  <link rel="icon" type="image/svg+xml" href="assets/awssbg-cdm-logo.svg" />
+  <title>AWSSBG - Colegio de Muntinlupa</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/script.js" defer></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container nav-container">
+      <a class="brand" href="#home" aria-label="AWSSBG-CDM home">
+        <img class="brand-logo" src="assets/awssbg-cdm-logo.svg" alt="" width="48" height="48" />
+        <span class="brand-copy">
+          <strong>AWS Student Builder Group</strong>
+          <small>Colegio de Muntinlupa</small>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#home">Home</a>
         <a href="#about">About</a>
         <a href="#events">Events</a>
         <a href="#contact">Contact</a>
+        <a class="nav-cta" href="#contact">Join the Community <span aria-hidden="true">↗</span></a>
       </nav>
-    </header>
+    </div>
+  </header>
 
-    <main>
-      <section id="about">
-        <h2>Build. Learn. Grow.</h2>
-        <p>
-          Explore cloud computing, build projects, and grow with our student
-          technology community.
-        </p>
-        <button id="joinButton">Join Our Community</button>
-        <p id="message"></p>
-      </section>
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-glow hero-glow-one" aria-hidden="true"></div>
+      <div class="hero-glow hero-glow-two" aria-hidden="true"></div>
 
-      <section id="events">
-        <h2>Upcoming Events</h2>
-        <form id="eventForm">
-          <label for="eventTitle">Event Title</label>
-          <input type="text" id="eventTitle" required />
-          
-          <label for="eventDate">Event Date</label>
-          <input type="date" id="eventDate" required />
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <p class="eyebrow">
+            <span class="status-dot" aria-hidden="true"></span>
+            STUDENT BUILDERS. REAL-WORLD POSSIBILITIES.
+          </p>
 
-          <label for="eventVenue">Venue</label>
-          <input type="text" id="eventVenue" required />
+          <h1>
+            Don't just <br>learn tech.
+            <span class="gradient-text">Build what's next.</span>
+          </h1>
 
-          <button type="submit">Add Event</button>
-        </form>
-        <div id="eventList"></div>
-      </section>
+          <p class="hero-description">
+            Explore cloud computing, experiment with AI, and turn ideas
+            into real projects with the AWS Student Builder Group at
+            Colegio de Muntinlupa.
+          </p>
 
-      <section id="contact">
-        <h2>Contact Us</h2>
-        <p>Interested in a partnership? Get in touch with our organization.</p>
-      </section>
-    </main>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#events">
+              Explore Events <span aria-hidden="true">→</span>
+            </a>
+            <a class="button button-secondary" href="#about">
+              Discover Our Community
+            </a>
+          </div>
 
-    <footer>
-      <p>&copy; 2026 AWSSBG-CDM</p>
-    </footer>
-    <!-- Deployment test: AWS Amplify auto-deploy -->
-  </body>
+          <div class="hero-note">
+            <span class="note-line" aria-hidden="true"></span>
+            <span>Learn together. Build together. Grow together.</span>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Cloud technology concept">
+          <div class="visual-orbit orbit-outer" aria-hidden="true"></div>
+          <div class="visual-orbit orbit-inner" aria-hidden="true"></div>
+
+          <div class="visual-card visual-card-top">
+            <span class="visual-card-icon icon-orange" aria-hidden="true">⌘</span>
+            <span>
+              <strong>Build</strong>
+              <small>Turn ideas into projects</small>
+            </span>
+          </div>
+
+          <div class="cloud-graphic" aria-hidden="true">
+            <div class="cloud-core">
+              <span class="cloud-symbol">☁</span>
+              <span class="cloud-label">CLOUD</span>
+            </div>
+            <span class="cloud-node node-one"></span>
+            <span class="cloud-node node-two"></span>
+            <span class="cloud-node node-three"></span>
+            <span class="cloud-node node-four"></span>
+            <span class="cloud-line line-one"></span>
+            <span class="cloud-line line-two"></span>
+            <span class="cloud-line line-three"></span>
+            <span class="cloud-line line-four"></span>
+          </div>
+
+          <div class="visual-card visual-card-bottom">
+            <span class="visual-card-icon icon-green" aria-hidden="true">↗</span>
+            <span>
+              <strong>Grow</strong>
+              <small>Learn beyond the classroom</small>
+            </span>
+          </div>
+
+          <span class="floating-tag tag-ai">AI + CLOUD</span>
+          <span class="floating-tag tag-community">COMMUNITY</span>
+        </div>
+      </div>
+
+      <div class="container hero-bottom">
+        <span>CURIOUS MINDS</span>
+        <span class="hero-bottom-divider" aria-hidden="true"></span>
+        <span>HANDS-ON LEARNING</span>
+        <span class="hero-bottom-divider" aria-hidden="true"></span>
+        <span>BUILDING THE FUTURE</span>
+      </div>
+    </section>
+
+    <section class="about-section section-padding" id="about">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow eyebrow-dark">MORE THAN A TECH COMMUNITY</p>
+          <h2>Learn it. Build it. <span class="gradient-text">Share it.</span></h2>
+          <p>
+            We bring aspiring builders together to explore technology,
+            develop practical skills, and create opportunities to learn
+            from one another.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon feature-purple" aria-hidden="true">01</div>
+            <h3>Explore Cloud</h3>
+            <p>
+              Discover cloud concepts, AWS services, and the infrastructure
+              powering modern applications.
+            </p>
+            <span class="feature-link">Learn by exploring <span aria-hidden="true">↗</span></span>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon feature-orange" aria-hidden="true">02</div>
+            <h3>Build with AI</h3>
+            <p>
+              Experiment with emerging technologies and find practical ways
+              to turn ideas into useful solutions.
+            </p>
+            <span class="feature-link">Create with purpose <span aria-hidden="true">↗</span></span>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon feature-green" aria-hidden="true">03</div>
+            <h3>Grow Together</h3>
+            <p>
+              Connect with fellow builders, learn through activities, and
+              grow your confidence by sharing what you create.
+            </p>
+            <span class="feature-link">Build your community <span aria-hidden="true">↗</span></span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="events-section section-padding" id="events">
+      <div class="container">
+        <div class="events-heading">
+          <div class="section-heading section-heading-left">
+            <p class="eyebrow eyebrow-dark">WHAT'S HAPPENING</p>
+            <h2>Learn something <span class="gradient-text">new.</span></h2>
+            <p>
+              Find upcoming activities, community sessions, and
+              opportunities to build your skills.
+            </p>
+          </div>
+
+          <a class="text-link" href="#contact">
+            Have a question? <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+
+        <div id="eventStatus" class="event-status" role="status" aria-live="polite">
+          Loading upcoming events...
+        </div>
+
+        <div id="eventList" class="event-grid"></div>
+      </div>
+    </section>
+
+    <section class="join-section" id="contact">
+      <div class="container">
+        <div class="join-panel">
+          <div class="join-decoration join-decoration-one" aria-hidden="true"></div>
+          <div class="join-decoration join-decoration-two" aria-hidden="true"></div>
+
+          <div class="join-content">
+            <p class="eyebrow">YOUR NEXT BUILD STARTS HERE</p>
+            <h2>Curiosity is a great place to start.</h2>
+            <p>
+              Interested in cloud technology, AI, or building projects
+              with a community of fellow learners? We'd love to connect.
+            </p>
+
+            <div class="join-actions">
+              <a class="button button-light" href="mailto:awssbg@cdm.edu.ph?subject=AWSSBG-CDM%20Community%20Inquiry">
+                Get in Touch <span aria-hidden="true">↗</span>
+              </a>
+              <a class="join-email" href="mailto:awssbg@cdm.edu.ph">
+                awssbg@cdm.edu.ph
+              </a>
+            </div>
+          </div>
+
+          <div class="join-stamp" aria-hidden="true">
+            <span>BUILD</span>
+            <span class="stamp-symbol">✳</span>
+            <span>TOGETHER</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-main">
+      <a class="brand" href="#home" aria-label="AWSSBG-CDM home">
+        <img class="brand-logo" src="assets/awssbg-cdm-logo.svg" alt="" width="48" height="48" />
+        <span class="brand-copy">
+          <strong>AWS Student Builder Group</strong>
+          <small>Colegio de Muntinlupa</small>
+        </span>
+      </a>
+
+      <p>Building skills, exploring cloud, and growing together.</p>
+
+      <a class="footer-back-top" href="#home">
+        Back to top ↑
+      </a>
+    </div>
+
+    <div class="container footer-bottom">
+      <span>&copy; <span id="currentYear">2026</span> AWS Student Builder Group - Colegio de Muntinlupa</span>
+      <span>Made by Jan Christian D. Wagan for the future builders.</span>
+    </div>
+  </footer>
+</body>
+
 </html>
