@@ -1,18 +1,26 @@
 
 import { UserManager } from "https://esm.sh/oidc-client-ts@3.5.0";
 
+const isLocal = ["localhost", "127.0.0.1"].includes(
+  window.location.hostname,
+);
+
+const baseUrl = window.location.origin;
+
 const cognitoAuthConfig = {
   authority:
     "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_Z8XPiGmrk",
   client_id: "7l1jvkjda7pql65kla7kqv4kon",
-  redirect_uri: "https://awssbg-cdm.live/admin/callback.html",
+  redirect_uri: `${baseUrl}/admin/callback.html`,
   response_type: "code",
   scope: "openid email",
+  post_logout_redirect_uri: `${baseUrl}/admin/`,
 };
 
 export const userManager = new UserManager(cognitoAuthConfig);
 
 export async function signIn() {
+  await userManager.clearStaleState();
   await userManager.signinRedirect();
 }
 
@@ -21,16 +29,5 @@ export async function handleSignInCallback() {
 }
 
 export async function signOut() {
-  const metadata = await userManager.metadataService.getMetadata();
-  const logoutEndpoint = metadata.end_session_endpoint;
-
-  if (!logoutEndpoint) {
-    throw new Error("Cognito logout endpoint is unavailable.");
-  }
-
-  const logoutUrl = new URL(logoutEndpoint);
-  logoutUrl.searchParams.set("client_id", cognitoAuthConfig.client_id);
-  logoutUrl.searchParams.set("logout_uri", "https://awssbg-cdm.live/admin/");
-
-  window.location.assign(logoutUrl.toString());
+  await userManager.signoutRedirect();
 }

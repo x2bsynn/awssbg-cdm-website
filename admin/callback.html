@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Signing In | AWSSBG-CDM</title>
   <link rel="stylesheet" href="admin.css">
 </head>
+
 <body>
   <main class="login-container">
     <h1>AWSSBG-CDM</h1>
@@ -13,20 +15,41 @@
     <p id="status">Completing secure sign-in. Please wait...</p>
   </main>
 
+
   <script type="module">
     import { handleSignInCallback } from "./auth.js";
 
     const status = document.getElementById("status");
 
+    const url = new URL(window.location.href);
+    const hasCode = url.searchParams.has("code");
+    const hasState = url.searchParams.has("state");
+
+    console.log("Callback URL:", url.origin + url.pathname);
+    console.log("Has authorization code:", hasCode);
+    console.log("Has state parameter:", hasState);
+
     try {
+      if (!hasCode || !hasState) {
+        throw new Error(
+          "The callback URL is missing the code or state parameter."
+        );
+      }
+
       await handleSignInCallback();
+
       status.textContent = "Sign-in successful. Redirecting...";
-      window.location.replace("./dashboard.html");
+      window.location.replace("./dashboard/index.html");
     } catch (error) {
       console.error("Sign-in callback error:", error);
       status.textContent =
-        "Sign-in could not be completed. Return to the admin login page and try again.";
+        "Sign-in failed. Check the browser console for details.";
     }
   </script>
 </body>
+
+</html>
+
+</body>
+
 </html>

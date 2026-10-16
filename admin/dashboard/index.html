@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#da1eab" />
+  <title>Admin Dashboard | AWSSBG-CDM</title>
+  <link rel="stylesheet" href="./dashboard.css" />
+  <script type="module" src="./dashboard.js"></script>
+</head>
+
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">🐧</div>
+        <div>
+          <div class="brand-name">AWSSBG-CDM</div>
+          <div class="brand-sub">Student Builder Group</div>
+        </div>
+      </div>
+
+      <div class="nav-label">Workspace</div>
+      <nav class="nav-list" aria-label="Main navigation">
+        <a class="nav-item active" href="./index.html">
+          <span class="nav-icon">▦</span> Overview
+        </a>
+        <button class="nav-item" id="events-nav" type="button">
+          <span class="nav-icon">◇</span> Events
+        </button>
+        <span class="nav-item disabled" title="Coming in a future update">
+          <span class="nav-icon">♧</span> Registrations
+        </span>
+        <span class="nav-item disabled" title="Coming in a future update">
+          <span class="nav-icon">♙</span> Members
+        </span>
+        <span class="nav-item" id="officers-nav" title="Coming in a future update">
+          <span class="nav-icon">♙</span> Officers
+        </span>
+      </nav>
+
+      <div class="nav-label">System</div>
+      <div class="nav-item disabled" title="Coming in a future update">
+        <span class="nav-icon">⚙</span> Settings
+      </div>
+
+      <div class="sidebar-bottom">
+        <strong>AWSSBG-CDM Admin</strong><br />
+        Built for our community.<br />
+        <span>Version 1.0 · Events</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="breadcrumb">Workspace / <strong>Overview</strong></div>
+
+        <div class="profile-wrap">
+          <button id="profile-button" class="profile-button" type="button" aria-expanded="false" aria-haspopup="true">
+            <span class="avatar" id="profile-avatar">A</span>
+            <span>
+              <span class="profile-name" id="profile-name">Administrator</span>
+              <span class="profile-role" id="profile-role">Administrator</span>
+            </span>
+            <span class="profile-chevron">⌄</span>
+          </button>
+
+          <div id="profile-menu" class="profile-menu" hidden>
+            <div class="profile-email" id="profile-email">
+              Signed-in account
+            </div>
+            <button id="profile-refresh" type="button">
+              Refresh dashboard
+            </button>
+            <button id="logout-button" class="signout" type="button">
+              Sign out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="welcome">
+          <div>
+            <div class="eyebrow">Your community, at a glance</div>
+            <h1>
+              Welcome back, <span id="welcome-name">Administrator</span>!
+            </h1>
+            <p class="subtitle">
+              Manage AWSSBG-CDM activities, events, and community operations
+              from one workspace.
+            </p>
+          </div>
+          <button id="new-event-button" class="button button-primary" type="button">
+            <span aria-hidden="true">＋</span> Create event
+          </button>
+        </section>
+
+        <p id="notice" class="notice" role="status" aria-live="polite">
+          Checking your session...
+        </p>
+
+        <section id="event-management" hidden>
+          <div class="overview-label">Workspace overview</div>
+
+          <div class="stats">
+            <article class="stat">
+              <div class="stat-top">
+                Total events <span class="stat-icon">◇</span>
+              </div>
+              <div class="stat-value" id="total-events">—</div>
+              <div class="stat-note">Events in your workspace</div>
+            </article>
+
+            <article class="stat">
+              <div class="stat-top">
+                Published <span class="stat-icon">✓</span>
+              </div>
+              <div class="stat-value" id="published-events">—</div>
+              <div class="stat-note">Visible event status</div>
+            </article>
+
+            <article class="stat">
+              <div class="stat-top">
+                Drafts <span class="stat-icon">✎</span>
+              </div>
+              <div class="stat-value" id="draft-events">—</div>
+              <div class="stat-note">Events still being prepared</div>
+            </article>
+
+            <article class="stat">
+              <div class="stat-top">
+                Upcoming <span class="stat-icon">▦</span>
+              </div>
+              <div class="stat-value" id="upcoming-events">—</div>
+              <div class="stat-note">Published events from today onward</div>
+            </article>
+          </div>
+
+          <section id="event-form-panel" class="form-panel" hidden>
+            <h2 id="form-heading">Create event</h2>
+            <p class="form-intro">Enter the event details below.</p>
+
+            <form id="event-form" novalidate>
+              <input id="event-id" type="hidden" />
+
+              <div class="form-grid">
+                <div class="field field-full">
+                  <label for="title">Event title</label>
+                  <input id="title" name="title" maxlength="200" placeholder="e.g. Cloud UP!" required />
+                </div>
+
+
+                <div class="field">
+                  <label for="date">Event date</label>
+
+                  <div class="custom-picker" id="date-picker">
+                    <button type="button" class="picker-trigger" id="date-picker-trigger" aria-haspopup="dialog"
+                      aria-expanded="false">
+                      <span id="date-display">Choose an event date</span>
+                    </button>
+
+                    <div class="calendar-popup" id="calendar-popup" hidden>
+                      <div class="calendar-header">
+                        <button type="button" id="calendar-prev" aria-label="Previous month">
+                          &#8249;
+                        </button>
+                        <strong id="calendar-month"></strong>
+                        <button type="button" id="calendar-next" aria-label="Next month">
+                          &#8250;
+                        </button>
+                      </div>
+                      <div class="calendar-weekdays">
+                        <span>Su</span><span>Mo</span><span>Tu</span>
+                        <span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                      </div>
+                      <div class="calendar-days" id="calendar-days"></div>
+                    </div>
+                  </div>
+
+                  <input type="hidden" id="date" name="date" required />
+                </div>
+
+
+                <div class="field">
+                  <label>Event time <span class="optional">(Optional)</span></label>
+
+                  <div class="custom-picker" id="time-picker">
+                    <button type="button" class="picker-trigger" id="time-picker-trigger" aria-haspopup="dialog"
+                      aria-expanded="false">
+                      <span id="time-display">Set event time range</span>
+                    </button>
+
+
+                    <div class="time-popup" id="time-popup" hidden>
+                      <div class="time-popup-heading">
+                        <div>
+                          <span class="time-kicker">EVENT SCHEDULE</span>
+                          <strong>Set your event time</strong>
+                          <span>Choose when your event starts and ends.</span>
+                        </div>
+                      </div>
+
+                      <div class="time-range-row">
+                        <div class="time-select-group">
+                          <label for="start-time">Start time</label>
+                          <div class="time-input-card">
+                            <span class="time-card-icon" aria-hidden="true">↗</span>
+                            <input id="start-time" type="time" step="900" aria-label="Event start time" />
+                          </div>
+                        </div>
+
+                        <div class="time-select-group">
+                          <label for="end-time">End time</label>
+                          <div class="time-input-card">
+                            <span class="time-card-icon" aria-hidden="true">↘</span>
+                            <input id="end-time" type="time" step="900" aria-label="Event end time" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="time-duration" id="time-duration" aria-live="polite">
+                        <span class="time-duration-icon" aria-hidden="true">◷</span>
+                        <div>
+                          <strong>Event duration</strong>
+                          <span id="time-duration-value">Select your start and end times</span>
+                        </div>
+                      </div>
+
+                      <p id="time-error" class="time-error" role="alert" hidden></p>
+
+                      <div class="time-popup-actions">
+                        <button type="button" id="time-clear" class="time-action-clear">
+                          Clear
+                        </button>
+                        <div class="time-action-right">
+                          <button type="button" id="time-cancel" class="time-action-cancel">
+                            Cancel
+                          </button>
+                          <button type="button" id="time-apply" class="button button-primary">
+                            Apply schedule
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <input type="hidden" id="time" name="time" value="" />
+              </div>
+              <div class="field field-full">
+                <label for="location">Location</label>
+                <input id="location" name="location" maxlength="300" placeholder="Venue or online meeting details"
+                  required />
+              </div>
+
+
+              <div class="form-actions">
+                <button id="save-draft-button" class="button button-light" type="submit" name="action" value="draft">
+                  Save as Draft
+                </button>
+
+                <button id="cancel-button" class="button button-light" type="button">
+                  Discard
+                </button>
+
+                <button id="publish-button" class="button button-primary" type="submit" name="action" value="published">
+                  Publish Event
+                </button>
+              </div>
+
+            </form>
+          </section>
+
+
+
+          <section class="panel" id="events-section">
+            <div class="panel-head">
+              <div>
+                <h2>Event management</h2>
+                <p>Create, review, and maintain organization events.</p>
+              </div>
+              <div class="toolbar-actions">
+                <button id="refresh-button" class="button button-light" type="button">
+                  ↻ Refresh
+                </button>
+                <button id="panel-new-event" class="button button-primary" type="button">
+                  ＋ New event
+                </button>
+              </div>
+            </div>
+
+            <div class="table-tools">
+              <input id="event-search" class="search" type="search"
+                placeholder="Search title, date, location, status..." aria-label="Search events" />
+              <span id="result-count" class="result-count">Loading events...</span>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="events-body">
+                  <tr>
+                    <td colspan="5" class="empty-cell">Loading events...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+
+        <section id="officers-management" hidden>
+          <div class="welcome officers-welcome">
+            <div>
+              <div class="eyebrow">PEOPLE & LEADERSHIP</div>
+              <h1>Officer management</h1>
+              <p class="subtitle">
+                Manage your organization's leadership, offices, and published profiles.
+              </p>
+            </div>
+            <button id="new-officer-button" class="button button-primary" type="button">
+              ＋ Add officer
+            </button>
+          </div>
+
+          <div class="stats officers-stats">
+            <article class="stat">
+              <div class="stat-top">Total officers <span class="stat-icon">♙</span></div>
+              <div class="stat-value" id="officer-total">0</div>
+              <div class="stat-note">Unique officer profiles</div>
+            </article>
+            <article class="stat">
+              <div class="stat-top">Offices <span class="stat-icon">▦</span></div>
+              <div class="stat-value" id="officer-offices">0</div>
+              <div class="stat-note">Represented offices</div>
+            </article>
+            <article class="stat">
+              <div class="stat-top">Published <span class="stat-icon">✓</span></div>
+              <div class="stat-value" id="officer-published">0</div>
+              <div class="stat-note">Profiles ready for public viewing</div>
+            </article>
+            <article class="stat">
+              <div class="stat-top">Drafts <span class="stat-icon">✎</span></div>
+              <div class="stat-value" id="officer-drafts">0</div>
+              <div class="stat-note">Profiles not yet published</div>
+            </article>
+          </div>
+
+          <section class="panel officers-panel">
+            <div class="panel-head">
+              <div>
+                <h2>Leadership directory</h2>
+                <p>Review officer assignments and profile publication status.</p>
+              </div>
+            </div>
+
+            <div class="officer-toolbar">
+              <input id="officer-search" class="search" type="search" placeholder="Search name, office, or position..."
+                aria-label="Search officers" />
+
+              <!-- Status filter -->
+              <div class="officer-select" data-filter="status">
+                <button type="button" class="officer-select-trigger" id="officer-status-trigger" aria-haspopup="listbox"
+                  aria-expanded="false" aria-controls="officer-status-options">
+                  <span class="officer-select-label">All statuses</span>
+                  <span class="officer-select-chevron" aria-hidden="true">⌄</span>
+                </button>
+
+                <div class="officer-select-menu" id="officer-status-options" role="listbox"
+                  aria-label="Filter by publication status" hidden>
+                  <button type="button" class="officer-select-option selected" role="option" aria-selected="true"
+                    data-value="all">
+                    <span>All statuses</span><span class="option-check">✓</span>
+                  </button>
+                  <button type="button" class="officer-select-option" role="option" aria-selected="false"
+                    data-value="published">
+                    <span>Published</span><span class="option-check">✓</span>
+                  </button>
+                  <button type="button" class="officer-select-option" role="option" aria-selected="false"
+                    data-value="draft">
+                    <span>Draft</span><span class="option-check">✓</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Academic year filter -->
+              <div class="officer-select" data-filter="year">
+                <button type="button" class="officer-select-trigger" id="officer-year-trigger" aria-haspopup="listbox"
+                  aria-expanded="false" aria-controls="officer-year-options">
+                  <span class="officer-select-label">All academic years</span>
+                  <span class="officer-select-chevron" aria-hidden="true">⌄</span>
+                </button>
+
+                <div class="officer-select-menu" id="officer-year-options" role="listbox"
+                  aria-label="Filter by academic year" hidden>
+                  <button type="button" class="officer-select-option selected" role="option" aria-selected="true"
+                    data-value="all">
+                    <span>All academic years</span><span class="option-check">✓</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="officer-list" class="officer-list">
+              <div class="officer-empty">Officer profiles will appear here.</div>
+            </div>
+          </section>
+
+          <section class="panel officers-panel">
+            <div class="panel-head">
+              <div>
+                <h2>Organizational structure</h2>
+                <p>Preview the leadership hierarchy and advisory relationship.</p>
+              </div>
+            </div>
+            <div id="officer-tree" class="officer-tree">
+              <p class="officer-empty">The organizational tree will appear here.</p>
+            </div>
+          </section>
+
+          <section id="officer-form-panel" class="form-panel" hidden>
+            <h2 id="officer-form-heading">Add officer</h2>
+            <p class="form-intro">
+              This form will manage officer details and assignments.
+            </p>
+            <div class="officer-empty">
+              The form will be added in the next step.
+            </div>
+            <div class="form-actions">
+              <button id="officer-form-cancel" class="button button-light" type="button">
+                Cancel
+              </button>
+            </div>
+          </section>
+        </section>
+
+
+        <footer class="footer">
+          AWSSBG-CDM · Student Builder Group · Admin Workspace
+        </footer>
+      </div>
+    </main>
+  </div>
+</body>
+
+</html>
