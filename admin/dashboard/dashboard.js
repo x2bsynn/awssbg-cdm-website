@@ -3,6 +3,9 @@ import { userManager, signOut } from "../auth.js";
 const API_BASE =
   "https://xxbmakdu4d.execute-api.us-east-1.amazonaws.com/prod/admin/events";
 
+const OFFICERS_API_BASE =
+  "https://xxbmakdu4d.execute-api.us-east-1.amazonaws.com/prod/admin/officers";
+
 const $ = (id) => document.getElementById(id);
 const notice = $("notice");
 const formPanel = $("event-form-panel");
@@ -526,7 +529,37 @@ async function loadEvents() {
 $("new-event-button").addEventListener("click", openCreateForm);
 $("panel-new-event").addEventListener("click", openCreateForm);
 
-function showWorkspace(view) {
+async function loadOfficers() {
+  try {
+    const data = await apiRequest(OFFICERS_API_BASE);
+    const items = Array.isArray(data?.items) ? data.items : [];
+
+    officerRecords = items.map((officer) => ({
+      ...officer,
+      id: officer.officerId ?? officer.id,
+      name: officer.name ?? "",
+      positions: Array.isArray(officer.positions) ? officer.positions : [],
+      reportsTo: Array.isArray(officer.reportsTo)
+        ? officer.reportsTo
+        : typeof officer.reportsTo === "string" && officer.reportsTo
+          ? [officer.reportsTo]
+          : [],
+      status: officer.status ?? "draft",
+      term: officer.term ?? "",
+    }));
+
+    updateOfficerYearOptions();
+    updateOfficerStats();
+    renderOfficers();
+
+    console.log("Officers loaded:", officerRecords.length);
+  } catch (error) {
+    console.error("Unable to load officers:", error);
+    showNotice(error.message || "Unable to load officers.", "error");
+  }
+}
+
+async function showWorkspace(view) {
   const isOfficers = view === "officers";
 
   $("event-management").hidden = isOfficers;
@@ -548,259 +581,14 @@ function showWorkspace(view) {
 
   if (isOfficers) {
     $("new-officer-button").focus();
+    await loadOfficers();
   }
 }
 
 $("events-nav").addEventListener("click", () => showWorkspace("events"));
 $("officers-nav").addEventListener("click", () => showWorkspace("officers"));
 
-const officerRecords = [
-  {
-    id: "person-1",
-    name: "Alexandra Reyes",
-    photo: "",
-    positions: [
-      {
-        title: "Student Builder Group Lead",
-        office: "Executive",
-        year: "2026-2027",
-      },
-      {
-        title: "Executive Director",
-        office: "Executive",
-        year: "2026-2027",
-      },
-    ],
-    birthdate: "2003-05-14",
-    contactNumber: "",
-    program: "BS Computer Engineering",
-    cdmEmail: "alexandra.reyes@cdm.edu.ph",
-    personalEmail: "",
-    email: "alexandra.reyes@cdm.edu.ph",
-    status: "published",
-    term: "2026-2027",
-    reportsTo: [],
-  },
-  {
-    id: "person-2",
-    name: "Miguel Santos",
-    photo: "",
-    positions: [
-      {
-        title: "Deputy Director",
-        office: "Executive",
-        year: "2026-2027",
-      },
-    ],
-    birthdate: "2004-02-21",
-    contactNumber: "",
-    program: "BS Computer Engineering",
-    cdmEmail: "miguel.santos@cdm.edu.ph",
-    personalEmail: "",
-    email: "miguel.santos@cdm.edu.ph",
-    status: "published",
-    term: "2026-2027",
-    reportsTo: ["person-1"],
-  },
-  {
-    id: "person-3",
-    name: "Sofia Mendoza",
-    photo: "",
-    positions: [
-      {
-        title: "Executive Secretary",
-        office: "Executive",
-        year: "2026-2027",
-      },
-    ],
-    birthdate: "2003-11-09",
-    contactNumber: "",
-    program: "BS Information Technology",
-    cdmEmail: "sofia.mendoza@cdm.edu.ph",
-    personalEmail: "",
-    email: "sofia.mendoza@cdm.edu.ph",
-    status: "published",
-    term: "2026-2027",
-    reportsTo: ["person-1"],
-  },
-  {
-    id: "person-4",
-    name: "Daniel Cruz",
-    photo: "",
-    positions: [
-      {
-        title: "Director",
-        office: "Executive",
-        year: "2026-2027",
-      },
-      {
-        title: "Director",
-        office: "Creatives",
-        year: "2026-2027",
-      },
-    ],
-    birthdate: "2004-07-18",
-    contactNumber: "",
-    program: "BS Computer Engineering",
-    cdmEmail: "daniel.cruz@cdm.edu.ph",
-    personalEmail: "",
-    email: "daniel.cruz@cdm.edu.ph",
-    status: "published",
-    term: "2026-2027",
-    reportsTo: ["person-1"],
-  },
-  {
-    id: "person-5",
-    name: "Isabella Flores",
-    photo: "",
-    positions: [
-      {
-        title: "Director",
-        office: "Executive",
-        year: "2026-2027",
-      },
-      {
-        title: "Director",
-        office: "Technology",
-        year: "2026-2027",
-      },
-    ],
-    birthdate: "2003-09-02",
-    contactNumber: "",
-    program: "BS Computer Engineering",
-    cdmEmail: "isabella.flores@cdm.edu.ph",
-    personalEmail: "",
-    email: "isabella.flores@cdm.edu.ph",
-    status: "published",
-    term: "2026-2027",
-    reportsTo: ["person-1"],
-  },
-  {
-    id: "person-6",
-    name: "Gabriel Torres",
-    photo: "",
-    positions: [
-      {
-        title: "Director",
-        office: "Executive",
-        year: "2026-2027",
-      },
-      {
-        title: "Director",
-        office: "Finance",
-        year: "2026-2027",
-      },
-    ],
-    birthdate: "2004-01-26",
-    contactNumber: "",
-    program: "BS Business Administration",
-    cdmEmail: "gabriel.torres@cdm.edu.ph",
-    personalEmail: "",
-    email: "gabriel.torres@cdm.edu.ph",
-    status: "draft",
-    term: "2026-2027",
-    reportsTo: ["person-1"],
-  },
-  {
-    id: "person-7",
-    name: "Chloe Navarro",
-    photo: "",
-    positions: [
-      {
-        title: "Director",
-        office: "Executive",
-        year: "2026-2027",
-      },
-      {
-        title: "Director",
-        office: "Relations",
-        year: "2026-2027",
-      },
-    ],
-    birthdate: "2003-12-12",
-    contactNumber: "",
-    program: "BS Information Technology",
-    cdmEmail: "chloe.navarro@cdm.edu.ph",
-    personalEmail: "",
-    email: "chloe.navarro@cdm.edu.ph",
-    status: "published",
-    term: "2026-2027",
-    reportsTo: ["person-1"],
-  },
-  {
-    id: "person-8",
-    name: "Ethan Garcia",
-    photo: "",
-    positions: [
-      {
-        title: "Director",
-        office: "Executive",
-        year: "2026-2027",
-      },
-      {
-        title: "Director",
-        office: "Marketing",
-        year: "2026-2027",
-      },
-    ],
-    birthdate: "2004-04-30",
-    contactNumber: "",
-    program: "BS Computer Engineering",
-    cdmEmail: "ethan.garcia@cdm.edu.ph",
-    personalEmail: "",
-    email: "ethan.garcia@cdm.edu.ph",
-    status: "published",
-    term: "2026-2027",
-    reportsTo: ["person-1"],
-  },
-  {
-    id: "person-9",
-    name: "Amara Villanueva",
-    photo: "",
-    positions: [
-      {
-        title: "Director",
-        office: "Executive",
-        year: "2026-2027",
-      },
-      {
-        title: "Director",
-        office: "Operations",
-        year: "2026-2027",
-      },
-    ],
-    birthdate: "2003-08-07",
-    contactNumber: "",
-    program: "BS Computer Engineering",
-    cdmEmail: "amara.villanueva@cdm.edu.ph",
-    personalEmail: "",
-    email: "amara.villanueva@cdm.edu.ph",
-    status: "draft",
-    term: "2026-2027",
-    reportsTo: ["person-1"],
-  },
-  {
-    id: "person-10",
-    name: "Patricia Lim",
-    photo: "",
-    positions: [
-      {
-        title: "Organization Adviser",
-        office: "Advisory",
-        year: "2026-2027",
-      },
-    ],
-    birthdate: "",
-    contactNumber: "",
-    program: "",
-    cdmEmail: "",
-    personalEmail: "",
-    email: "",
-    status: "published",
-    term: "2026-2027",
-    reportsTo: [],
-  },
-];
+let officerRecords = [];
 
 function getOfficerPositions(officer) {
   return Array.isArray(officer.positions) ? officer.positions : [];
@@ -944,14 +732,14 @@ function renderOfficerTree() {
     );
 
   const personCard = (officer, subtitle = "") => `
-    <article class="org-person">
-      <div class="org-person-accent"></div>
-      <div class="org-person-info">
-        <strong>${escapeHTML(officer.name)}</strong>
-        <span>${escapeHTML(subtitle || roleNames(officer, "Executive") || "Organization member")}</span>
-      </div>
-    </article>
-  `;
+      <article class="org-person">
+        <div class="org-person-accent"></div>
+        <div class="org-person-info">
+          <strong>${escapeHTML(officer.name)}</strong>
+          <span>${escapeHTML(subtitle || roleNames(officer, "Executive") || "Organization member")}</span>
+        </div>
+      </article>
+    `;
 
   const empty = `<p class="org-empty">No published officers assigned.</p>`;
 
@@ -967,7 +755,7 @@ function renderOfficerTree() {
     hasRole(o, "Executive Director"),
   );
 
-  const advisers = published.filter((o) => hasOffice(o, "Advisory"));
+  const advisers = published.filter((o) => hasOffice(o, "Executive") && hasRole(o, "Organization Adviser"));
 
   const executiveTeam = published.filter(
     (o) =>
@@ -990,116 +778,118 @@ function renderOfficerTree() {
       const members = published.filter((o) => hasOffice(o, office));
 
       return `
-      <section class="org-branch">
-        <div class="org-office-heading">${escapeHTML(office)}</div>
-        <div class="org-branch-people">
-          ${
-            members.length
-              ? members.map((o) => personCard(o, roleNames(o, office))).join("")
-              : empty
-          }
-        </div>
-      </section>
-    `;
+        <section class="org-branch">
+          <div class="org-office-heading">${escapeHTML(office)}</div>
+          <div class="org-branch-people">
+            ${
+              members.length
+                ? members
+                    .map((o) => personCard(o, roleNames(o, office)))
+                    .join("")
+                : empty
+            }
+          </div>
+        </section>
+      `;
     })
     .join("");
 
   tree.innerHTML = `
-    <div class="org-chart">
-      <div class="org-chart-heading">
-        <div>
-          <span class="org-eyebrow">AWSSBG · CDM</span>
-          <h3>Organization Structure</h3>
-          <p>Leadership, executive coordination, and functional offices</p>
+      <div class="org-chart">
+        <div class="org-chart-heading">
+          <div>
+            <span class="org-eyebrow">AWSSBG · CDM</span>
+            <h3>Organization Structure</h3>
+            <p>Leadership, executive coordination, and functional offices</p>
+          </div>
+          <span class="org-live-label">
+            <span></span> Published profiles
+          </span>
         </div>
-        <span class="org-live-label">
-          <span></span> Published profiles
-        </span>
-      </div>
 
-<div class="org-leadership">
-  <div class="org-leader-card org-leader-primary">
-    <span class="org-role-tag">STUDENT BUILDER GROUP LEAD</span>
-    ${
-      sbgl.length
-        ? sbgl
-            .map(
-              (o) => `
-          <div class="org-leader-name">${escapeHTML(o.name)}</div>
-        `,
-            )
-            .join("")
-        : `<div class="org-leader-name">Position vacant</div>`
-    }
-  </div>
-
-  <div class="org-leader-card org-leader-executive">
-    <span class="org-role-tag">EXECUTIVE DIRECTOR</span>
-    ${
-      executiveDirectors.length
-        ? executiveDirectors
-            .map(
-              (o) => `
-          <div class="org-leader-name">${escapeHTML(o.name)}</div>
-        `,
-            )
-            .join("")
-        : `<div class="org-leader-name">Position vacant</div>`
-    }
-  </div>
-
-  <aside class="org-adviser">
-    <span class="org-adviser-symbol">✳</span>
-    <div class="org-adviser-info">
-      <span class="org-role-tag">ADVISORY</span>
-      <strong>Organization Adviser</strong>
+  <div class="org-leadership">
+    <div class="org-leader-card org-leader-primary">
+      <span class="org-role-tag">STUDENT BUILDER GROUP LEAD</span>
       ${
-        advisers.length
-          ? advisers
+        sbgl.length
+          ? sbgl
               .map(
                 (o) => `
-            <div class="org-adviser-name">${escapeHTML(o.name)}</div>
+            <div class="org-leader-name">${escapeHTML(o.name)}</div>
           `,
               )
               .join("")
-          : `<div class="org-adviser-name">No published adviser</div>`
+          : `<div class="org-leader-name">Position vacant</div>`
       }
     </div>
-  </aside>
-</div>
 
-      <div class="org-connector" aria-hidden="true">
-        <span></span>
-      </div>
-
-      <section class="org-tier">
-        <div class="org-tier-label">EXECUTIVE OFFICE</div>
-        <div class="org-executive-grid">
-          ${
-            executiveTeam.length
-              ? executiveTeam.map((o) => personCard(o)).join("")
-              : empty
-          }
-        </div>
-      </section>
-
-      <div class="org-connector org-connector-long" aria-hidden="true">
-        <span></span>
-      </div>
-
-      <section class="org-functional">
-        <div class="org-tier-label">FUNCTIONAL OFFICES</div>
-        <div class="org-functional-grid">
-          ${officeMarkup}
-        </div>
-      </section>
-
-      <div class="org-chart-footer">
-        <span>AWSSBG-CDM</span>
-        <span>Showing published profiles only</span>
-      </div>
+    <div class="org-leader-card org-leader-executive">
+      <span class="org-role-tag">EXECUTIVE DIRECTOR</span>
+      ${
+        executiveDirectors.length
+          ? executiveDirectors
+              .map(
+                (o) => `
+            <div class="org-leader-name">${escapeHTML(o.name)}</div>
+          `,
+              )
+              .join("")
+          : `<div class="org-leader-name">Position vacant</div>`
+      }
     </div>
-  `;
+
+    <aside class="org-adviser">
+      <span class="org-adviser-symbol"></span>
+      <div class="org-adviser-info">
+        <span class="org-role-tag">ADVISORY</span>
+        <strong>Organization Adviser</strong>
+        ${
+          advisers.length
+            ? advisers
+                .map(
+                  (o) => `
+              <div class="org-adviser-name">${escapeHTML(o.name)}</div>
+            `,
+                )
+                .join("")
+            : `<div class="org-adviser-name">No published adviser</div>`
+        }
+      </div>
+    </aside>
+  </div>
+
+        <div class="org-connector" aria-hidden="true">
+          <span></span>
+        </div>
+
+        <section class="org-tier">
+          <div class="org-tier-label">EXECUTIVE OFFICE</div>
+          <div class="org-executive-grid">
+            ${
+              executiveTeam.length
+                ? executiveTeam.map((o) => personCard(o)).join("")
+                : empty
+            }
+          </div>
+        </section>
+
+        <div class="org-connector org-connector-long" aria-hidden="true">
+          <span></span>
+        </div>
+
+        <section class="org-functional">
+          <div class="org-tier-label">FUNCTIONAL OFFICES</div>
+          <div class="org-functional-grid">
+            ${officeMarkup}
+          </div>
+        </section>
+
+        <div class="org-chart-footer">
+          <span>AWSSBG-CDM</span>
+          <span>Showing published profiles only</span>
+        </div>
+      </div>
+    `;
 }
 
 function renderOfficers() {
@@ -1132,10 +922,10 @@ function renderOfficers() {
 
   if (filtered.length === 0) {
     list.innerHTML = `
-      <div class="officer-empty">
-        No officers match your search or filters.
-      </div>
-    `;
+        <div class="officer-empty">
+          No officers match your search or filters.
+        </div>
+      `;
     renderOfficerTree();
     return;
   }
@@ -1154,85 +944,100 @@ function renderOfficers() {
     );
 
   list.innerHTML = `
-    <div class="table-wrap officer-table-wrap">
-      <table class="officer-table">
-        <thead>
-          <tr>
-            <th scope="col">Officer Name*</th>
-            <th scope="col">Office</th>
-            <th scope="col">Position</th>
-            <th scope="col">Academic year</th>
-            <th scope="col">Status</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${filtered
-            .map((officer) => {
-              const positions = getOfficerPositions(officer);
+      <div class="table-wrap officer-table-wrap">
+        <table class="officer-table">
+          <thead>
+            <tr>
+              <th scope="col">Officer Name*</th>
+              <th scope="col">Office</th>
+              <th scope="col">Position</th>
+              <th scope="col">Academic year</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered
+              .map((officer) => {
+                const positions = getOfficerPositions(officer);
 
-              const offices = [
-                ...new Set(positions.map((position) => position.office)),
-              ];
+                const offices = [
+                  ...new Set(positions.map((position) => position.office)),
+                ];
 
-              const titles = [
-                ...new Set(positions.map((position) => position.title)),
-              ];
+                const titles = [
+                  ...new Set(positions.map((position) => position.title)),
+                ];
 
-              const years = [
-                ...new Set(
-                  positions.map((position) => position.year).filter(Boolean),
-                ),
-              ];
+                const years = [
+                  ...new Set(
+                    positions.map((position) => position.year).filter(Boolean),
+                  ),
+                ];
 
-              return `
-              <tr>
-                <td>
-                  <span class="officer-name-cell">
-                    ${escapeHTML(officer.name)}
-                  </span>
-                </td>
-                <td>${escapeHTML(offices.join(", ") || "—")}</td>
-                <td>${escapeHTML(titles.join(", ") || "—")}</td>
-                <td>${escapeHTML(years.join(", ") || officer.term || "—")}</td>
-                <td>
-                  <span class="status-badge ${
-                    officer.status === "published"
-                      ? "status-published"
-                      : "status-draft"
-                  }">
-                    ${officer.status === "published" ? "Published" : "Draft"}
-                  </span>
-                </td>
-                <td>
-                  <div class="officer-row-actions">
-                    <button
-                      class="button button-light officer-edit-button"
-                      type="button"
-                      data-officer-id="${escapeHTML(officer.id)}"
-                    >Edit</button>
-                    <button
-                      class="button button-light officer-delete-button"
-                      type="button"
-                      data-officer-id="${escapeHTML(officer.id)}"
-                    >Delete</button>
-                  </div>
-                </td>
-              </tr>
-            `;
-            })
-            .join("")}
-        </tbody>
-      </table>
-    </div>
-  `;
+                return `
+                <tr>
+                  <td>
+                    <span class="officer-name-cell">
+                      ${escapeHTML(officer.name)}
+                    </span>
+                  </td>
+                  <td>${escapeHTML(offices.join(", ") || "—")}</td>
+                  <td>${escapeHTML(titles.join(", ") || "—")}</td>
+                  <td>${escapeHTML(years.join(", ") || officer.term || "—")}</td>
+                  <td>
+                    <span class="status-badge ${
+                      officer.status === "published"
+                        ? "status-published"
+                        : "status-draft"
+                    }">
+                      ${officer.status === "published" ? "Published" : "Draft"}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="officer-row-actions">
+                      <button
+                        class="button button-light officer-edit-button"
+                        type="button"
+                        data-officer-id="${escapeHTML(officer.id)}"
+                      >Edit</button>
+                      <button
+                        class="button button-light officer-delete-button"
+                        type="button"
+                        data-officer-id="${escapeHTML(officer.id)}"
+                      >Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+              })
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    
+    `;
+
+  // Connect each dynamically rendered Edit button to the officer modal.
+  list.querySelectorAll(".officer-edit-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const officerId = button.dataset.officerId;
+      const officer = officerRecords.find(
+        (item) => String(item.id) === String(officerId),
+      );
+
+      if (officer) {
+        openOfficerModal(officer);
+      }
+    });
+  });
 
   renderOfficerTree();
 }
 
 /* ========================================
-   CUSTOM OFFICER FILTER DROPDOWNS
-======================================== */
+    CUSTOM OFFICER FILTER DROPDOWNS
+  ======================================== */
 
 function setupOfficerDropdown(dropdown) {
   const trigger = dropdown.querySelector(".officer-select-trigger");
@@ -1336,6 +1141,76 @@ function setupOfficerDropdown(dropdown) {
 
 document.querySelectorAll(".officer-select").forEach(setupOfficerDropdown);
 
+// Convert Basic Information native select sources into the same custom dropdown
+// component used by the Officers status filter, while keeping the original select
+// in the form for validation and existing data handling.
+function enhanceOfficerFormSelect(select) {
+  if (!select || select.dataset.customized === "true") return;
+  select.dataset.customized = "true";
+  const dropdown = document.createElement("div");
+  dropdown.className = "officer-select officer-basic-select";
+  dropdown.dataset.sourceId = select.id;
+  dropdown.dataset.value = select.value;
+  const trigger = document.createElement("button");
+  trigger.type = "button";
+  trigger.className = "officer-select-trigger";
+  trigger.setAttribute("aria-haspopup", "listbox");
+  trigger.setAttribute("aria-expanded", "false");
+  const label = document.createElement("span");
+  label.className = "officer-select-label";
+  const chevron = document.createElement("span");
+  chevron.className = "officer-select-chevron";
+  chevron.setAttribute("aria-hidden", "true");
+  chevron.textContent = "⌄";
+  trigger.append(label, chevron);
+  const menu = document.createElement("div");
+  menu.className = "officer-select-menu";
+  menu.hidden = true;
+  menu.setAttribute("role", "listbox");
+  menu.setAttribute("aria-label", select.labels?.[0]?.textContent || select.name);
+  [...select.options].forEach((opt) => {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "officer-select-option";
+    item.dataset.value = opt.value;
+    item.setAttribute("role", "option");
+    const text = document.createElement("span"); text.textContent = opt.textContent;
+    const check = document.createElement("span"); check.className = "option-check"; check.textContent = "✓";
+    item.append(text, check); menu.append(item);
+  });
+  select.insertAdjacentElement("afterend", dropdown);
+  dropdown.append(trigger, menu);
+  select.classList.add("custom-select-source-hidden");
+  function sync(value = select.value) {
+    dropdown.dataset.value = value;
+    const option = [...menu.querySelectorAll(".officer-select-option")].find(x => x.dataset.value === value) || menu.querySelector(".officer-select-option");
+    menu.querySelectorAll(".officer-select-option").forEach(x => {
+      const chosen = x === option; x.classList.toggle("selected", chosen); x.setAttribute("aria-selected", String(chosen));
+    });
+    label.textContent = option?.querySelector("span")?.textContent || "Select an option";
+  }
+  trigger.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const opening = menu.hidden;
+    document.querySelectorAll(".officer-select-menu").forEach(m => m.hidden = true);
+    document.querySelectorAll(".officer-select-trigger").forEach(t => t.setAttribute("aria-expanded", "false"));
+    menu.hidden = !opening; trigger.setAttribute("aria-expanded", String(opening));
+  });
+  menu.addEventListener("click", event => {
+    const option = event.target.closest(".officer-select-option"); if (!option) return;
+    select.value = option.dataset.value; select.dispatchEvent(new Event("change", {bubbles:true})); sync(select.value);
+    menu.hidden = true; trigger.setAttribute("aria-expanded", "false"); trigger.focus();
+  });
+  select.addEventListener("change", () => sync(select.value));
+  sync();
+  select._customDropdownSync = sync;
+}
+document.querySelectorAll("#officer-program, #officer-status").forEach(enhanceOfficerFormSelect);
+function syncOfficerFormSelects() {
+  [$("officer-program"), $("officer-status")].forEach(select => select?._customDropdownSync?.());
+}
+
+
 document.addEventListener("click", (event) => {
   if (!event.target.closest(".officer-select")) {
     document.querySelectorAll(".officer-select-menu").forEach((menu) => {
@@ -1349,6 +1224,479 @@ document.addEventListener("click", (event) => {
 });
 
 $("officer-search").addEventListener("input", renderOfficers);
+
+
+let officerPhotoFile = null;
+let officerPhotoObjectUrl = null;
+
+
+
+
+/* ========================================
+   OFFICER MODAL: FOCUS AND SCROLL CONTROL
+======================================== */
+
+let officerModalReturnFocus = null;
+
+function openOfficerModal(officer = null) {
+  const modal = $("officer-form-panel");
+  const form = $("officer-form");
+
+  // Remember the element that opened the modal.
+  officerModalReturnFocus = document.activeElement;
+
+  // Reset the form for a new officer.
+  form.reset();
+  $("officer-id").value = "";
+  $("officer-positions-list").replaceChildren();
+
+  // Reset optional photo selection; intentionally no image preview.
+  officerPhotoFile = null;
+  $("officer-photo-file").value = "";
+  $("officer-photo-file").dataset.existingPhoto = "";
+  $("officer-photo-filename").textContent = "No photo selected";
+  $("officer-photo-remove").hidden = true;
+
+  if (officer) {
+    // Populate these fields when editing an existing officer.
+    $("officer-id").value = officer.officerId ?? officer.id ?? "";
+    $("officer-name").value = officer.name ?? "";
+    $("officer-program").value = officer.program ?? "";
+    $("officer-student-number").value = officer.studentNumber ?? officer.term ?? "";
+    $("officer-status").value = officer.status ?? "draft";
+    $("officer-cdm-email").value = officer.cdmEmail ?? "";
+    $("officer-personal-email").value = officer.personalEmail ?? "";
+    $("officer-contact").value = officer.contactNumber ?? "";
+
+    const birthdate = officer.birthdate ?? "";
+    $("officer-birthdate").value = birthdate;
+
+    if (birthdate) {
+      const parts = birthdate.split("-");
+      $("officer-birthdate").value =
+        parts.length === 3 && parts[0].length === 4
+          ? `${parts[1]}-${parts[2]}-${parts[0]}`
+          : birthdate;
+    }
+
+    const positions = Array.isArray(officer.positions)
+      ? officer.positions
+      : [];
+
+    positions.forEach((position) => addOfficerPositionRow(position));
+
+    $("officer-form-heading").textContent = "Edit officer";
+  } else {
+    $("officer-form-heading").textContent = "Add officer";
+    addOfficerPositionRow();
+  }
+
+  // Clear stale browser validation messages.
+  [
+    $("officer-birthdate"),
+    $("officer-contact"),
+    $("officer-cdm-email"),
+  ].forEach((input) => input.setCustomValidity(""));
+
+  syncOfficerFormSelects();
+  if (!modal.open) {
+    modal.showModal();
+  }
+
+  document.body.classList.add("officer-modal-open");
+  $("officer-name").focus();
+}
+
+function closeOfficerModal() {
+  const modal = $("officer-form-panel");
+
+  if (modal.open) {
+    modal.close();
+  }
+}
+
+function restoreOfficerModalFocus() {
+  document.body.classList.remove("officer-modal-open");
+
+  if (officerPhotoObjectUrl) {
+    URL.revokeObjectURL(officerPhotoObjectUrl);
+    officerPhotoObjectUrl = null;
+  }
+
+  if (officerModalReturnFocus?.isConnected) {
+    officerModalReturnFocus.focus();
+  }
+
+  officerModalReturnFocus = null;
+}
+
+const officerModal = $("officer-form-panel");
+
+$("officer-form-cancel").addEventListener("click", closeOfficerModal);
+$("officer-modal-close").addEventListener("click", closeOfficerModal);
+
+officerModal.addEventListener("close", restoreOfficerModalFocus);
+
+officerModal.addEventListener("click", (event) => {
+  if (event.target === officerModal) {
+    closeOfficerModal();
+  }
+});
+
+
+/* ========================================
+   OFFICER FORM VALIDATION
+======================================== */
+
+
+
+let officerBirthdateMonth = new Date(
+  new Date().getFullYear(),
+  new Date().getMonth(),
+  1
+);
+
+const officerBirthdateCalendar = $("officer-birthdate-calendar");
+
+function formatOfficerBirthdate(value) {
+  if (!value) return "Choose a birthdate";
+
+  const [year, month, day] = value.split("-").map(Number);
+
+  return new Date(year, month - 1, day).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function populateBirthdateSelectors() {
+  const monthSelect = $("officer-birthdate-month-select");
+  const yearSelect = $("officer-birthdate-year-select");
+  const currentYear = new Date().getFullYear();
+
+  monthSelect.replaceChildren();
+
+  for (let month = 0; month < 12; month++) {
+    const option = document.createElement("option");
+    option.value = String(month);
+    option.textContent = new Date(2000, month, 1).toLocaleDateString(
+      "en-US",
+      { month: "long" }
+    );
+    monthSelect.append(option);
+  }
+
+  yearSelect.replaceChildren();
+
+  for (let year = currentYear; year >= 1900; year--) {
+    const option = document.createElement("option");
+    option.value = String(year);
+    option.textContent = String(year);
+    yearSelect.append(option);
+  }
+}
+
+function renderOfficerBirthdateCalendar() {
+  const year = officerBirthdateMonth.getFullYear();
+  const month = officerBirthdateMonth.getMonth();
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+
+  $("officer-birthdate-month-select").value = String(month);
+  $("officer-birthdate-year-select").value = String(year);
+
+  $("officer-birthdate-prev").disabled = year <= 1900 && month === 0;
+  $("officer-birthdate-next").disabled =
+    year === today.getFullYear() && month === today.getMonth();
+
+  const days = $("officer-birthdate-days");
+  days.replaceChildren();
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const numberOfDays = new Date(year, month + 1, 0).getDate();
+  const selected = $("officer-birthdate").value;
+
+  for (let i = 0; i < firstDay; i++) {
+    const spacer = document.createElement("span");
+    spacer.className = "calendar-empty";
+    days.append(spacer);
+  }
+
+  for (let day = 1; day <= numberOfDays; day++) {
+    const date = new Date(year, month, day);
+    const value =
+      `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "calendar-day";
+    button.textContent = String(day);
+    button.disabled = date > today;
+
+    if (value === selected) button.classList.add("selected");
+    if (date.getTime() === today.getTime()) button.classList.add("today");
+
+    button.addEventListener("click", () => {
+      $("officer-birthdate").value = value;
+      $("officer-birthdate-display").textContent =
+        formatOfficerBirthdate(value);
+
+      officerBirthdateCalendar.hidden = true;
+      $("officer-birthdate-trigger").setAttribute("aria-expanded", "false");
+      $("officer-birthdate-trigger").focus();
+    });
+
+    days.append(button);
+  }
+}
+
+populateBirthdateSelectors();
+
+function getAcademicYearChoices() {
+  const start = 2020;
+  const current = new Date().getFullYear();
+  const years = [];
+  for (let year = current + 1; year >= start; year--) years.push(`${year}-${year + 1}`);
+  return years;
+}
+
+// Student number is a text field, not an academic-year selector.
+
+
+$("officer-birthdate-month-select").addEventListener("change", (event) => {
+  officerBirthdateMonth = new Date(
+    officerBirthdateMonth.getFullYear(),
+    Number(event.target.value),
+    1
+  );
+  renderOfficerBirthdateCalendar();
+});
+
+$("officer-birthdate-year-select").addEventListener("change", (event) => {
+  officerBirthdateMonth = new Date(
+    Number(event.target.value),
+    officerBirthdateMonth.getMonth(),
+    1
+  );
+  renderOfficerBirthdateCalendar();
+});
+
+const officerBirthdateTrigger = $("officer-birthdate-trigger");
+
+if (officerBirthdateTrigger && officerBirthdateCalendar) {
+  officerBirthdateTrigger.addEventListener("click", () => {
+    const opening = officerBirthdateCalendar.hidden;
+
+    officerBirthdateCalendar.hidden = !opening;
+
+    officerBirthdateTrigger.setAttribute(
+      "aria-expanded",
+      String(opening)
+    );
+
+    if (opening) {
+      const selected = $("officer-birthdate").value;
+      const parts = selected
+        ? selected.split("-").map(Number)
+        : [
+            new Date().getFullYear(),
+            new Date().getMonth() + 1,
+            1,
+          ];
+
+      officerBirthdateMonth = new Date(
+        parts[0],
+        parts[1] - 1,
+        1
+      );
+
+      renderOfficerBirthdateCalendar();
+    }
+  });
+} else {
+  console.error("Birthdate trigger or calendar element not found.", {
+    trigger: officerBirthdateTrigger,
+    calendar: officerBirthdateCalendar,
+  });
+} 
+
+$("officer-birthdate-prev").addEventListener("click", () => {
+  officerBirthdateMonth = new Date(
+    officerBirthdateMonth.getFullYear(),
+    officerBirthdateMonth.getMonth() - 1,
+    1
+  );
+  renderOfficerBirthdateCalendar();
+});
+
+$("officer-birthdate-next").addEventListener("click", () => {
+  officerBirthdateMonth = new Date(
+    officerBirthdateMonth.getFullYear(),
+    officerBirthdateMonth.getMonth() + 1,
+    1
+  );
+  renderOfficerBirthdateCalendar();
+});
+
+const officerBirthdateClear = $("officer-birthdate-clear");
+
+if (officerBirthdateClear) {
+  officerBirthdateClear.addEventListener("click", () => {
+    $("officer-birthdate").value = "";
+    $("officer-birthdate-display").textContent = "Choose a birthdate";
+
+    officerBirthdateCalendar.hidden = true;
+
+    officerBirthdateTrigger?.setAttribute("aria-expanded", "false");
+    officerBirthdateTrigger?.focus();
+  });
+}
+
+$("officer-birthdate-today").addEventListener("click", () => {
+  const today = new Date();
+  officerBirthdateMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  renderOfficerBirthdateCalendar();
+});
+
+// Photo selection only. No image preview is shown; persistent upload storage is separate. 
+$("officer-photo-file").addEventListener("change", () => {
+  const file = $("officer-photo-file").files?.[0];
+  const filename = $("officer-photo-filename");
+  const removeButton = $("officer-photo-remove");
+  if (!file) {
+    filename.textContent = "No photo selected";
+    removeButton.hidden = true;
+    officerPhotoFile = null;
+    return;
+  }
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  if (!allowedTypes.includes(file.type)) {
+    showNotice("Choose a JPG, PNG, or WebP image file.", "error");
+    $("officer-photo-file").value = "";
+    filename.textContent = "No photo selected";
+    officerPhotoFile = null;
+    removeButton.hidden = true;
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showNotice("The photo must be 5 MB or smaller.", "error");
+    $("officer-photo-file").value = "";
+    filename.textContent = "No photo selected";
+    officerPhotoFile = null;
+    removeButton.hidden = true;
+    return;
+  }
+  officerPhotoFile = file;
+  filename.textContent = file.name;
+  removeButton.hidden = false;
+});
+
+$("officer-photo-remove").addEventListener("click", () => {
+  officerPhotoFile = null;
+  $("officer-photo-file").value = "";
+  $("officer-photo-file").dataset.existingPhoto = "";
+  $("officer-photo-filename").textContent = "No photo selected";
+  $("officer-photo-remove").hidden = true;
+});
+
+
+$("new-officer-button").addEventListener("click", () => {
+  openOfficerModal();
+});
+
+function addOfficerPositionRow(position = {}) {
+  const row = document.createElement("div");
+  row.className = "officer-position-row";
+
+  const fields = [
+    { key: "office", label: "Office", options: ["Executive", "Creatives", "Finance", "Technology", "Relations", "Marketing", "Operations"] },
+    { key: "title", label: "Position title", type: "input", placeholder: "e.g. President" },
+    { key: "year", label: "Academic year", options: getAcademicYearChoices() },
+  ];
+
+  fields.forEach(({ key, label, type, options = [], placeholder = "" }) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "field";
+    const inputLabel = document.createElement("label");
+    inputLabel.textContent = `${label} *`;
+
+    if (type === "input") {
+      const input = document.createElement("input");
+      input.name = key;
+      input.dataset.positionField = key;
+      input.required = true;
+      input.placeholder = placeholder;
+      input.value = position[key] ?? "";
+      input.id = `officer-position-${key}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      inputLabel.htmlFor = input.id;
+      wrapper.append(inputLabel, input);
+    } else {
+      // Reuse the same custom dropdown pattern as the Officers status filters.
+      const dropdown = document.createElement("div");
+      dropdown.className = "officer-select officer-position-select";
+      dropdown.dataset.value = position[key] ?? "";
+      dropdown.dataset.positionField = key;
+
+      const trigger = document.createElement("button");
+      trigger.type = "button";
+      trigger.className = "officer-select-trigger";
+      trigger.setAttribute("aria-haspopup", "listbox");
+      trigger.setAttribute("aria-expanded", "false");
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "officer-select-label";
+      labelSpan.textContent = position[key] || (key === "office" ? "Select office" : "Select academic year");
+      const chevron = document.createElement("span");
+      chevron.className = "officer-select-chevron";
+      chevron.setAttribute("aria-hidden", "true");
+      chevron.textContent = "⌄";
+      trigger.append(labelSpan, chevron);
+
+      const menu = document.createElement("div");
+      menu.className = "officer-select-menu";
+      menu.hidden = true;
+      menu.setAttribute("role", "listbox");
+      options.forEach((value) => {
+        const option = document.createElement("button");
+        option.type = "button";
+        option.className = "officer-select-option";
+        option.dataset.value = value;
+        option.setAttribute("role", "option");
+        option.setAttribute("aria-selected", String(value === (position[key] ?? "")));
+        const text = document.createElement("span");
+        text.textContent = value;
+        const check = document.createElement("span");
+        check.className = "option-check";
+        check.textContent = "✓";
+        option.classList.toggle("selected", value === (position[key] ?? ""));
+        option.append(text, check);
+        menu.append(option);
+      });
+      dropdown.append(trigger, menu);
+      inputLabel.htmlFor = "";
+      wrapper.append(inputLabel, dropdown);
+      setupOfficerDropdown(dropdown);
+    }
+    row.appendChild(wrapper);
+  });
+
+  const actions = document.createElement("div");
+  actions.className = "field position-row-actions";
+  const removeButton = document.createElement("button");
+  removeButton.type = "button";
+  removeButton.className = "button button-light";
+  removeButton.textContent = "Remove position";
+  removeButton.addEventListener("click", () => row.remove());
+  actions.appendChild(removeButton);
+  row.appendChild(actions);
+  $("officer-positions-list").appendChild(row);
+}
+
+$("add-officer-position").addEventListener("click", (event) => {
+  event.preventDefault();
+  addOfficerPositionRow();
+});
 
 updateOfficerYearOptions();
 updateOfficerStats();

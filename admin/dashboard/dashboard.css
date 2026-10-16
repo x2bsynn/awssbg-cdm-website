@@ -1172,7 +1172,7 @@ textarea:focus-visible {
 /* Calendar month heading */
 .calendar-header strong,
 .time-popup-heading strong,
-.time-select-group > label {
+.time-select-group>label {
   color: var(--picker-text);
 }
 
@@ -1300,7 +1300,7 @@ textarea:focus-visible {
   margin-bottom: 22px;
 }
 
-.time-popup-heading > div {
+.time-popup-heading>div {
   display: flex;
   flex-direction: column;
   gap: 7px;
@@ -1319,7 +1319,7 @@ textarea:focus-visible {
   letter-spacing: -0.5px;
 }
 
-.time-popup-heading > div > span:last-child {
+.time-popup-heading>div>span:last-child {
   color: #8c6877;
   font-size: 12px;
   line-height: 1.5;
@@ -1335,7 +1335,7 @@ textarea:focus-visible {
   gap: 9px;
 }
 
-.time-select-group > label {
+.time-select-group>label {
   color: #765062;
   font-size: 12px;
   font-weight: 700;
@@ -1411,7 +1411,7 @@ textarea:focus-visible {
   font-size: 22px;
 }
 
-.time-duration > div {
+.time-duration>div {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1423,7 +1423,7 @@ textarea:focus-visible {
   font-size: 12px;
 }
 
-.time-duration > div > span {
+.time-duration>div>span {
   color: #8c6877;
   font-size: 12px;
   line-height: 1.5;
@@ -1983,6 +1983,7 @@ textarea:focus-visible {
     opacity: 0;
     transform: translateY(-4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -2264,7 +2265,7 @@ textarea:focus-visible {
   min-width: 0;
 }
 
-.org-leader-group > .org-tier-label {
+.org-leader-group>.org-tier-label {
   margin-bottom: 12px;
 }
 
@@ -2284,6 +2285,7 @@ textarea:focus-visible {
   height: 100%;
   border-radius: 13px;
 }
+
 .org-leader-card {
   display: flex;
   flex-direction: column;
@@ -2324,7 +2326,7 @@ textarea:focus-visible {
   background: #e9faf3;
 }
 
-.org-adviser > div {
+.org-adviser>div {
   min-width: 0;
 }
 
@@ -2372,7 +2374,7 @@ textarea:focus-visible {
   background: white;
 }
 
-.org-tier > .org-tier-label {
+.org-tier>.org-tier-label {
   margin-bottom: 14px;
 }
 
@@ -2409,7 +2411,7 @@ textarea:focus-visible {
   overflow-wrap: anywhere;
 }
 
-.org-person-info > span {
+.org-person-info>span {
   display: block;
   margin-top: 5px;
   color: var(--org-muted);
@@ -2427,7 +2429,7 @@ textarea:focus-visible {
   padding-top: 4px;
 }
 
-.org-functional > .org-tier-label {
+.org-functional>.org-tier-label {
   margin-bottom: 14px;
 }
 
@@ -2514,6 +2516,7 @@ textarea:focus-visible {
   .org-adviser {
     min-height: 130px;
   }
+
   .org-executive-grid,
   .org-functional-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2570,7 +2573,7 @@ textarea:focus-visible {
 }
 
 /* The group label must not take up a grid cell */
-.org-leader-group > .org-tier-label {
+.org-leader-group>.org-tier-label {
   display: none !important;
 }
 
@@ -2673,7 +2676,7 @@ textarea:focus-visible {
   display: contents !important;
 }
 
-.org-leader-group > .org-tier-label {
+.org-leader-group>.org-tier-label {
   display: none !important;
 }
 
@@ -2713,7 +2716,7 @@ textarea:focus-visible {
   background: #e9faf3;
 }
 
-.org-adviser > div {
+.org-adviser>div {
   min-width: 0;
 }
 
@@ -2950,3 +2953,894 @@ textarea:focus-visible {
   }
 }
 
+
+/* Modal window */
+.officer-modal {
+  box-sizing: border-box;
+  width: min(900px, calc(100% - 32px));
+  max-width: 900px;
+  height: 90vh;
+  height: 90dvh;
+  max-height: 900px;
+
+  margin: auto;
+  padding: 0;
+  border: 1px solid #f0d5df;
+  border-radius: 20px;
+  overflow: hidden;
+
+  color: #54263c;
+  background: #fffafb;
+  box-shadow: 0 24px 80px rgb(65 24 44 / 22%);
+}
+
+.officer-modal[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dim the background */
+.officer-modal::backdrop {
+  background: rgb(37 20 30 / 60%);
+  backdrop-filter: blur(3px);
+}
+
+/* Fixed header */
+.officer-modal-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 24px 28px;
+  border-bottom: 1px solid #f0d5df;
+  background: #fffafb;
+}
+
+.officer-modal-header h2 {
+  margin: 6px 0;
+}
+
+/* Form must fill remaining space */
+.officer-modal>form {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Scrollable content, with proper inner spacing */
+.officer-modal-body {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 8px 28px 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+
+  scrollbar-width: thin;
+  scrollbar-color: #d98aa7 #f8e9ef;
+}
+
+/* Rounded scrollbar */
+.officer-modal-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.officer-modal-body::-webkit-scrollbar-track {
+  margin-block: 8px;
+  background: #f8e9ef;
+  border-radius: 999px;
+}
+
+.officer-modal-body::-webkit-scrollbar-thumb {
+  background: #d98aa7;
+  border: 2px solid #f8e9ef;
+  border-radius: 999px;
+}
+
+.officer-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #c96b90;
+}
+
+/* Form sections */
+.officer-form-section {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 20px 0;
+  border-bottom: 1px solid #f0dfe5;
+}
+
+.officer-form-section h3 {
+  margin: 0 0 16px;
+}
+
+.officer-form-section .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+}
+
+.officer-form-section .field {
+  min-width: 0;
+}
+
+.officer-form-section input,
+.officer-form-section select {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Positions */
+.officer-positions-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.officer-position-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 18px;
+  border: 1px solid #f0d5df;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.officer-position-row .field:last-child {
+  grid-column: 1 / -1;
+}
+
+/* Fixed footer */
+.officer-modal-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 14px 28px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+
+  border-top: 1px solid #f0d5df;
+  background: #fffafb;
+  box-shadow: 0 -5px 16px rgb(65 24 44 / 4%);
+}
+
+/* Prevent page scrolling behind the native modal */
+html:has(#officer-form-panel[open]),
+body:has(#officer-form-panel[open]) {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .officer-modal {
+    width: calc(100% - 20px);
+    height: 94vh;
+    height: 94dvh;
+    max-height: 94dvh;
+    border-radius: 16px;
+  }
+
+  .officer-modal-header {
+    padding: 18px;
+  }
+
+  .officer-modal-body {
+    padding: 8px 18px 20px;
+  }
+
+  .officer-form-section .form-grid,
+  .officer-position-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .officer-position-row .field:last-child {
+    grid-column: auto;
+  }
+
+  .officer-positions-heading {
+    flex-direction: column;
+  }
+
+  .officer-modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 12px 18px;
+  }
+
+  .officer-modal-actions button {
+    width: 100%;
+  }
+}
+
+
+/* Birthdate picker, matching the officer admin palette */
+.birthdate-picker-wrap {
+  position: relative;
+}
+
+.officer-date-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid #ead5df;
+  border-radius: 12px;
+  background: #fff;
+  color: #54263c;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.officer-date-trigger:focus-visible {
+  outline: 3px solid rgb(217 138 167 / 28%);
+  border-color: #d96f94;
+}
+
+.officer-birthdate-calendar {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  left: 0;
+  width: min(330px, calc(100vw - 64px));
+  padding: 16px;
+  border: 1px solid #f0d5df;
+  border-radius: 16px;
+  background: #fffafb;
+  box-shadow: 0 12px 35px rgb(65 24 44 / 18%);
+}
+
+.officer-birthdate-calendar[hidden] {
+  display: none !important;
+}
+
+.officer-birthdate-calendar .calendar-header strong {
+  color: #54263c;
+}
+
+.officer-birthdate-calendar .calendar-header button {
+  background: #f9e8ef;
+  border-color: #f0d5df;
+  color: #54263c;
+}
+
+.officer-birthdate-calendar .calendar-day {
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: #54263c;
+  cursor: pointer;
+}
+
+.officer-birthdate-calendar .calendar-day:hover {
+  background: #f9e8ef;
+}
+
+.officer-birthdate-calendar .calendar-day.selected {
+  background: #d96f94;
+  color: #fff;
+}
+
+.officer-birthdate-calendar .calendar-day.today {
+  border-color: #d96f94;
+}
+
+.officer-birthdate-calendar #officer-birthdate-clear {
+  margin-top: 12px;
+  width: 100%;
+}
+
+
+/* Officer birthdate calendar redesign */
+.officer-calendar-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.officer-calendar-selectors {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  min-width: 0;
+}
+
+.officer-calendar-selectors select {
+  min-width: 0;
+  padding: 10px 30px 10px 12px;
+  border: 1px solid #ead5df;
+  border-radius: 10px;
+  background: #fff;
+  color: #54263c;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#officer-birthdate-month-select {
+  flex: 1.3;
+}
+
+#officer-birthdate-year-select {
+  flex: 0.8;
+}
+
+.officer-calendar-navigation {
+  display: flex;
+  gap: 6px;
+}
+
+.officer-calendar-navigation button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #f0d5df;
+  border-radius: 10px;
+  background: #f9e8ef;
+  color: #54263c;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.officer-calendar-navigation button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.officer-birthdate-calendar .calendar-day:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.officer-birthdate-calendar .calendar-day:disabled:hover {
+  background: transparent;
+}
+
+.officer-calendar-selectors select:focus-visible,
+.officer-calendar-navigation button:focus-visible {
+  outline: 3px solid rgb(217 138 167 / 30%);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* Officer form refinements: custom pink controls and non-clipped birthdate calendar */
+#officer-form-panel .officer-form-section .field > select,
+#officer-form-panel .officer-position-row select,
+#officer-form-panel #officer-term,
+#officer-form-panel #officer-program,
+#officer-form-panel #officer-status {
+  appearance: none; -webkit-appearance: none;
+  width: 100%; min-height: 48px; padding: 12px 42px 12px 15px;
+  border: 1px solid #ead5df; border-radius: 12px;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a5b70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  color: #593344; font: inherit; cursor: pointer;
+}
+#officer-form-panel select:focus-visible,
+#officer-form-panel input:focus-visible,
+#officer-birthdate-trigger:focus-visible {
+  outline: 2px solid #d96f91 !important; outline-offset: 2px; border-color: #d96f91;
+  box-shadow: 0 0 0 3px rgb(217 111 145 / 12%);
+}
+#officer-birthdate-trigger { min-height: 48px; height: 48px; width: 100%; border: 1px solid #ead5df; border-radius: 12px; padding: 12px 15px; background: #fff; color: #593344; text-align: left; display:flex; align-items:center; justify-content:space-between; }
+#officer-birthdate-trigger:hover { border-color: #d96f91; background: #fff8fa; box-shadow: none; }
+.date-trigger-icon { color: #d96f91; font-size: 18px; }
+.birthdate-picker-wrap { position: relative; min-width: 0; }
+#officer-birthdate-calendar {
+  position: relative; z-index: 2; width: 100%; max-width: 100%; margin-top: 8px;
+  padding: 14px; border: 1px solid #f0d5df; border-radius: 14px;
+  background: #fffafb; box-shadow: 0 10px 24px rgb(89 51 68 / 10%);
+}
+#officer-birthdate-calendar[hidden] { display:none !important; }
+#officer-birthdate-calendar .officer-calendar-heading { gap: 8px; margin-bottom: 12px; }
+#officer-birthdate-calendar .officer-calendar-selectors { min-width: 0; }
+#officer-birthdate-calendar .officer-calendar-selectors select { min-height: 42px; padding: 9px 28px 9px 10px; border-color:#f0d5df; border-radius:10px; font-size:13px; }
+#officer-birthdate-calendar .officer-calendar-navigation button { flex:0 0 36px; width:36px; height:36px; border:1px solid #f0d5df; border-radius:10px; background:#fbe8ef; color:#593344; }
+#officer-birthdate-calendar .calendar-weekdays, #officer-birthdate-calendar .calendar-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; text-align:center; }
+#officer-birthdate-calendar .calendar-weekdays { margin: 8px 0; color:#9b7888; font-size:12px; font-weight:700; }
+#officer-birthdate-calendar .calendar-days { row-gap:4px; }
+#officer-birthdate-calendar .calendar-day, #officer-birthdate-calendar .calendar-empty { min-width:0; width:100%; height:36px; display:grid; place-items:center; }
+#officer-birthdate-calendar .calendar-day { padding:0; border:1px solid transparent; border-radius:9px; background:transparent; color:#593344; font-size:13px; }
+#officer-birthdate-calendar .calendar-day:hover:not(:disabled) { background:#fbe8ef; border-color:#f0d5df; box-shadow:none; }
+#officer-birthdate-calendar .calendar-day.selected { background:#d96f91; border-color:#d96f91; color:#fff; }
+#officer-birthdate-calendar .calendar-day.today:not(.selected) { border-color:#d96f91; }
+#officer-birthdate-calendar .calendar-day:disabled { color:#cfc4ca; opacity:.5; text-decoration:none; cursor:not-allowed; }
+#officer-birthdate-calendar .officer-calendar-footer { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:12px; padding-top:10px; border-top:1px solid #f3e2e8; }
+#officer-birthdate-calendar .officer-calendar-footer button { border:0; background:transparent; color:#a84f72; font-size:12px; font-weight:700; padding:7px 4px; }
+#officer-birthdate-calendar .officer-calendar-footer button:hover { color:#773650; text-decoration:underline; background:transparent; box-shadow:none; }
+.photo-upload-control { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
+.photo-choose-button { cursor:pointer; }
+.photo-filename { color:#806b76; font-size:12px; overflow-wrap:anywhere; }
+
+/* Final officer-form refinements */
+#officer-form-panel .officer-position-select {
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+#officer-form-panel .officer-position-select .officer-select-trigger {
+  min-height: 48px;
+  height: 48px;
+  font-size: 14px;
+  background: #fff;
+  border-color: #ead5df;
+}
+#officer-form-panel .officer-position-select .officer-select-menu {
+  z-index: 10020;
+  max-height: 220px;
+}
+#officer-form-panel .officer-position-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+}
+#officer-form-panel .officer-position-row .field:last-child {
+  grid-column: 1 / -1;
+}
+#officer-form-panel .officer-position-row .position-row-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+#officer-form-panel .officer-form-section:has(#officer-photo-file) .field {
+  display: block;
+  width: 100%;
+}
+#officer-form-panel .photo-upload-control {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+#officer-form-panel .photo-choose-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  margin: 0;
+  padding: 0 16px;
+  border: 1px solid #e7b7c8;
+  border-radius: 10px;
+  background: #fff1f6;
+  color: #753650;
+  line-height: 1;
+  white-space: nowrap;
+}
+#officer-form-panel .photo-filename { flex: 0 1 auto; min-width: 0; }
+#officer-birthdate-calendar .calendar-days {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+}
+#officer-birthdate-calendar .calendar-day,
+#officer-birthdate-calendar .calendar-empty {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  min-height: 0;
+  box-sizing: border-box;
+}
+#officer-birthdate-calendar .officer-calendar-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 10px;
+}
+#officer-birthdate-calendar .officer-calendar-footer button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 36px;
+  width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid #efd0dc;
+  border-radius: 9px;
+  background: #fff1f6;
+  color: #9b4568;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+}
+#officer-birthdate-calendar .officer-calendar-footer button:hover {
+  border-color: #d96f91;
+  background: #fbe4ed;
+  text-decoration: none;
+  box-shadow: none;
+}
+@media (max-width: 640px) {
+  #officer-form-panel .officer-position-row { grid-template-columns: minmax(0, 1fr); }
+  #officer-form-panel .officer-position-row .field:last-child { grid-column: auto; }
+}
+
+
+/* Basic information dropdowns match the Officers filter custom menu. */
+#officer-form-panel .custom-select-source-hidden {
+  position: absolute !important; width: 1px !important; height: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important;
+  border: 0 !important; opacity: 0 !important; pointer-events: none !important;
+}
+#officer-form-panel .officer-basic-select { position: relative; width: 100%; min-width: 0; }
+#officer-form-panel .officer-basic-select .officer-select-trigger {
+  width: 100%; min-height: 48px; height: 48px; padding: 0 14px;
+  border: 1px solid #ead5df; border-radius: 12px; background: #fff;
+  color: #593344; font: inherit; display: flex; align-items: center;
+  justify-content: space-between; text-align: left; box-shadow: none;
+}
+#officer-form-panel .officer-basic-select .officer-select-trigger:hover,
+#officer-form-panel .officer-basic-select .officer-select-trigger[aria-expanded="true"] {
+  border-color: #d96f91; background: #fff8fa; box-shadow: none;
+}
+#officer-form-panel .officer-basic-select .officer-select-menu { z-index: 10050; max-height: 240px; }
+#officer-form-panel .birthdate-picker-wrap { position: relative; }
+#officer-form-panel #officer-birthdate-calendar {
+  position: absolute; left: 0; right: 0; top: calc(100% + 8px); width: 100%;
+  max-width: min(440px, calc(100vw - 64px)); margin: 0; z-index: 10040;
+}
+#officer-form-panel .officer-form-section:has(#officer-birthdate-calendar) { position: relative; }
+#officer-form-panel #officer-student-number { min-height: 48px; }
+
+
+/* ==========================================================
+   FORM POLISH + RESPONSIVE PASS
+   1. Remove the browser autofill tint
+   2. One set of control sizes (height, radius, padding, text)
+      shared by inputs, dropdown triggers and menu options
+   3. Custom-designed birthdate month / year dropdowns
+   4. Responsive behaviour from desktop down to small phones
+========================================================== */
+
+:root {
+  --control-h: 48px;
+  --control-r: 12px;
+  --control-px: 14px;
+  --control-fs: 13px;
+}
+
+/* Phones: 16px stops iOS from zooming in when a field is tapped */
+@media (max-width: 640px) {
+  :root {
+    --control-fs: 16px;
+  }
+}
+
+/* ---------- 1. Autofill: stay white instead of Chrome's blue tint ---------- */
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus,
+.field input:-webkit-autofill:active,
+.search:-webkit-autofill,
+.search:-webkit-autofill:hover,
+.search:-webkit-autofill:focus,
+#officer-form-panel input:-webkit-autofill,
+#officer-form-panel input:-webkit-autofill:hover,
+#officer-form-panel input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--ink);
+  caret-color: var(--ink);
+  -webkit-box-shadow: 0 0 0 1000px #fff inset;
+  box-shadow: 0 0 0 1000px #fff inset;
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+#officer-form-panel input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ink);
+  -webkit-box-shadow: 0 0 0 1000px #fff inset, 0 0 0 3px rgb(217 111 145 / 12%);
+  box-shadow: 0 0 0 1000px #fff inset, 0 0 0 3px rgb(217 111 145 / 12%);
+}
+
+/* ---------- 2. Shared control sizing ---------- */
+
+/* Text inputs and date/time triggers (Officer modal + Event form) */
+#officer-form-panel .field > input,
+.form-panel .field > input,
+.form-panel .picker-trigger {
+  box-sizing: border-box;
+  min-height: var(--control-h);
+  padding: 0 var(--control-px);
+  border-radius: var(--control-r);
+  background: #fff;
+  font-size: var(--control-fs);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* Custom dropdown triggers and the birthdate trigger */
+#officer-form-panel .officer-form-section .officer-basic-select .officer-select-trigger,
+#officer-form-panel .officer-position-row .officer-position-select .officer-select-trigger,
+#officer-form-panel #officer-birthdate-trigger {
+  box-sizing: border-box;
+  min-height: var(--control-h);
+  height: var(--control-h);
+  padding: 0 var(--control-px);
+  border-radius: var(--control-r);
+  font-size: var(--control-fs);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* Menu options */
+#officer-form-panel .officer-select-option {
+  font-size: var(--control-fs);
+}
+
+/* The Location field sits outside the form grid, so give it the grid's gap */
+.form-panel .form-grid + .field {
+  margin-top: 18px;
+}
+
+/* Tighten the gap under the modal subtitles */
+.officer-modal-header .form-intro,
+.officer-positions-heading .form-intro {
+  margin-bottom: 0;
+}
+
+/* ---------- 3. Birthdate month / year dropdowns ---------- */
+#officer-birthdate-calendar .officer-calendar-selectors select {
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 0 34px 0 14px;
+  border: 1px solid #ead5df;
+  border-radius: var(--control-r);
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a8456c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  color: #593344;
+  font-size: var(--control-fs);
+  font-weight: 400;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: border-color 180ms ease, background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+#officer-birthdate-calendar .officer-calendar-selectors select:hover {
+  border-color: #d96f91;
+  background-color: #fff8fa;
+}
+
+#officer-birthdate-calendar .officer-calendar-selectors select:focus-visible {
+  border-color: #d96f91;
+  box-shadow: 0 0 0 3px rgb(217 111 145 / 16%);
+}
+
+/* Browsers with customizable selects (Chrome / Edge 135+) also get the
+   custom popup list, matching the Program and Profile status menus.
+   Other browsers keep the styled closed state above. */
+@supports (appearance: base-select) {
+  #officer-birthdate-calendar .officer-calendar-selectors select,
+  #officer-birthdate-calendar .officer-calendar-selectors select::picker(select) {
+    appearance: base-select;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors select {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 12px 0 14px;
+    background-image: none;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors select:open {
+    border-color: #d96f91;
+    background-color: #fff8fa;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors select::picker-icon {
+    content: "⌄";
+    flex-shrink: 0;
+    color: #a8456c;
+    font-size: 19px;
+    line-height: 1;
+    transition: rotate 180ms ease;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors select:open::picker-icon {
+    rotate: 180deg;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors select::picker(select) {
+    box-sizing: border-box;
+    min-width: anchor-size(width);
+    max-height: min(240px, 50dvh);
+    margin-block: 8px;
+    padding: 7px;
+    border: 1px solid #f0d0dc;
+    border-radius: 14px;
+    background: #fffdfd;
+    box-shadow: 0 12px 30px rgb(117 48 77 / 14%);
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors select option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    box-sizing: border-box;
+    min-height: 40px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    background: transparent;
+    color: #765062;
+    font-size: var(--control-fs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors select option:hover,
+  #officer-birthdate-calendar .officer-calendar-selectors select option:focus-visible {
+    outline: none;
+    background: #fff0f4;
+    color: #593344;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors select option:checked {
+    background: #fbe3eb;
+    color: #593344;
+    font-weight: 700;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors select option::checkmark {
+    content: "✓";
+    order: 1;
+    color: #bd5278;
+    font-size: 13px;
+  }
+}
+
+/* ---------- 4. Responsive ---------- */
+
+/* Tablets and small laptops: position rows need room for three fields */
+@media (max-width: 720px) {
+  #officer-form-panel .officer-position-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #officer-form-panel .officer-position-row .field:last-child {
+    grid-column: auto;
+  }
+}
+
+/* Wide phones / small tablets: keep two columns until space runs out */
+@media (min-width: 521px) and (max-width: 640px) {
+  #officer-form-panel .officer-form-section .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Phones */
+@media (max-width: 640px) {
+  /* Footer: Cancel + Save side by side, Publish gets its own full row */
+  #officer-form-panel .officer-modal-actions {
+    grid-template-columns: 1fr 1fr;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  #officer-form-panel #officer-publish {
+    grid-column: 1 / -1;
+  }
+
+  /* Easier tap targets in menus */
+  #officer-form-panel .officer-select-option {
+    min-height: 44px;
+  }
+
+  /* Search boxes and filters: same no-zoom text size, kept consistent */
+  .search,
+  .officer-toolbar .search,
+  .officer-toolbar .officer-select-trigger,
+  .officer-toolbar .officer-select-option {
+    font-size: 16px;
+  }
+
+  /* Event form: keep clear space between stacked fields */
+  .form-panel .form-grid {
+    gap: 18px;
+  }
+}
+
+/* Small phones: single column form, roomier calendar header */
+@media (max-width: 520px) {
+  #officer-form-panel .officer-form-section .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #officer-form-panel #officer-birthdate-calendar {
+    padding: 14px;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-heading {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors {
+    flex: 1 1 100%;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-selectors select {
+    flex: 1 1 0;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-navigation {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+
+  #officer-birthdate-calendar .officer-calendar-navigation button {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Landscape phones and other short screens: give the form the room */
+@media (max-height: 520px) and (max-width: 900px) {
+  .officer-modal-header {
+    padding: 10px 18px;
+  }
+
+  .officer-modal-header .eyebrow,
+  .officer-modal-header .form-intro {
+    display: none;
+  }
+
+  .officer-modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .officer-modal-actions {
+    padding: 8px 18px;
+  }
+}
