@@ -274,13 +274,21 @@ function showNotice(message, type = "") {
   notice.className = `notice ${type}`;
 }
 
+
+
 function setProfile(user) {
   const profile = user.profile ?? {};
-  const email = profile.email ?? user.email ?? "Signed-in account";
+
+  const email = profile.email ?? user.email ?? "";
+
+  // Prefer the person's actual name, then their chosen username.
+  // Never use the Cognito sub UUID as the display name.
   const fullName =
     profile.name ||
-    [profile.given_name, profile.family_name].filter(Boolean).join(" ") ||
-    email;
+    profile.preferred_username ||
+    profile["cognito:username"] ||
+    profile.username ||
+    "Administrator";
 
   const initials = fullName
     .split(/[\s@._-]+/)
@@ -294,6 +302,8 @@ function setProfile(user) {
   $("profile-avatar").textContent = initials || "A";
   $("welcome-name").textContent = fullName.split(/\s+/)[0];
 }
+
+
 
 async function apiRequest(url, options = {}) {
   const response = await fetch(url, {
@@ -691,7 +701,6 @@ function updateOfficerYearOptions() {
   trigger.setAttribute("aria-expanded", "false");
 }
 
-
 function renderOfficerTree() {
   const tree = $("officer-tree");
   if (!tree) return;
@@ -715,23 +724,26 @@ function renderOfficerTree() {
   const hasRole = (officer, title) =>
     positions(officer).some(
       (position) =>
-        String(position.title ?? "").trim().toLowerCase() ===
-        title.toLowerCase(),
+        String(position.title ?? "")
+          .trim()
+          .toLowerCase() === title.toLowerCase(),
     );
 
   const hasOffice = (officer, office) =>
     positions(officer).some(
       (position) =>
-        String(position.office ?? "").trim().toLowerCase() ===
-        office.toLowerCase(),
+        String(position.office ?? "")
+          .trim()
+          .toLowerCase() === office.toLowerCase(),
     );
 
   const roleNames = (officer, office) => {
     const roles = positions(officer)
       .filter(
         (position) =>
-          String(position.office ?? "").trim().toLowerCase() ===
-          office.toLowerCase(),
+          String(position.office ?? "")
+            .trim()
+            .toLowerCase() === office.toLowerCase(),
       )
       .map((position) => position.title)
       .filter(Boolean);
@@ -740,14 +752,16 @@ function renderOfficerTree() {
   };
 
   const escapeHTML = (value) =>
-    String(value ?? "").replace(/[&<>"']/g, (char) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
-      })[char],
+    String(value ?? "").replace(
+      /[&<>"']/g,
+      (char) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[char],
     );
 
   const personCard = (officer, subtitle = "") => `
@@ -756,7 +770,7 @@ function renderOfficerTree() {
       <div class="org-person-info">
         <strong>${escapeHTML(officer.name)}</strong>
         <span>${escapeHTML(
-          subtitle || roleNames(officer, "Executive") || "Organization member"
+          subtitle || roleNames(officer, "Executive") || "Organization member",
         )}</span>
       </div>
     </article>
@@ -924,7 +938,6 @@ function renderOfficerTree() {
     </div>
   `;
 }
-
 
 function renderOfficers() {
   const list = $("officer-list");
