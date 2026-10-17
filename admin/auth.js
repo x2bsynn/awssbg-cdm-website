@@ -1,10 +1,6 @@
 
 import { UserManager } from "https://esm.sh/oidc-client-ts@3.5.0";
 
-const isLocal = ["localhost", "127.0.0.1"].includes(
-  window.location.hostname,
-);
-
 const baseUrl = window.location.origin;
 
 const cognitoAuthConfig = {
@@ -13,7 +9,7 @@ const cognitoAuthConfig = {
   client_id: "7l1jvkjda7pql65kla7kqv4kon",
   redirect_uri: `${baseUrl}/admin/callback.html`,
   response_type: "code",
-  scope: "openid email",
+  scope: "openid email profile",
   post_logout_redirect_uri: `${baseUrl}/admin/`,
 };
 
