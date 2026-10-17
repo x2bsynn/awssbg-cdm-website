@@ -1,59 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#fffdf8">
   <title>Admin Login | AWSSBG-CDM</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/awssbg-cdm-logo.svg" />
   <link rel="stylesheet" href="./admin.css">
 </head>
 
 <body>
-
   <main class="login-container">
-    <img class="login-logo" src="../assets/awssbg-cdm-logo.svg" alt="AWS Student Builder Group - Colegio de Muntinlupa">
+    <img
+      class="login-logo"
+      src="../assets/awssbg-cdm-logo.svg"
+      alt="AWS Student Builder Group - Colegio de Muntinlupa"
+    >
 
     <h1>AWSSBG-CDM</h1>
     <p>Administration Portal</p>
 
     <div class="login-divider"></div>
 
-    <p id="status">
+    <p id="status" role="status" aria-live="polite">
       Sign in with your authorized administrator account.
     </p>
 
-    <button id="login-button" type="button">
-      Sign in securely
-      <span aria-hidden="true">→</span>
-    </button>
+    <form id="login-form">
+      <div class="login-field">
+        <label for="email">Email address</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="username"
+          placeholder="admin@example.com"
+          required
+        >
+      </div>
+
+      <div class="login-field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+
+      <button id="login-button" type="submit">
+        Sign in
+      </button>
+    </form>
 
     <p class="login-security-note">
-      Authorized administrators only. Authentication is <br> secured by Amazon Cognito.
+      Authorized administrators only. Authentication is secured
+      by Amazon Cognito.
     </p>
   </main>
 
-
-  <script type="module">
-    import { signIn } from "./auth.js";
-
-    const loginButton = document.getElementById("login-button");
-    const status = document.getElementById("status");
-
-    loginButton.addEventListener("click", async () => {
-      status.textContent = "Redirecting to secure sign-in...";
-      loginButton.disabled = true;
-
-      try {
-        await signIn();
-      } catch (error) {
-        console.error("Sign-in error:", error);
-        status.textContent =
-          "Unable to start sign-in. Please try again.";
-        loginButton.disabled = false;
-      }
-    });
-  </script>
+  <script type="module" src="./login.js"></script>
 </body>
 
 </html>
