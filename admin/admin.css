@@ -1,91 +1,26 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  font-family: Arial, sans-serif;
-  background: #f4f7fb;
-  color: #172033;
-}
-
-.login-container {
-  width: 100%;
-  max-width: 420px;
-  padding: 36px;
-  text-align: center;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
-}
-
-h1 {
-  margin: 0 0 8px;
-  color: #232f3e;
-  font-size: 28px;
-}
-
-.login-container > p:first-of-type {
-  margin: 0 0 24px;
-  color: #64748b;
-}
-
-#status {
-  min-height: 40px;
-  line-height: 1.5;
-  font-size: 14px;
-  color: #475569;
-}
-
-button {
-  width: 100%;
-  margin-top: 12px;
-  padding: 13px 18px;
-  border: none;
-  border-radius: 8px;
-  background: #ff9900;
-  color: #232f3e;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #ec8b00;
-}
-
-button:focus-visible {
-  outline: 3px solid #2563eb;
-  outline-offset: 3px;
-}
-
 
 /* =========================================
    AWSSBG-CDM Admin Theme
    Palette: Blush, Mint, Cream, Forest Green
 ========================================= */
 
+
 :root {
+  --forest: #d96f91;
+  --forest-dark: #593344;
+  --mint: #baf3df;
   --pink: #f5c4d0;
   --pink-soft: #fff0f4;
-  --mint: #baf3df;
-  --mint-strong: #4bbf9b;
+  --pink-hover: #efa8bb;
   --cream: #fffdf8;
-  --forest: #245747;
-  --forest-dark: #183d33;
-  --text: #263b35;
-  --muted: #71817b;
-  --border: #e6ece8;
+  --ink: #3d3440;
+  --muted: #7a727d;
+  --line: #f0dfe5;
   --white: #ffffff;
   --danger: #b83b4b;
-  --shadow: 0 8px 28px rgba(36, 87, 71, 0.07);
+  --shadow: 0 8px 28px rgba(217, 111, 145, 0.09);
 }
+
 
 * {
   box-sizing: border-box;
@@ -99,67 +34,164 @@ body {
   color: var(--text);
 }
 
-/* Login page */
+/* =========================================
+   AWSSBG-CDM Branded Login
+========================================= */
 
 body:has(.login-container) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  min-height: 100vh;
+  padding: 28px 20px;
   background:
-    radial-gradient(circle at top left, var(--pink-soft), transparent 45%),
-    radial-gradient(circle at bottom right, #e0fff2, transparent 45%),
-    #f7faf8;
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(245, 196, 208, 0.65),
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 90% 90%,
+      rgba(186, 243, 223, 0.55),
+      transparent 36%
+    ),
+    var(--cream);
+  color: var(--ink);
 }
 
 .login-container {
+  position: relative;
   width: 100%;
-  max-width: 420px;
-  padding: 36px;
+  max-width: 440px;
+  padding: 42px 36px 34px;
+  overflow: hidden;
   text-align: center;
   background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 20px 55px rgba(217, 111, 145, 0.15);
 }
 
-h1 {
+.login-container::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--pink),
+    var(--forest),
+    var(--pink-hover)
+  );
+  content: "";
+}
+
+.login-logo {
+  display: block;
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 22px;
+  object-fit: contain;
+}
+
+.login-container h1 {
   margin: 0 0 8px;
   color: var(--forest-dark);
-  font-size: 28px;
+  font-size: clamp(24px, 5vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.6px;
 }
 
 .login-container > p:first-of-type {
-  margin: 0 0 24px;
+  margin: 0 0 26px;
   color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.login-divider {
+  height: 1px;
+  margin: 24px 0;
+  background: var(--line);
 }
 
 #status {
-  min-height: 40px;
-  line-height: 1.5;
+  min-height: 42px;
+  margin: 0 0 12px;
+  color: var(--muted);
   font-size: 14px;
-  color: #475569;
-}
-
-button {
-  font: inherit;
-  cursor: pointer;
+  line-height: 1.6;
 }
 
 .login-container button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   width: 100%;
-  margin-top: 12px;
-  padding: 13px 18px;
-  border: none;
-  border-radius: 10px;
+  min-height: 50px;
+  margin-top: 16px;
+  padding: 14px 18px;
+  border: 1px solid var(--forest);
+  border-radius: 12px;
   background: var(--forest);
   color: var(--white);
+  font: inherit;
   font-size: 15px;
   font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
 
-.login-container button:hover {
-  background: var(--forest-dark);
+.login-container button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--pink-hover);
+  border-color: var(--pink-hover);
+  color: var(--forest-dark);
+  box-shadow: 0 8px 18px rgba(217, 111, 145, 0.18);
+}
+
+.login-container button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.login-security-note {
+  margin: 20px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 38px 24px 28px;
+    border-radius: 20px;
+  }
+
+  .login-logo {
+    width: 92px;
+    height: 92px;
+  }
+}
+
+
+/* =========================================
+   Shared Focus States and Form Controls
+========================================= */
+
+button,
+a,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
 }
 
 button:focus-visible,
@@ -170,8 +202,6 @@ textarea:focus-visible {
   outline: 3px solid var(--mint-strong);
   outline-offset: 3px;
 }
-
-/* Shared form controls */
 
 input,
 select,
@@ -199,7 +229,9 @@ label {
   font-weight: 700;
 }
 
-/* Dashboard surfaces */
+/* =========================================
+   Dashboard Surfaces
+========================================= */
 
 .card,
 .panel,
@@ -240,12 +272,14 @@ tbody tr:hover {
   background: #fcfefd;
 }
 
-/* Utility buttons for dashboard pages */
+/* =========================================
+   Dashboard Buttons
+========================================= */
 
 .btn-primary {
+  padding: 12px 16px;
   border: none;
   border-radius: 10px;
-  padding: 12px 16px;
   background: var(--forest);
   color: var(--white);
   font-weight: 700;
@@ -256,18 +290,18 @@ tbody tr:hover {
 }
 
 .btn-secondary {
+  padding: 12px 16px;
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 12px 16px;
   background: var(--white);
   color: var(--forest);
   font-weight: 700;
 }
 
 .btn-danger {
+  padding: 10px 14px;
   border: none;
   border-radius: 10px;
-  padding: 10px 14px;
   background: #fff0f1;
   color: var(--danger);
   font-weight: 700;
@@ -277,7 +311,9 @@ tbody tr:hover {
   background: #ffe0e4;
 }
 
-/* Status badges */
+/* =========================================
+   Status Badges
+========================================= */
 
 .status-badge {
   display: inline-flex;
@@ -300,14 +336,33 @@ tbody tr:hover {
   color: #5c6670;
 }
 
-/* Small screens */
+/* =========================================
+   Responsive Layout
+========================================= */
 
 @media (max-width: 700px) {
   .login-container {
-    padding: 28px 22px;
+    padding: 38px 24px 28px;
+    border-radius: 20px;
+  }
+
+  .login-brand {
+    width: 66px;
+    height: 66px;
+    border-radius: 20px;
   }
 
   table {
     min-width: 650px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-container button {
+    transition: none;
+  }
+
+  .login-container button:hover {
+    transform: none;
   }
 }
