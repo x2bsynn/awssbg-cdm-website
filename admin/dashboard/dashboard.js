@@ -545,6 +545,7 @@ async function loadOfficers() {
           ? [officer.reportsTo]
           : [],
       status: officer.status ?? "draft",
+      studentNumber: officer.studentNumber ?? "",
       term: officer.term ?? "",
     }));
 
@@ -755,7 +756,6 @@ function renderOfficerTree() {
     hasRole(o, "Executive Director"),
   );
 
-  const advisers = published.filter((o) => hasOffice(o, "Executive") && hasRole(o, "Organization Adviser"));
 
   const executiveTeam = published.filter(
     (o) =>
@@ -838,24 +838,6 @@ function renderOfficerTree() {
       }
     </div>
 
-    <aside class="org-adviser">
-      <span class="org-adviser-symbol"></span>
-      <div class="org-adviser-info">
-        <span class="org-role-tag">ADVISORY</span>
-        <strong>Organization Adviser</strong>
-        ${
-          advisers.length
-            ? advisers
-                .map(
-                  (o) => `
-              <div class="org-adviser-name">${escapeHTML(o.name)}</div>
-            `,
-                )
-                .join("")
-            : `<div class="org-adviser-name">No published adviser</div>`
-        }
-      </div>
-    </aside>
   </div>
 
         <div class="org-connector" aria-hidden="true">
@@ -898,6 +880,13 @@ function renderOfficers() {
   const statusFilter = getOfficerFilter("status");
   const yearFilter = getOfficerFilter("year");
 
+  // Program codes (e.g. "CpE") shown as their full names from the form's dropdown.
+  const programNames = Object.fromEntries(
+    [...($("officer-program")?.options ?? [])]
+      .filter((option) => option.value)
+      .map((option) => [option.value, option.textContent.trim()]),
+  );
+
   const filtered = officerRecords.filter((officer) => {
     const positions = getOfficerPositions(officer);
     const name = officer.name.toLowerCase();
@@ -905,9 +894,18 @@ function renderOfficers() {
     const positionText = getOfficerPositionText(officer);
     const yearText = officer.term || "";
 
-    const matchesSearch = [name, officeText, positionText, yearText].some(
-      (value) => value.toLowerCase().includes(search),
-    );
+    const matchesSearch = [
+      name,
+      officeText,
+      positionText,
+      yearText,
+      officer.studentNumber,
+      officer.cdmEmail,
+      officer.personalEmail,
+      officer.contactNumber,
+      officer.program,
+      programNames[officer.program],
+    ].some((value) => String(value ?? "").toLowerCase().includes(search));
 
     const matchesStatus =
       statusFilter === "all" || officer.status === statusFilter;
@@ -943,12 +941,52 @@ function renderOfficers() {
         })[char],
     );
 
+  // Accepts YYYY-MM-DD or MM-DD-YYYY and shows e.g. "Mar 5, 2004".
+  const formatBirthdate = (value) => {
+    const text = String(value ?? "").trim();
+    let match = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    let year, month, day;
+
+    if (match) {
+      [, year, month, day] = match;
+    } else if ((match = text.match(/^(\d{2})-(\d{2})-(\d{4})$/))) {
+      [, month, day, year] = match;
+    } else {
+      return text;
+    }
+
+    return new Date(Number(year), Number(month) - 1, Number(day))
+      .toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+  };
+
+  const emptyCell = '<span class="officer-cell-empty">—</span>';
+  const cell = (label, value, { email = false } = {}) => {
+    // On phone cards an email may wrap after the "@" instead of mid-word.
+    const text = escapeHTML(value);
+    return `<td data-label="${label}">${
+      value
+        ? email
+          ? text.replace(/@(.*)$/, '@<span class="officer-email-domain">$1</span>')
+          : text
+        : emptyCell
+    }</td>`;
+  };
+
   list.innerHTML = `
       <div class="table-wrap officer-table-wrap">
         <table class="officer-table">
           <thead>
             <tr>
-              <th scope="col">Officer Name*</th>
+              <th scope="col">Officer</th>
+              <th scope="col">Student number</th>
+              <th scope="col">Birthdate</th>
+              <th scope="col">CDM email</th>
+              <th scope="col">Personal email</th>
+              <th scope="col">Cell number</th>
               <th scope="col">Office</th>
               <th scope="col">Position</th>
               <th scope="col">Academic year</th>
@@ -975,17 +1013,30 @@ function renderOfficers() {
                   ),
                 ];
 
+                const programName =
+                  programNames[officer.program] || officer.program || "";
+
                 return `
                 <tr>
-                  <td>
+                  <td data-label="Officer">
                     <span class="officer-name-cell">
                       ${escapeHTML(officer.name)}
                     </span>
+                    ${
+                      programName
+                        ? `<span class="officer-cell-sub">${escapeHTML(programName)}</span>`
+                        : ""
+                    }
                   </td>
-                  <td>${escapeHTML(offices.join(", ") || "—")}</td>
-                  <td>${escapeHTML(titles.join(", ") || "—")}</td>
-                  <td>${escapeHTML(years.join(", ") || officer.term || "—")}</td>
-                  <td>
+                  ${cell("Student number", officer.studentNumber)}
+                  ${cell("Birthdate", formatBirthdate(officer.birthdate))}
+                  ${cell("CDM email", officer.cdmEmail, { email: true })}
+                  ${cell("Personal email", officer.personalEmail, { email: true })}
+                  ${cell("Cell number", officer.contactNumber)}
+                  ${cell("Office", offices.join(", "))}
+                  ${cell("Position", titles.join(", "))}
+                  ${cell("Academic year", years.join(", ") || officer.term)}
+                  <td data-label="Status">
                     <span class="status-badge ${
                       officer.status === "published"
                         ? "status-published"
@@ -994,7 +1045,7 @@ function renderOfficers() {
                       ${officer.status === "published" ? "Published" : "Draft"}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Actions">
                     <div class="officer-row-actions">
                       <button
                         class="button button-light officer-edit-button"
@@ -1268,16 +1319,14 @@ function openOfficerModal(officer = null) {
     $("officer-personal-email").value = officer.personalEmail ?? "";
     $("officer-contact").value = officer.contactNumber ?? "";
 
-    const birthdate = officer.birthdate ?? "";
-    $("officer-birthdate").value = birthdate;
-
-    if (birthdate) {
-      const parts = birthdate.split("-");
-      $("officer-birthdate").value =
-        parts.length === 3 && parts[0].length === 4
-          ? `${parts[1]}-${parts[2]}-${parts[0]}`
-          : birthdate;
-    }
+    const birthdate = String(officer.birthdate ?? "");
+    const isoBirthdate = birthdate.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+      ? birthdate
+      : birthdate.match(/^(\d{2})-(\d{2})-(\d{4})$/)
+        ? `${birthdate.slice(6, 10)}-${birthdate.slice(0, 2)}-${birthdate.slice(3, 5)}`
+        : "";
+    $("officer-birthdate").value = isoBirthdate;
+    $("officer-birthdate-display").textContent = formatOfficerBirthdate(isoBirthdate);
 
     const positions = Array.isArray(officer.positions)
       ? officer.positions
@@ -1696,6 +1745,87 @@ function addOfficerPositionRow(position = {}) {
 $("add-officer-position").addEventListener("click", (event) => {
   event.preventDefault();
   addOfficerPositionRow();
+});
+
+// Officer CRUD: the Lambda already supports POST, PUT and DELETE.
+$("officer-list").addEventListener("click", async (event) => {
+  const button = event.target.closest(".officer-delete-button");
+  if (!button) return;
+  const officerId = button.dataset.officerId;
+  const officer = officerRecords.find((item) => String(item.id) === String(officerId));
+  if (!officerId || !officer) return;
+  if (!confirm(`Delete the officer profile for "${officer.name}"? This cannot be undone.`)) return;
+  button.disabled = true;
+  try {
+    await apiRequest(`${OFFICERS_API_BASE}/${encodeURIComponent(officerId)}`, { method: "DELETE" });
+    showNotice(`Deleted ${officer.name}.`, "success");
+    await loadOfficers();
+  } catch (error) {
+    showNotice(error.message || "Unable to delete officer.", "error");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$("officer-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = $("officer-form");
+  if (!form.checkValidity()) { form.reportValidity(); return; }
+  const action = event.submitter?.value;
+  if (!['draft', 'published'].includes(action)) {
+    showNotice("Choose Save as Draft or Publish Officer.", "error");
+    return;
+  }
+  if (officerPhotoFile) {
+    showNotice("The form validates photo files, but persistent S3 uploads are not connected yet. Remove the selected photo to save this profile for now.", "error");
+    return;
+  }
+  const positions = [...document.querySelectorAll("#officer-positions-list .officer-position-row")].map((row) => {
+    const officeDropdown = row.querySelector('[data-position-field="office"]');
+    const yearDropdown = row.querySelector('[data-position-field="year"]');
+    return {
+      office: officeDropdown?.dataset.value || "",
+      title: row.querySelector('[data-position-field="title"]')?.value.trim() || "",
+      year: yearDropdown?.dataset.value || "",
+    };
+  });
+  if (!positions.length || positions.some((p) => !p.office || !p.title || !p.year)) {
+    showNotice("Complete the office, position title, and academic year for every position.", "error");
+    return;
+  }
+  const payload = {
+    name: $("officer-name").value.trim(),
+    program: $("officer-program").value,
+    studentNumber: $("officer-student-number").value.trim(),
+    status: action,
+    cdmEmail: $("officer-cdm-email").value.trim(),
+    personalEmail: $("officer-personal-email").value.trim(),
+    contactNumber: $("officer-contact").value.trim(),
+    birthdate: $("officer-birthdate").value,
+    photo: $("officer-photo-file").dataset.existingPhoto || "",
+    positions,
+  };
+  if (!payload.name || !payload.program || !payload.studentNumber || !payload.birthdate || !payload.cdmEmail || !payload.contactNumber) {
+    showNotice("Complete all required officer fields.", "error"); return;
+  }
+  const officerId = $("officer-id").value;
+  const buttons = [$("officer-save-draft"), $("officer-publish")];
+  buttons.forEach((button) => { button.disabled = true; });
+  try {
+    if (officerId) {
+      await apiRequest(`${OFFICERS_API_BASE}/${encodeURIComponent(officerId)}`, { method: "PUT", body: JSON.stringify(payload) });
+      showNotice(action === "published" ? "Officer updated and published." : "Officer changes saved as draft.", "success");
+    } else {
+      await apiRequest(OFFICERS_API_BASE, { method: "POST", body: JSON.stringify(payload) });
+      showNotice(action === "published" ? "Officer published successfully." : "Officer saved as draft.", "success");
+    }
+    closeOfficerModal();
+    await loadOfficers();
+  } catch (error) {
+    showNotice(error.message || "Unable to save officer.", "error");
+  } finally {
+    buttons.forEach((button) => { button.disabled = false; });
+  }
 });
 
 updateOfficerYearOptions();

@@ -362,7 +362,7 @@
             <div class="panel-head">
               <div>
                 <h2>Leadership directory</h2>
-                <p>Review officer assignments and profile publication status.</p>
+                <p>Review officer assignments and profile publication status. Use the sample records in the development branch to preview the organizational tree.</p>
               </div>
             </div>
 
@@ -422,7 +422,7 @@
             <div class="panel-head">
               <div>
                 <h2>Organizational structure</h2>
-                <p>Preview the leadership hierarchy and advisory relationship.</p>
+                <p>Preview the published leadership hierarchy and functional offices.</p>
               </div>
             </div>
             <div id="officer-tree" class="officer-tree">
@@ -455,19 +455,29 @@
                     </div>
                     <div class="field">
                       <label for="officer-program">Program *</label>
-                      <select id="officer-program" name="program" required class="custom-select-source">
+                      <select id="officer-program" name="program" required>
                         <option value="">Select program</option>
-                        <option value="Archi">Architecture</option><option value="CE">Civil Engineering</option><option value="CpE">Computer Engineering</option><option value="EE">Electrical Engineering</option><option value="ECE">Electronics Engineering</option><option value="EnSE">Environmental and Sanitary Engineering</option><option value="IE">Industrial Engineering</option><option value="ME">Mechanical Engineering</option><option value="MEE">Microelectronics Engineering</option><option value="REM">Railway Engineering Management</option>
+                        <option value="Archi">Architecture</option>
+                        <option value="CE">Civil Engineering</option>
+                        <option value="CpE">Computer Engineering</option>
+                        <option value="EE">Electrical Engineering</option>
+                        <option value="ECE">Electronics Engineering</option>
+                        <option value="EnSE">Environmental and Sanitary Engineering</option>
+                        <option value="IE">Industrial Engineering</option>
+                        <option value="ME">Mechanical Engineering</option>
+                        <option value="MEE">Microelectronics Engineering</option>
+                        <option value="REM">Railway Engineering Management</option>
                       </select>
                     </div>
                     <div class="field">
                       <label for="officer-student-number">Student number *</label>
-                      <input id="officer-student-number" name="studentNumber" required inputmode="numeric" autocomplete="off" maxlength="20" placeholder="Enter student number">
+                      <input id="officer-student-number" name="studentNumber" required maxlength="30" autocomplete="off" placeholder="Enter student number">
                     </div>
                     <div class="field">
-                      <label for="officer-status">Profile status *</label>
-                      <select id="officer-status" name="status" required class="custom-select-source">
-                        <option value="draft">Draft</option><option value="published">Published</option>
+                      <label for="officer-status">Profile status</label>
+                      <select id="officer-status" name="status">
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
                       </select>
                     </div>
                   </div>
