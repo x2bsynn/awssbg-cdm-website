@@ -2343,29 +2343,32 @@ textarea:focus-visible {
   overflow-wrap: anywhere;
 }
 
-.org-connector {
-  position: relative;
-  height: 34px;
-  margin-left: calc((100% - 220px - 20px) / 2);
-  border-left: 1px solid var(--org-line);
+
+/* Organizational chart spacing only. No connector lines or arrows. */
+.org-connector,
+.org-connector-long {
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
-.org-connector::after {
-  position: absolute;
-  bottom: 0;
-  left: -5px;
-  width: 9px;
-  height: 9px;
-  border-right: 1px solid var(--org-line);
-  border-bottom: 1px solid var(--org-line);
-  background: #fffdfd;
-  content: "";
-  transform: rotate(45deg);
+.org-connector::before,
+.org-connector::after,
+.org-connector-long::before,
+.org-connector-long::after {
+  display: none;
+  content: none;
 }
 
-.org-connector span {
+.org-connector span,
+.org-connector-long span {
   display: none;
 }
+
 
 .org-tier {
   padding: 18px;
@@ -2630,11 +2633,6 @@ textarea:focus-visible {
   background: var(--office-tint, white);
 }
 
-/* Center the connector beneath the leadership row */
-.org-connector {
-  margin-left: 50%;
-}
-
 /* Tablet */
 @media (max-width: 900px) {
   .org-leadership {
@@ -2832,7 +2830,7 @@ textarea:focus-visible {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
   gap: 16px;
-  margin: 24px 0;
+  margin: 5px 0;
 }
 
 .org-leader-card,
@@ -2912,15 +2910,6 @@ textarea:focus-visible {
   flex: 0 0 auto;
 }
 
-/* Keep the connector separate from rounded cards. */
-.org-connector,
-.org-connector-long {
-  position: relative;
-  width: 100%;
-  margin: 0;
-  border: 0;
-  background: transparent;
-}
 
 /* Responsive layout */
 @media (max-width: 900px) {
@@ -3843,4 +3832,57 @@ body:has(#officer-form-panel[open]) {
   .officer-modal-actions {
     padding: 8px 18px;
   }
+}
+
+/* Compact officer birthdate calendar */
+.officer-birthdate-calendar {
+  width: min(280px, calc(100vw - 48px));
+  padding: 12px;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.officer-calendar-heading {
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.officer-calendar-selectors {
+  gap: 6px;
+}
+
+.officer-calendar-selectors select {
+  min-width: 0;
+  padding: 5px 7px;
+  font-size: 0.85rem;
+}
+
+.officer-calendar-navigation button {
+  width: 28px;
+  height: 28px;
+}
+
+.officer-birthdate-calendar .calendar-weekdays span {
+  font-size: 0.75rem;
+}
+
+.officer-birthdate-calendar .calendar-days {
+  gap: 3px;
+}
+
+.officer-birthdate-calendar .calendar-days button {
+  min-width: 0;
+  min-height: 30px;
+  padding: 4px;
+  font-size: 0.8rem;
+}
+
+.officer-calendar-footer {
+  margin-top: 8px;
+  gap: 8px;
+}
+
+.officer-calendar-footer button {
+  padding: 6px 9px;
+  font-size: 0.8rem;
 }
