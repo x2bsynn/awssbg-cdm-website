@@ -48,9 +48,9 @@
       </div>
 
       <div class="sidebar-bottom">
-        <strong>AWSSBG-CDM Admin</strong><br />
+        <strong>AWS Student Builder Group - Colegio de Muntinlupa · Admin</strong><br />
         Built for our community.<br />
-        <span>Version 1.0 · Events</span>
+        <span>Version 1.0</span>
       </div>
     </aside>
 
@@ -362,7 +362,8 @@
             <div class="panel-head">
               <div>
                 <h2>Leadership directory</h2>
-                <p>Review officer assignments and profile publication status. Use the sample records in the development branch to preview the organizational tree.</p>
+                <p>Review officer assignments and profile publication status. Use the sample records in the development
+                  branch to preview the organizational tree.</p>
               </div>
             </div>
 
@@ -442,7 +443,7 @@
                 aria-label="Close officer form">✕</button>
             </div>
 
-            <form id="officer-form">
+            <form id="officer-form" novalidate>
               <input id="officer-id" type="hidden">
 
               <div class="officer-modal-body">
@@ -471,13 +472,20 @@
                     </div>
                     <div class="field">
                       <label for="officer-student-number">Student number *</label>
-                      <input id="officer-student-number" name="studentNumber" required maxlength="30" autocomplete="off" placeholder="Enter student number">
+                      <input id="officer-student-number" name="studentNumber" type="text" inputmode="numeric"
+                        pattern="[0-9]+" maxlength="30" autocomplete="off" placeholder="Enter student number"
+                        title="Enter digits only" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 30)"
+                        required>
                     </div>
                     <div class="field">
-                      <label for="officer-status">Profile status</label>
-                      <select id="officer-status" name="status">
-                        <option value="draft">Draft</option>
-                        <option value="published">Published</option>
+                      <label for="officer-year-level">Year level *</label>
+                      <select id="officer-year-level" name="yearLevel" required>
+                        <option value="">Select year level</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                        <option value="5th Year">5th Year</option>
                       </select>
                     </div>
                   </div>
@@ -489,25 +497,29 @@
                     <div class="field">
                       <label for="officer-cdm-email">CDM email *</label>
                       <input id="officer-cdm-email" name="cdmEmail" type="email" placeholder="name@cdm.edu.ph"
-                        pattern="^[A-Za-z0-9._%+-]+@cdm\.edu\.ph$" title="Enter a valid email ending in @cdm.edu.ph"
+                        pattern="[A-Za-z0-9._%+\-]+@cdm\.edu\.ph" title="Enter a valid email ending in @cdm.edu.ph"
                         required>
                     </div>
                     <div class="field">
-                      <label for="officer-personal-email">Personal email</label>
+                      <label for="officer-personal-email">Personal email *</label>
                       <input id="officer-personal-email" name="personalEmail" type="email"
-                        placeholder="name@example.com" pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$">
+                        placeholder="name@example.com" pattern="[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
+                        required>
                     </div>
                     <div class="field">
                       <label for="officer-contact">Cell number *</label>
                       <input id="officer-contact" name="contactNumber" type="tel" inputmode="numeric" maxlength="11"
                         minlength="11" pattern="[0-9]{11}" placeholder="09XXXXXXXXX"
-                        title="Enter exactly 11 digits, starting with 09" required>
+                        title="Enter exactly 11 digits, starting with 09"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)" required>
                     </div>
                     <div class="field">
                       <label for="officer-birthdate-trigger">Birthdate *</label>
                       <div class="birthdate-picker-wrap">
-                        <button class="officer-date-trigger" type="button" id="officer-birthdate-trigger" aria-expanded="false" aria-controls="officer-birthdate-calendar">
-                          <span id="officer-birthdate-display">Choose a birthdate</span><span class="date-trigger-icon" aria-hidden="true">▦</span>
+                        <button class="officer-date-trigger" type="button" id="officer-birthdate-trigger"
+                          aria-expanded="false" aria-controls="officer-birthdate-calendar">
+                          <span id="officer-birthdate-display">Choose a birthdate</span><span class="date-trigger-icon"
+                            aria-hidden="true">▦</span>
                         </button>
                         <input type="hidden" id="officer-birthdate" name="birthdate" required>
                         <div class="officer-birthdate-calendar" id="officer-birthdate-calendar" hidden>
@@ -523,9 +535,13 @@
                               <button id="officer-birthdate-next" type="button" aria-label="Next month">›</button>
                             </div>
                           </div>
-                          <div class="calendar-weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+                          <div class="calendar-weekdays">
+                            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                          </div>
                           <div class="calendar-days" id="officer-birthdate-days"></div>
-                          <div class="officer-calendar-footer"><button id="officer-birthdate-clear" type="button">Clear</button><button id="officer-birthdate-today" type="button">Jump to today</button></div>
+                          <div class="officer-calendar-footer"><button id="officer-birthdate-clear"
+                              type="button">Clear</button><button id="officer-birthdate-today" type="button">Jump to
+                              today</button></div>
                         </div>
                       </div>
                     </div>
@@ -538,7 +554,8 @@
                     <label for="officer-photo-file">Profile photo <span class="optional">(Optional)</span></label>
                     <div class="photo-upload-control">
                       <input id="officer-photo-file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
-                      <label class="button button-light photo-choose-button" for="officer-photo-file">Choose photo</label>
+                      <label class="button button-light photo-choose-button" for="officer-photo-file">Choose
+                        photo</label>
                       <span id="officer-photo-filename" class="photo-filename">No photo selected</span>
                       <button id="officer-photo-remove" class="button button-light" type="button" hidden>Remove</button>
                     </div>
@@ -571,7 +588,7 @@
 
 
         <footer class="footer">
-          AWSSBG-CDM · Student Builder Group · Admin Workspace
+          AWSS Student Builder Group - Colegio de Muntinlupa · Admin Workspace
         </footer>
       </div>
     </main>
