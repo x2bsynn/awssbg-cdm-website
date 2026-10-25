@@ -23,10 +23,18 @@
       Sign in with your authorized administrator account.
     </p>
 
-    <button id="login-button" type="button">
-      Sign in securely
-      <span aria-hidden="true">→</span>
-    </button>
+    <form id="login-form">
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" autocomplete="username" placeholder="admin@example.com" required>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password"
+        placeholder="Enter your password" required>
+
+      <button id="login-button" type="submit">
+        Sign in
+      </button>
+    </form>
 
     <p class="login-security-note">
       Authorized administrators only. Authentication is <br> secured by Amazon Cognito.
@@ -35,21 +43,40 @@
 
 
   <script type="module">
-    import { signIn } from "./auth.js";
+    import { signIn } from "./amplify.js";
 
+    const form = document.getElementById("login-form");
     const loginButton = document.getElementById("login-button");
     const status = document.getElementById("status");
 
-    loginButton.addEventListener("click", async () => {
-      status.textContent = "Redirecting to secure sign-in...";
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      status.textContent = "Signing in...";
       loginButton.disabled = true;
 
       try {
-        await signIn();
+        const result = await signIn({
+          username: email,
+          password,
+        });
+
+        if (result.isSignedIn) {
+          status.textContent = "Sign-in successful. Opening dashboard...";
+          window.location.assign("./dashboard/index.html");
+        } else {
+          status.textContent =
+            "Additional verification is required to complete sign-in.";
+          console.info("Additional sign-in step:", result.nextStep.signInStep);
+        }
       } catch (error) {
-        console.error("Sign-in error:", error);
+        console.error("Sign-in failed:", error);
         status.textContent =
-          "Unable to start sign-in. Please try again.";
+          "Unable to sign in. Check your credentials or contact an administrator.";
+      } finally {
         loginButton.disabled = false;
       }
     });

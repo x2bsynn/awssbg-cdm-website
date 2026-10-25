@@ -1,4 +1,4 @@
-import { userManager, signOut } from "../auth.js";
+import { fetchAuthSession, getCurrentUser, signOut } from "../amplify.js";
 
 const API_BASE =
   "https://xxbmakdu4d.execute-api.us-east-1.amazonaws.com/prod/admin/events";
@@ -274,8 +274,6 @@ function showNotice(message, type = "") {
   notice.className = `notice ${type}`;
 }
 
-
-
 function setProfile(user) {
   const profile = user.profile ?? {};
 
@@ -302,8 +300,6 @@ function setProfile(user) {
   $("profile-avatar").textContent = initials || "A";
   $("welcome-name").textContent = fullName.split(/\s+/)[0];
 }
-
-
 
 async function apiRequest(url, options = {}) {
   const response = await fetch(url, {
@@ -2156,6 +2152,7 @@ $("event-form").addEventListener("submit", async (event) => {
 $("logout-button").addEventListener("click", async () => {
   try {
     await signOut();
+    window.location.replace("/admin/");
   } catch (error) {
     showNotice(error.message, "error");
   }
@@ -2191,18 +2188,33 @@ function validateOptionalTimeRange() {
 }
 
 try {
-  const user = await userManager.getUser();
+  const user = await getCurrentUser();
+  const session = await fetchAuthSession();
+  const idTokenValue = session.tokens?.idToken;
 
-  if (!user || user.expired || !user.id_token) {
-    await userManager.signinRedirect();
+  if (!user || !idTokenValue) {
+    window.location.replace("/admin/");
   } else {
-    idToken = user.id_token;
-    setProfile(user);
+    idToken = idTokenValue.toString();
+
+    setProfile({
+      profile: {
+        name: idTokenValue.payload.name,
+        email: idTokenValue.payload.email,
+        preferred_username: idTokenValue.payload.preferred_username,
+        username: user.username,
+      },
+    });
+
     management.hidden = false;
-    showNotice("Signed in successfully. Loading your events...", "success");
+    showNotice(
+      "Signed in successfully. Loading your events...",
+      "success",
+    );
+
     await loadEvents();
   }
 } catch (error) {
-  console.error(error);
-  showNotice("Unable to verify your session. Please sign in again.", "error");
+  console.error("Unable to verify the Cognito session:", error);
+  window.location.replace("/admin/");
 }
