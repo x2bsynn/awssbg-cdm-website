@@ -532,6 +532,7 @@ async function loadEvents() {
   }
 }
 
+$("new-event-button").addEventListener("click", openCreateForm);
 $("panel-new-event").addEventListener("click", openCreateForm);
 
 async function loadOfficers() {
@@ -563,43 +564,31 @@ async function loadOfficers() {
 }
 
 async function showWorkspace(view) {
-  const isOverview = view === "overview";
-  const isEvents = view === "events";
   const isOfficers = view === "officers";
 
-  $("overview-management").hidden = !isOverview;
-  $("event-management").hidden = !isEvents;
+  $("event-management").hidden = isOfficers;
   $("officers-management").hidden = !isOfficers;
+  $("new-event-button").hidden = isOfficers;
 
   document.querySelectorAll(".nav-list .nav-item").forEach((item) => {
     item.classList.remove("active");
   });
 
-  $(
-    isOverview ? "overview-nav" : isOfficers ? "officers-nav" : "events-nav",
-  ).classList.add("active");
+  $(isOfficers ? "officers-nav" : "events-nav").classList.add("active");
 
   const breadcrumb = document.querySelector(".breadcrumb");
   breadcrumb.replaceChildren("Workspace / ");
 
   const currentPage = document.createElement("strong");
-  currentPage.textContent = isOverview
-    ? "Overview"
-    : isOfficers
-      ? "Officers"
-      : "Events";
+  currentPage.textContent = isOfficers ? "Officers" : "Events";
   breadcrumb.appendChild(currentPage);
 
-  if (isEvents) {
-    // Keep event data and the overview statistics current when opening Events.
-    await loadEvents();
-  } else if (isOfficers) {
+  if (isOfficers) {
     $("new-officer-button").focus();
     await loadOfficers();
   }
 }
 
-$("overview-nav").addEventListener("click", () => showWorkspace("overview"));
 $("events-nav").addEventListener("click", () => showWorkspace("events"));
 $("officers-nav").addEventListener("click", () => showWorkspace("officers"));
 
@@ -2163,7 +2152,6 @@ $("event-form").addEventListener("submit", async (event) => {
 $("logout-button").addEventListener("click", async () => {
   try {
     await signOut();
-    window.location.replace("/admin/");
   } catch (error) {
     showNotice(error.message, "error");
   }
@@ -2198,22 +2186,29 @@ function validateOptionalTimeRange() {
   return true;
 }
 
+// Add signInWithRedirect to your import at the top:
+// import { fetchAuthSession, getCurrentUser, signOut, signInWithRedirect } from "../amplify.js";
+
 try {
   const user = await getCurrentUser();
   const session = await fetchAuthSession();
   const idTokenValue = session.tokens?.idToken;
 
   if (!user || !idTokenValue) {
-    window.location.replace("/admin/");
+    // Mirroring File 2: Redirect to the Auth Provider instead of reloading the page
+    await signInWithRedirect();
   } else {
+    // Fix for Amplify v6 JWT object string extraction
     idToken = idTokenValue.toString();
+
+    const payload = idTokenValue.payload ?? {};
 
     setProfile({
       profile: {
-        name: idTokenValue.payload.name,
-        email: idTokenValue.payload.email,
-        preferred_username: idTokenValue.payload.preferred_username,
-        username: user.username,
+        name: payload.name || payload.nickname || "",
+        email: payload.email || "",
+        preferred_username: payload.preferred_username || "",
+        username: user.username || "",
       },
     });
 
@@ -2224,5 +2219,6 @@ try {
   }
 } catch (error) {
   console.error("Unable to verify the Cognito session:", error);
-  window.location.replace("/admin/");
+  // Mirroring File 2: Send unauthenticated users straight to login redirect
+  await signInWithRedirect();
 }
