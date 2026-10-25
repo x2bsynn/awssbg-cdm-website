@@ -532,7 +532,6 @@ async function loadEvents() {
   }
 }
 
-$("new-event-button").addEventListener("click", openCreateForm);
 $("panel-new-event").addEventListener("click", openCreateForm);
 
 async function loadOfficers() {
@@ -564,31 +563,43 @@ async function loadOfficers() {
 }
 
 async function showWorkspace(view) {
+  const isOverview = view === "overview";
+  const isEvents = view === "events";
   const isOfficers = view === "officers";
 
-  $("event-management").hidden = isOfficers;
+  $("overview-management").hidden = !isOverview;
+  $("event-management").hidden = !isEvents;
   $("officers-management").hidden = !isOfficers;
-  $("new-event-button").hidden = isOfficers;
 
   document.querySelectorAll(".nav-list .nav-item").forEach((item) => {
     item.classList.remove("active");
   });
 
-  $(isOfficers ? "officers-nav" : "events-nav").classList.add("active");
+  $(
+    isOverview ? "overview-nav" : isOfficers ? "officers-nav" : "events-nav",
+  ).classList.add("active");
 
   const breadcrumb = document.querySelector(".breadcrumb");
   breadcrumb.replaceChildren("Workspace / ");
 
   const currentPage = document.createElement("strong");
-  currentPage.textContent = isOfficers ? "Officers" : "Events";
+  currentPage.textContent = isOverview
+    ? "Overview"
+    : isOfficers
+      ? "Officers"
+      : "Events";
   breadcrumb.appendChild(currentPage);
 
-  if (isOfficers) {
+  if (isEvents) {
+    // Keep event data and the overview statistics current when opening Events.
+    await loadEvents();
+  } else if (isOfficers) {
     $("new-officer-button").focus();
     await loadOfficers();
   }
 }
 
+$("overview-nav").addEventListener("click", () => showWorkspace("overview"));
 $("events-nav").addEventListener("click", () => showWorkspace("events"));
 $("officers-nav").addEventListener("click", () => showWorkspace("officers"));
 
@@ -2207,10 +2218,7 @@ try {
     });
 
     management.hidden = false;
-    showNotice(
-      "Signed in successfully. Loading your events...",
-      "success",
-    );
+    showNotice("Signed in successfully. Loading your events...", "success");
 
     await loadEvents();
   }
