@@ -123,7 +123,7 @@ function createEventCard(event) {
   const calendar = document.createElement("span");
   calendar.className = "event-calendar";
   calendar.setAttribute("aria-hidden", "true");
-  calendar.textContent = "✳";
+  calendar.textContent = "";
   top.append(badge, calendar);
 
   const title = document.createElement("h3");
