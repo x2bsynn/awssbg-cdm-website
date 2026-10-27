@@ -542,7 +542,7 @@ async function loadEvents() {
 }
 
 $("new-event-button").addEventListener("click", openCreateForm);
-$("panel-new-event").addEventListener("click", openCreateForm);
+// $("panel-new-event").addEventListener("click", openCreateForm);
 
 async function loadOfficers() {
   try {
