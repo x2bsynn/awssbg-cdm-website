@@ -7,7 +7,7 @@ const OFFICERS_API_BASE =
   "https://xxbmakdu4d.execute-api.us-east-1.amazonaws.com/prod/admin/officers";
 
 const $ = (id) => document.getElementById(id);
-const notice = $("notice");
+let notice = $("notice");
 const formPanel = $("event-form-panel");
 const management = $("event-management");
 const eventsBody = $("events-body");
@@ -270,8 +270,17 @@ $("time-clear").addEventListener("click", () => {
 $("time-cancel").addEventListener("click", closeTimePicker);
 
 function showNotice(message, type = "") {
-  notice.textContent = message;
-  notice.className = `notice ${type}`;
+  if (!notice || !notice.isConnected) {
+    notice = document.createElement("div");
+    notice.id = "notice";
+    notice.setAttribute("role", "status");
+    notice.setAttribute("aria-live", "polite");
+
+    document.body.prepend(notice);
+  }
+
+  notice.textContent = String(message ?? "");
+  notice.className = `notice ${type}`.trim();
 }
 
 function setProfile(user) {
@@ -1394,6 +1403,23 @@ function openOfficerModal(officer = null) {
   $("officer-id").value = "";
   $("officer-positions-list").replaceChildren();
 
+  // Clear the custom birthdate value and display.
+  $("officer-birthdate").value = "";
+  $("officer-birthdate-display").textContent = "Choose a birthdate";
+
+  // Reset the calendar to the current month.
+  const today = new Date();
+  officerBirthdateMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  $("officer-birthdate-month-select").value = String(today.getMonth());
+  $("officer-birthdate-year-select").value = String(today.getFullYear());
+
+  // Close the calendar and reset its trigger state.
+  officerBirthdateCalendar.hidden = true;
+  $("officer-birthdate-trigger").setAttribute("aria-expanded", "false");
+
+  renderOfficerBirthdateCalendar();
+
   // Reset optional photo selection; intentionally no image preview.
   officerPhotoFile = null;
   $("officer-photo-file").value = "";
@@ -2196,7 +2222,7 @@ try {
 
   if (!user || !idTokenValue) {
     // Mirroring File 2: Redirect to the Auth Provider instead of reloading the page
-    await signInWithRedirect();
+    window.location.replace("/admin/");
   } else {
     // Fix for Amplify v6 JWT object string extraction
     idToken = idTokenValue.toString();
@@ -2220,5 +2246,5 @@ try {
 } catch (error) {
   console.error("Unable to verify the Cognito session:", error);
   // Mirroring File 2: Send unauthenticated users straight to login redirect
-  await signInWithRedirect();
+  window.location.replace("/admin/");
 }
