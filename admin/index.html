@@ -83,129 +83,325 @@
   </main>
 
 
-  <script type="module">
-    import { signIn, confirmSignIn, resetPassword, confirmResetPassword } from "./amplify.js";
 
-    const form = document.getElementById("login-form");
-    const loginButton = document.getElementById("login-button");
-    const status = document.getElementById("status");
+<script type="module">
+  import {
+    signIn,
+    confirmSignIn,
+    resetPassword,
+    confirmResetPassword,
+  } from "./amplify.js";
 
-    let requiresNewPassword = false;
+  // Login elements
+  const form = document.getElementById("login-form");
+  const loginButton = document.getElementById("login-button");
+  const status = document.getElementById("status");
 
-    function showNewPasswordField() {
-      const passwordLabel = document.createElement("label");
-      passwordLabel.htmlFor = "new-password";
-      passwordLabel.textContent = "New Password";
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
 
-      const passwordInput = document.createElement("input");
-      passwordInput.id = "new-password";
-      passwordInput.name = "new-password";
-      passwordInput.type = "password";
-      passwordInput.autocomplete = "new-password";
-      passwordInput.placeholder = "Enter your new password";
-      passwordInput.required = true;
+  // Password recovery elements
+  const forgotPasswordLink = document.getElementById("forgot-password-link");
+  const recoveryPanel = document.getElementById("forgot-password-panel");
+  const recoveryRequestSection = document.getElementById("recovery-request-section");
+  const recoveryConfirmSection = document.getElementById("recovery-confirm-section");
 
-      const confirmLabel = document.createElement("label");
-      confirmLabel.htmlFor = "confirm-password";
-      confirmLabel.textContent = "Confirm Password";
+  const recoveryEmail = document.getElementById("recovery-email");
+  const recoveryCode = document.getElementById("recovery-code");
+  const recoveryNewPassword = document.getElementById("recovery-new-password");
+  const recoveryConfirmPassword = document.getElementById("recovery-confirm-password");
 
-      const confirmInput = document.createElement("input");
-      confirmInput.id = "confirm-password";
-      confirmInput.name = "confirm-password";
-      confirmInput.type = "password";
-      confirmInput.autocomplete = "new-password";
-      confirmInput.placeholder = "Confirm your new password";
-      confirmInput.required = true;
+  const sendRecoveryCodeButton = document.getElementById("send-recovery-code");
+  const confirmPasswordResetButton = document.getElementById("confirm-password-reset");
+  const backToLoginButton = document.getElementById("back-to-login");
 
-      const emailInput = document.getElementById("email");
-      const currentPasswordInput = document.getElementById("password");
+  let requiresNewPassword = false;
 
-      emailInput.hidden = true;
-      currentPasswordInput.hidden = true;
+  // =========================================
+  // TEMPORARY PASSWORD / FIRST-TIME LOGIN
+  // =========================================
 
-      document.querySelector("label[for='email']").hidden = true; //nkatrue???
-      document.querySelector("label[for='password']").hidden = true;
+  function showNewPasswordField() {
+    const passwordLabel = document.createElement("label");
+    passwordLabel.htmlFor = "new-password";
+    passwordLabel.textContent = "New Password";
 
-      passwordInput.value = "";
+    const passwordInput = document.createElement("input");
+    passwordInput.id = "new-password";
+    passwordInput.name = "new-password";
+    passwordInput.type = "password";
+    passwordInput.autocomplete = "new-password";
+    passwordInput.placeholder = "Enter your new password";
+    passwordInput.required = true;
 
-      document.querySelector(".login-container h1").textContent = "Set Your New Password";
+    const confirmLabel = document.createElement("label");
+    confirmLabel.htmlFor = "confirm-password";
+    confirmLabel.textContent = "Confirm Password";
 
-      form.insertBefore(passwordLabel, loginButton);
-      form.insertBefore(passwordInput, loginButton);
-      form.insertBefore(confirmLabel, loginButton);
-      form.insertBefore(confirmInput, loginButton);
+    const confirmInput = document.createElement("input");
+    confirmInput.id = "confirm-password";
+    confirmInput.name = "confirm-password";
+    confirmInput.type = "password";
+    confirmInput.autocomplete = "new-password";
+    confirmInput.placeholder = "Confirm your new password";
+    confirmInput.required = true;
 
-      loginButton.textContent = "Set New Password";
-      requiresNewPassword = true;
+    // Hide and disable the original login fields.
+    emailInput.hidden = true;
+    emailInput.disabled = true;
+    emailInput.required = false;
 
-      status.textContent = "Your account requires a new password. Please set a new password to continue.";
+    passwordInputElement.hidden = true;
+    passwordInputElement.disabled = true;
+    passwordInputElement.required = false;
+    passwordInputElement.value = "";
+
+    document.querySelector("label[for='email']").hidden = true;
+    document.querySelector("label[for='password']").hidden = true;
+
+    // Hide Forgot Password during the challenge.
+    forgotPasswordLink.hidden = true;
+
+    document.querySelector(".login-container h1").textContent =
+      "Set Your New Password";
+
+    // Insert the new password fields before the submit button.
+    form.insertBefore(passwordLabel, loginButton);
+    form.insertBefore(passwordInput, loginButton);
+    form.insertBefore(confirmLabel, loginButton);
+    form.insertBefore(confirmInput, loginButton);
+
+    loginButton.textContent = "Set New Password";
+    requiresNewPassword = true;
+
+    status.textContent =
+      "Your account requires a new password. Please set a new password to continue.";
+  }
+
+  // Preserve the original password input reference.
+  const passwordInputElement = passwordInput;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    loginButton.disabled = true;
+
+    status.textContent = requiresNewPassword
+      ? "Setting new password..."
+      : "Signing in...";
+
+    try {
+      let result;
+
+      if (requiresNewPassword) {
+        const newPassword = document.getElementById("new-password").value;
+        const confirmPassword = document.getElementById("confirm-password").value;
+
+        if (!newPassword || !confirmPassword) {
+          status.textContent = "Please complete both password fields.";
+          return;
+        }
+
+        if (newPassword !== confirmPassword) {
+          status.textContent = "Passwords do not match. Please try again.";
+          return;
+        }
+
+        if (newPassword.length < 8) {
+          status.textContent = "New password must be at least 8 characters long.";
+          return;
+        }
+
+        result = await confirmSignIn({
+          challengeResponse: newPassword,
+        });
+
+      } else {
+        const email = emailInput.value.trim();
+        const password = passwordInputElement.value;
+
+        result = await signIn({
+          username: email,
+          password,
+        });
+      }
+
+      if (result.isSignedIn) {
+        status.textContent = "Sign-in successful. Opening dashboard...";
+        window.location.assign("./dashboard/index.html");
+        return;
+      }
+
+      const nextStep = result.nextStep?.signInStep;
+
+      if (
+        nextStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED" &&
+        !requiresNewPassword
+      ) {
+        showNewPasswordField();
+        return;
+      }
+
+      console.info("Additional sign-in step:", nextStep);
+
+      status.textContent =
+        "Additional verification is required. Please contact an administrator for assistance.";
+
+    } catch (error) {
+      console.error("Sign-in failed:", error);
+
+      status.textContent =
+        error.message || "Unable to sign in. Check your credentials or contact an administrator.";
+
+    } finally {
+      loginButton.disabled = false;
+    }
+  });
+
+  // =========================================
+  // FORGOT PASSWORD
+  // =========================================
+
+  // Open password recovery.
+  forgotPasswordLink.addEventListener("click", () => {
+    recoveryEmail.value = emailInput.value.trim();
+
+    form.hidden = true;
+    recoveryPanel.hidden = false;
+
+    recoveryRequestSection.hidden = false;
+    recoveryConfirmSection.hidden = true;
+
+    status.textContent =
+      "Enter your registered email address to reset your password.";
+  });
+
+  // Request a verification code.
+  sendRecoveryCodeButton.addEventListener("click", async () => {
+    const username = recoveryEmail.value.trim();
+
+    if (!username) {
+      status.textContent = "Please enter your registered email address.";
+      recoveryEmail.focus();
+      return;
     }
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+    sendRecoveryCodeButton.disabled = true;
+    status.textContent = "Sending verification code...";
 
-      loginButton.disabled = true;
-      status.textContent = requiresNewPassword
-        ? "Setting new password..."
-        : "Signing in...";
+    try {
+      const result = await resetPassword({ username });
+      const nextStep = result.nextStep?.resetPasswordStep;
 
-      try {
-        let result;
+      if (nextStep === "CONFIRM_RESET_PASSWORD_WITH_CODE") {
+        recoveryRequestSection.hidden = true;
+        recoveryConfirmSection.hidden = false;
 
-        if (requiresNewPassword) {
-          const newPassword = document.getElementById("new-password").value;
-          const confirmPassword = document.getElementById("confirm-password").value;
+        const destination =
+          result.nextStep.codeDeliveryDetails?.destination;
 
-          if (newPassword !== confirmPassword) {
-            status.textContent = "Passwords do not match. Please try again.";
-            loginButton.disabled = false;
-            return;
-          }
+        status.textContent = destination
+          ? `A verification code has been sent to ${destination}.`
+          : "A verification code has been sent using your registered recovery method.";
 
-          if (!newPassword || newPassword.length < 8) {
-            status.textContent = "New password must be at least 8 characters long.";
-            loginButton.disabled = false;
-            return;
-          }
+        recoveryCode.focus();
 
-          result = await confirmSignIn({
-            challengeRespond: newPassword,
-          });
+      } else if (nextStep === "DONE") {
+        status.textContent =
+          "Your password reset is already complete. Please sign in.";
 
-        } else {
-          const email = document.getElementById("email").value.trim();
-          const password = document.getElementById("password").value;
+        recoveryPanel.hidden = true;
+        form.hidden = false;
 
-          result = await signIn({
-            username: email,
-            password,
-          });
-        }
+      } else {
+        status.textContent =
+          "An additional password recovery step is required.";
 
-        if (result.isSignedIn) {
-          status.textContent = "Sign-in successful. Opening dashboard...";
-          window.location.assign("./dashboard/index.html");
-          return;
-        }
-
-        const nextStep = result.nextStep?.signInStep;
-
-        if (nextStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED" && !requiresNewPassword) {
-          showNewPasswordField();
-          return;
-        }
-
-        console.info("Additional sign-in step:", nextStep);
-
-        status.textContent = "Additional verification is required to complete sign-in. Please contatt an administrator for assistance.";
-      } catch (error) {
-        console.error("Sign-in failed:", error);
-        status.textContent = error.message || "Unable to sign in. Check your credentials or contact an administrator.";
-      } finally {
-        loginButton.disabled = false;
+        console.info("Password recovery step:", nextStep);
       }
-    });
-  </script>
+
+    } catch (error) {
+      console.error("Password recovery request failed:", error);
+
+      status.textContent =
+        error.message || "Unable to send the verification code. Please try again.";
+
+    } finally {
+      sendRecoveryCodeButton.disabled = false;
+    }
+  });
+
+  // Confirm the password reset.
+  confirmPasswordResetButton.addEventListener("click", async () => {
+    const username = recoveryEmail.value.trim();
+    const confirmationCode = recoveryCode.value.trim();
+    const newPassword = recoveryNewPassword.value;
+    const confirmPassword = recoveryConfirmPassword.value;
+
+    if (!confirmationCode || !newPassword || !confirmPassword) {
+      status.textContent = "Please complete all password reset fields.";
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      status.textContent = "Your passwords do not match.";
+      recoveryConfirmPassword.focus();
+      return;
+    }
+
+    confirmPasswordResetButton.disabled = true;
+    status.textContent = "Resetting your password...";
+
+    try {
+      await confirmResetPassword({
+        username,
+        confirmationCode,
+        newPassword,
+      });
+
+      status.textContent =
+        "Your password has been reset successfully. You can now sign in.";
+
+      recoveryPanel.hidden = true;
+      form.hidden = false;
+
+      emailInput.value = username;
+      passwordInputElement.value = "";
+
+      recoveryCode.value = "";
+      recoveryNewPassword.value = "";
+      recoveryConfirmPassword.value = "";
+
+      emailInput.focus();
+
+    } catch (error) {
+      console.error("Password reset confirmation failed:", error);
+
+      status.textContent =
+        error.message || "Unable to reset your password. Check your verification code and password requirements.";
+
+    } finally {
+      confirmPasswordResetButton.disabled = false;
+    }
+  });
+
+  // Return to login.
+  backToLoginButton.addEventListener("click", () => {
+    recoveryPanel.hidden = true;
+    form.hidden = false;
+
+    recoveryRequestSection.hidden = false;
+    recoveryConfirmSection.hidden = true;
+
+    recoveryCode.value = "";
+    recoveryNewPassword.value = "";
+    recoveryConfirmPassword.value = "";
+
+    status.textContent =
+      "Sign in with your authorized administrator account.";
+  });
+</script>
+
 </body>
 
 </html>
