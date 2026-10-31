@@ -31,10 +31,50 @@
       <input id="password" name="password" type="password" autocomplete="current-password"
         placeholder="Enter your password" required>
 
+      <p class="forgot-password-text">Forgot your password? <a href="#" id="forgot-password-link">Reset it here</a></p>
+
       <button id="login-button" type="submit">
         Sign in
       </button>
     </form>
+
+    <section id="forgot-password-panel" hidden>
+      <h2>Reset Your Password</h2>
+      <p>Enter your registered email address to receive a verification code.</p>
+
+
+      <!-- Request Verifcation Code -->
+
+      <div id="recovery-request-action">
+        <label for="recovery-email">Email address</label>
+
+        <input id="recovery-email" type="email" autocomplete="email" placeholder="admin@example.com" required>
+
+        <button id="send-recovery-code" type="button">Send Verification Code</button>
+      </div>
+
+      <!-- Confirm password reset -->
+
+      <div id="recovery-confirm-section" hidden>
+
+        <label for="recovery-code">Verification Code</label>
+
+        <input id="recovery-code" type="text" autocomplete="one-time-code" placeholder="Enter verificatin code"
+          required>
+
+        <label for="recovery-new-password">New Password</label>
+        <input id="recovery-new-password" type="password" autocomplete="new-password"
+          placeholder="Enter your new password" required>
+
+        <label for="recovery-confirm-password">Confirm New Password</label>
+        <input id="recovery-confirm-password" type="password" autocomplete="new-password"
+          placeholder="Confirm your new password" required>
+
+        <button id="confirm-password-reset" type="button">Reset Password</button>
+      </div>
+
+      <button id="back-to-login" type="button">Back to Sign in</button>
+    </section>
 
     <p class="login-security-note">
       Authorized administrators only. Authentication is secured
@@ -44,7 +84,7 @@
 
 
   <script type="module">
-    import { signIn } from "./amplify.js";
+    import { signIn, confirmSignIn, resetPassword, confirmResetPassword } from "./amplify.js";
 
     const form = document.getElementById("login-form");
     const loginButton = document.getElementById("login-button");
@@ -89,7 +129,7 @@
       passwordInput.value = "";
 
       document.querySelector(".login-container h1").textContent = "Set Your New Password";
-      
+
       form.insertBefore(passwordLabel, loginButton);
       form.insertBefore(passwordInput, loginButton);
       form.insertBefore(confirmLabel, loginButton);

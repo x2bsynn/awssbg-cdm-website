@@ -5,6 +5,8 @@ import {
   signOut,
   fetchAuthSession,
   getCurrentUser,
+  resetPassword,
+  confirmResetPassword,
 } from "https://esm.sh/aws-amplify@6/auth";
 
 Amplify.configure({
@@ -26,4 +28,6 @@ export {
   signOut,
   fetchAuthSession,
   getCurrentUser,
+  resetPassword,
+  confirmResetPassword,
 };

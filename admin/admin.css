@@ -264,14 +264,14 @@ body:has(.login-container) {
   text-align: center;
 }
 
-.login-security-note::before {
+/* .login-security-note::before {
   display: inline-block;
   margin-right: 6px;
   color: var(--success);
   content: "●";
   font-size: 9px;
   vertical-align: 1px;
-}
+} */
 
 /* Entrance animation */
 
@@ -643,7 +643,25 @@ body:has(.login-container) {
   }
 }
 
-
 [hidden] {
   display: none !important;
+}
+
+.forgot-password-text {
+  margin: 0;
+  text-align: left;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.forgot-password-text a {
+  color: var(--forest);
+  font-weight: 700;
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.forgot-password-text a:hover {
+  color: var(--forest-dark);
+  text-decoration: underline;
 }
