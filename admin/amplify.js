@@ -1,6 +1,7 @@
 import { Amplify } from "https://esm.sh/aws-amplify@6";
 import {
   signIn,
+  confirmSignIn,
   signOut,
   fetchAuthSession,
   getCurrentUser,
@@ -21,6 +22,7 @@ Amplify.configure({
 
 export {
   signIn,
+  confirmSignIn,
   signOut,
   fetchAuthSession,
   getCurrentUser,

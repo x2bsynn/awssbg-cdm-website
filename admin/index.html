@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,11 +12,7 @@
 
 <body>
   <main class="login-container">
-    <img
-      class="login-logo"
-      src="../assets/awssbg-cdm-logo.svg"
-      alt="AWS Student Builder Group - Colegio de Muntinlupa"
-    >
+    <img class="login-logo" src="../assets/awssbg-cdm-logo.svg" alt="AWS Student Builder Group - Colegio de Muntinlupa">
 
     <h1>AWSSBG-CDM</h1>
     <p>Administration Portal</p>
@@ -53,33 +50,117 @@
     const loginButton = document.getElementById("login-button");
     const status = document.getElementById("status");
 
+    let requiresNewPassword = false;
+
+    function showNewPasswordField() {
+      const passwordLabel = document.createElement("label");
+      passwordLabel.htmlFor = "new-password";
+      passwordLabel.textContent = "New Password";
+
+      const passwordInput = document.createElement("input");
+      passwordInput.id = "new-password";
+      passwordInput.name = "new-password";
+      passwordInput.type = "password";
+      passwordInput.autocomplete = "new-password";
+      passwordInput.placeholder = "Enter your new password";
+      passwordInput.required = true;
+
+      const confirmLabel = document.createElement("label");
+      confirmLabel.htmlFor = "confirm-password";
+      confirmLabel.textContent = "Confirm Password";
+
+      const confirmInput = document.createElement("input");
+      confirmInput.id = "confirm-password";
+      confirmInput.name = "confirm-password";
+      confirmInput.type = "password";
+      confirmInput.autocomplete = "new-password";
+      confirmInput.placeholder = "Confirm your new password";
+      confirmInput.required = true;
+
+      const emailInput = document.getElementById("email");
+      const currentPasswordInput = document.getElementById("password");
+
+      emailInput.hidden = true;
+      currentPasswordInput.hidden = true;
+
+      document.querySelector("label[for='email']").hidden = true; //nkatrue???
+      document.querySelector("label[for='password']").hidden = true;
+
+      passwordInput.value = "";
+
+      document.querySelector(".login-container h1").textContent = "Set Your New Password";
+      
+      form.insertBefore(passwordLabel, loginButton);
+      form.insertBefore(passwordInput, loginButton);
+      form.insertBefore(confirmLabel, loginButton);
+      form.insertBefore(confirmInput, loginButton);
+
+      loginButton.textContent = "Set New Password";
+      requiresNewPassword = true;
+
+      status.textContent = "Your account requires a new password. Please set a new password to continue.";
+    }
+
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      status.textContent = "Signing in...";
       loginButton.disabled = true;
+      status.textContent = requiresNewPassword
+        ? "Setting new password..."
+        : "Signing in...";
 
       try {
-        const result = await signIn({
-          username: email,
-          password,
-        });
+        let result;
+
+        if (requiresNewPassword) {
+          const newPassword = document.getElementById("new-password").value;
+          const confirmPassword = document.getElementById("confirm-password").value;
+
+          if (newPassword !== confirmPassword) {
+            status.textContent = "Passwords do not match. Please try again.";
+            loginButton.disabled = false;
+            return;
+          }
+
+          if (!newPassword || newPassword.length < 8) {
+            status.textContent = "New password must be at least 8 characters long.";
+            loginButton.disabled = false;
+            return;
+          }
+
+          result = await confirmSignIn({
+            challengeRespond: newPassword,
+          });
+
+        } else {
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value;
+
+          result = await signIn({
+            username: email,
+            password,
+          });
+        }
 
         if (result.isSignedIn) {
           status.textContent = "Sign-in successful. Opening dashboard...";
           window.location.assign("./dashboard/index.html");
-        } else {
-          status.textContent =
-            "Additional verification is required to complete sign-in.";
-          console.info("Additional sign-in step:", result.nextStep.signInStep);
+          return;
         }
+
+        const nextStep = result.nextStep?.signInStep;
+
+        if (nextStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED" && !requiresNewPassword) {
+          showNewPasswordField();
+          return;
+        }
+
+        console.info("Additional sign-in step:", nextStep);
+
+        status.textContent = "Additional verification is required to complete sign-in. Please contatt an administrator for assistance.";
       } catch (error) {
         console.error("Sign-in failed:", error);
-        status.textContent =
-          "Unable to sign in. Check your credentials or contact an administrator.";
+        status.textContent = error.message || "Unable to sign in. Check your credentials or contact an administrator.";
       } finally {
         loginButton.disabled = false;
       }

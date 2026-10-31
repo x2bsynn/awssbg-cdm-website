@@ -642,3 +642,8 @@ body:has(.login-container) {
     transition: none;
   }
 }
+
+
+[hidden] {
+  display: none !important;
+}

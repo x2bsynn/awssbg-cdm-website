@@ -2239,6 +2239,7 @@ try {
     });
 
     management.hidden = false;
+    //Hide notice message after successful sign-in and before loading events
     //showNotice("Signed in successfully. Loading your events...", "success");
 
     await loadEvents();
