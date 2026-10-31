@@ -843,7 +843,7 @@ function renderOfficerTree() {
     <div class="org-chart">
       <div class="org-chart-heading">
         <div>
-          <span class="org-eyebrow">AWSSBG · CDM</span>
+          <span class="org-eyebrow">AWS Student Builder Group - Colegio de Muntinlupa</span>
           <h3>Organization Structure</h3>
           <p>Leadership, executive coordination, and functional offices</p>
         </div>
@@ -2239,7 +2239,7 @@ try {
     });
 
     management.hidden = false;
-    showNotice("Signed in successfully. Loading your events...", "success");
+    //showNotice("Signed in successfully. Loading your events...", "success");
 
     await loadEvents();
   }
