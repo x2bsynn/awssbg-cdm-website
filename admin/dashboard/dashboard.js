@@ -2220,45 +2220,49 @@ try {
   const session = await fetchAuthSession();
   const idTokenValue = session.tokens?.idToken;
 
+  // No valid signed-in session.
   if (!user || !idTokenValue) {
     window.location.replace("/admin/");
   } else {
     const payload = idTokenValue.payload ?? {};
-
-    // Check Cognito administrator group membership.
     const groups = payload["cognito:groups"] ?? [];
 
-    const isAdmin =
-      Array.isArray(groups) && groups.includes("Admins");
+    // Only users in the Cognito Admins group may enter.
+    const isAdmin = Array.isArray(groups) && groups.includes("Admins");
 
     if (!isAdmin) {
       console.warn("Dashboard access denied: user is not an administrator.");
 
-      await signOut();
-      window.location.replace("/admin/?error=access-denied");
-      throw new Error("Administrator access required.");
+      try {
+        await signOut();
+      } finally {
+        window.location.replace("/admin/?error=access-denied");
+      }
+    } else {
+      // Store the ID token for authorized API requests.
+      idToken = idTokenValue.toString();
+
+      // Populate the signed-in administrator's profile.
+      setProfile({
+        profile: {
+          name: payload.name || payload.nickname || "",
+          email: payload.email || "",
+          preferred_username: payload.preferred_username || "",
+          username: user.username || "",
+        },
+      });
+
+      // Reveal the dashboard only after authorization succeeds.
+      document.querySelector(".app").hidden = false;
+
+      // Show the event workspace and load its data.
+      management.hidden = false;
+      await loadEvents();
     }
-
-    // Continue only after administrator authorization succeeds.
-    idToken = idTokenValue.toString();
-
-    setProfile({
-      profile: {
-        name: payload.name || payload.nickname || "",
-        email: payload.email || "",
-        preferred_username: payload.preferred_username || "",
-        username: user.username || "",
-      },
-    });
-
-    management.hidden = false;
-
-    await loadEvents();
   }
 } catch (error) {
   console.error("Unable to verify the Cognito administrator session:", error);
 
-  if (error.message !== "Administrator access required.") {
-    window.location.replace("/admin/");
-  }
+  // If session verification fails, return to the login page.
+  window.location.replace("/admin/");
 }
