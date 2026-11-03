@@ -2221,13 +2221,26 @@ try {
   const idTokenValue = session.tokens?.idToken;
 
   if (!user || !idTokenValue) {
-    // Mirroring File 2: Redirect to the Auth Provider instead of reloading the page
     window.location.replace("/admin/");
   } else {
-    // Fix for Amplify v6 JWT object string extraction
-    idToken = idTokenValue.toString();
-
     const payload = idTokenValue.payload ?? {};
+
+    // Check Cognito administrator group membership.
+    const groups = payload["cognito:groups"] ?? [];
+
+    const isAdmin =
+      Array.isArray(groups) && groups.includes("Admins");
+
+    if (!isAdmin) {
+      console.warn("Dashboard access denied: user is not an administrator.");
+
+      await signOut();
+      window.location.replace("/admin/?error=access-denied");
+      throw new Error("Administrator access required.");
+    }
+
+    // Continue only after administrator authorization succeeds.
+    idToken = idTokenValue.toString();
 
     setProfile({
       profile: {
@@ -2239,13 +2252,13 @@ try {
     });
 
     management.hidden = false;
-    //Hide notice message after successful sign-in and before loading events
-    //showNotice("Signed in successfully. Loading your events...", "success");
 
     await loadEvents();
   }
 } catch (error) {
-  console.error("Unable to verify the Cognito session:", error);
-  // Mirroring File 2: Send unauthenticated users straight to login redirect
-  window.location.replace("/admin/");
+  console.error("Unable to verify the Cognito administrator session:", error);
+
+  if (error.message !== "Administrator access required.") {
+    window.location.replace("/admin/");
+  }
 }

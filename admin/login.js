@@ -35,7 +35,7 @@ form.addEventListener("submit", async (event) => {
     if (result.isSignedIn) {
       status.textContent = "Sign-in successful. Opening dashboard...";
 
-      window.location.assign("./dashboard/index.html");
+      window.location.assign("./dashboard/dashboard.html");
     } else {
       status.textContent =
         "Additional verification is required to complete sign-in.";
