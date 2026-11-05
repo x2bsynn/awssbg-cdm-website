@@ -2176,10 +2176,26 @@ $("event-form").addEventListener("submit", async (event) => {
 });
 
 $("logout-button").addEventListener("click", async () => {
+  const logoutButton = $("logout-button");
+
   try {
+    logoutButton.disabled = true;
+    logoutButton.textContent = "Signing out...";
+
     await signOut();
+
+    // Return to the admin login page after signing out.
+    window.location.replace("/admin/");
   } catch (error) {
-    showNotice(error.message, "error");
+    console.error("Sign-out failed:", error);
+
+    showNotice(
+      "Unable to sign out. Please try again.",
+      "error"
+    );
+
+    logoutButton.disabled = false;
+    logoutButton.textContent = "Sign out";
   }
 });
 
