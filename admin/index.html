@@ -70,7 +70,9 @@
   <script type="module">
     import {
       signIn,
-      confirmSignIn
+      confirmSignIn,
+      fetchAuthSession,
+      signOut
     } from "./amplify.js";
 
     // ==========================================
@@ -340,13 +342,65 @@
         }
 
         if (result.isSignedIn) {
-          setStatus(
-            "Sign-in successful. Opening dashboard...",
-            "success"
-          );
+          setStatus("Verifying administrator permissions...", "loading");
 
-          window.location.assign("./dashboard/dashboard.html");
-          return;
+          try {
+            const session = await fetchAuthSession();
+            const idToken = session.tokens?.idToken;
+
+            if (!idToken) {
+              throw new Error("Unable to verify your account session. Please try again.");
+            }
+
+            const payload = idToken.payload ?? {};
+            const groups = payload["cognito:groups"] ?? [];
+
+            const isAdmin =
+              Array.isArray(groups) && groups.includes("Admins");
+
+            console.log("Authenticated account:", emailInput.value.trim());
+            console.log("Cognito groups:", groups);
+
+            if (!isAdmin) {
+              console.warn("Access denied");
+
+              try {
+                await signOut();
+              } catch (signOutError) {
+                console.error("Unable to clear unauthorized session:", signOutError);
+              }
+
+              passwordInput.value = "";
+
+              setStatus(
+                "Access denied",
+                "error"
+              );
+
+              return;
+            }
+
+            setStatus("Administrator verified. Opening dashboard...", "success");
+
+            window.location.assign("./dashboard/dashboard.html");
+            return;
+
+          } catch (verificationError) {
+            console.error("Administrator verification failed:", verificationError);
+
+            try {
+              await signOut();
+            } catch (signOutError) {
+              console.error("Unable to clear session:", signOutError);
+            }
+
+            setStatus(
+              "We couldn't verify your administrator permissions. Please try again or contact an administrator.",
+              "error"
+            );
+
+            return;
+          }
         }
 
         if (
