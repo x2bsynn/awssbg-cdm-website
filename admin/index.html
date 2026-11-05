@@ -45,14 +45,34 @@
         <input id="recovery-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
           pattern="[0-9]{6}" placeholder="Enter verification code">
 
-        <p id="otp-countdown" class="otp-countdown" role="timer" aria-live="off">
-          Your code expires in 05:00.
-        </p>
-        <button id="resend-recovery-code" class="resend-code-button" type="button" disabled>
-          Resend Code (05:00)
-        </button>
+        <div class="otp-meta-card">
+          <div class="otp-meta-topline">
+            <span class="otp-meta-label">CODE EXPIRATION</span>
+            <strong id="otp-time-value" class="otp-time-value">05:00</strong>
+          </div>
+          <p id="otp-countdown" class="otp-countdown" role="timer" aria-live="off">
+            Your verification code is valid for five minutes.
+          </p>
+          <div class="otp-progress-track" aria-hidden="true">
+            <span id="otp-progress-bar" class="otp-progress-bar"></span>
+          </div>
+        </div>
 
-        <button id="continue-to-password" class="primary-button" type="button">Continue</button>
+        <div id="otp-attempt-card" class="otp-attempt-card" aria-live="polite">
+          <div class="otp-attempt-topline">
+            <span class="otp-meta-label">VERIFICATION ATTEMPTS</span>
+            <strong id="otp-attempt-count">5 of 5 remaining</strong>
+          </div>
+          <div class="otp-attempt-dots" id="otp-attempt-dots" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <p id="otp-attempt-help">You have five attempts to enter the correct code.</p>
+        </div>
+
+        <button id="continue-to-password" class="primary-button" type="button">Verify Code</button>
+        <button id="resend-recovery-code" class="resend-code-button" type="button" disabled>
+          Resend code available in 05:00
+        </button>
       </div>
 
       <div id="recovery-password-section" hidden>
@@ -149,6 +169,12 @@
     const otpCountdown =
       document.getElementById("otp-countdown");
 
+    const otpTimeValue = document.getElementById("otp-time-value");
+    const otpProgressBar = document.getElementById("otp-progress-bar");
+    const otpAttemptCount = document.getElementById("otp-attempt-count");
+    const otpAttemptHelp = document.getElementById("otp-attempt-help");
+    const otpAttemptDots = document.getElementById("otp-attempt-dots");
+
     const continueButton =
       document.getElementById("continue-to-password");
 
@@ -172,6 +198,8 @@
     const OTP_VALIDITY_SECONDS = 5 * 60;
     let otpCountdownInterval = null;
     let otpExpiresAt = null;
+    let otpAttemptsRemaining = 5;
+    let otpLocked = false;
 
     // ==========================================
     // STATUS MESSAGE
@@ -208,9 +236,14 @@
       }
 
       if (!response.ok) {
-        throw new Error(
+        const error = new Error(
           result.message || "The recovery request could not be completed."
         );
+        error.code = result.code || "RECOVERY_REQUEST_FAILED";
+        error.attemptsRemaining = Number.isInteger(result.attemptsRemaining)
+          ? result.attemptsRemaining
+          : null;
+        throw error;
       }
 
       return result;
@@ -244,30 +277,58 @@
         Math.ceil((otpExpiresAt - Date.now()) / 1000)
       );
 
+      const time = formatCountdown(remainingSeconds);
+      otpTimeValue.textContent = time;
+      otpProgressBar.style.width = `${(remainingSeconds / OTP_VALIDITY_SECONDS) * 100}%`;
+
       if (remainingSeconds <= 0) {
         stopOtpCountdown();
-        otpCountdown.textContent =
-          "Your verification code has expired. You can request a new one.";
-        resendCodeButton.textContent = "Resend Code";
+        otpCountdown.textContent = "This code has expired. Request a new code to continue.";
+        resendCodeButton.textContent = "Send a new code";
         resendCodeButton.disabled = false;
         return;
       }
 
-      const time = formatCountdown(remainingSeconds);
-
-      otpCountdown.textContent = `Your code expires in ${time}.`;
-      resendCodeButton.textContent = `Resend Code (${time})`;
+      otpCountdown.textContent = "Enter the code before the timer runs out.";
+      resendCodeButton.textContent = `Resend available in ${time}`;
       resendCodeButton.disabled = true;
     }
 
-    function startOtpCountdown() {
+    function startOtpCountdown(requestStartedAt = Date.now()) {
       stopOtpCountdown();
-
-      otpExpiresAt = Date.now() + OTP_VALIDITY_SECONDS * 1000;
+      // Start from the request time, not the response time. The Lambda creates
+      // the challenge before SES finishes sending the email.
+      otpExpiresAt = requestStartedAt + OTP_VALIDITY_SECONDS * 1000;
+      otpTimeValue.textContent = "05:00";
+      otpProgressBar.style.width = "100%";
       resendCodeButton.disabled = true;
-
       updateOtpCountdown();
       otpCountdownInterval = setInterval(updateOtpCountdown, 1000);
+    }
+
+    function renderOtpAttempts(remaining = 5) {
+      otpAttemptsRemaining = Math.max(0, Math.min(5, remaining));
+      const used = 5 - otpAttemptsRemaining;
+      otpAttemptCount.textContent = `${otpAttemptsRemaining} of 5 remaining`;
+      otpAttemptHelp.textContent = otpAttemptsRemaining === 0
+        ? "This verification code is locked. Wait for it to expire, then request a new one."
+        : `${used} incorrect ${used === 1 ? "attempt" : "attempts"}. ${otpAttemptsRemaining} ${otpAttemptsRemaining === 1 ? "attempt" : "attempts"} left.`;
+
+      [...otpAttemptDots.children].forEach((dot, index) => {
+        dot.classList.toggle("used", index < used);
+        dot.classList.toggle("remaining", index >= used);
+      });
+
+      otpLocked = otpAttemptsRemaining === 0;
+      recoveryCode.disabled = otpLocked;
+      continueButton.disabled = otpLocked;
+      recoveryCodeSection.classList.toggle("otp-locked", otpLocked);
+    }
+
+    function lockOtpChallenge() {
+      renderOtpAttempts(0);
+      recoveryCode.value = "";
+      setStatus("Too many incorrect codes. This verification code is now locked. You can request another code after the current code expires.", "error");
     }
 
     // ==========================================
@@ -542,6 +603,7 @@
       }
 
       sendCodeButton.disabled = true;
+      const requestStartedAt = Date.now();
 
       setStatus("Sending verification code...", "loading");
 
@@ -554,7 +616,8 @@
         recoveryCode.value = "";
 
         showRecoveryStage("code");
-        startOtpCountdown();
+        renderOtpAttempts(5);
+        startOtpCountdown(requestStartedAt);
 
         setStatus(
           result.message ||
@@ -593,6 +656,7 @@
 
       resendCodeButton.disabled = true;
       resendCodeButton.textContent = "Sending Code...";
+      const requestStartedAt = Date.now();
 
       setStatus("Requesting a new verification code...", "loading");
 
@@ -601,7 +665,8 @@
 
         recoveryCode.value = "";
         recoveryResetToken = null;
-        startOtpCountdown();
+        renderOtpAttempts(5);
+        startOtpCountdown(requestStartedAt);
 
         setStatus(
           result.message ||
@@ -686,16 +751,22 @@
 
         recoveryResetToken = null;
 
-        setStatus(
-          error.message ||
-          "Invalid or expired verification code. Please try again.",
-          "error"
-        );
-
-        recoveryCode.focus();
+        if (error.code === "ATTEMPTS_EXCEEDED" || error.attemptsRemaining === 0) {
+          lockOtpChallenge();
+        } else {
+          if (error.attemptsRemaining !== null) {
+            renderOtpAttempts(error.attemptsRemaining);
+          }
+          setStatus(
+            error.message || "That code is incorrect or expired. Check the code and try again.",
+            "error"
+          );
+          if (!otpLocked) recoveryCode.focus();
+        }
 
       } finally {
-        continueButton.disabled = false;
+        // Do not re-enable verification after the backend reports lockout.
+        continueButton.disabled = otpLocked;
       }
     });
 
@@ -818,6 +889,9 @@
     // ==========================================
 
     backButton.addEventListener("click", () => {
+      stopOtpCountdown();
+      renderOtpAttempts(5);
+      recoveryCode.disabled = false;
       recoveryResetToken = null;
       stopOtpCountdown();
 

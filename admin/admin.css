@@ -634,3 +634,161 @@ tbody tr:hover {
   cursor: not-allowed;
   opacity: .8;
 }
+
+
+/* =========================================
+   Password recovery OTP experience
+========================================= */
+
+#forgot-password-panel {
+  gap: 14px;
+}
+
+#recovery-code-section {
+  display: grid;
+  gap: 11px;
+}
+
+#recovery-code-section[hidden] {
+  display: none;
+}
+
+#recovery-code {
+  min-height: 58px !important;
+  margin: 0 !important;
+  text-align: center;
+  font-size: 25px !important;
+  font-weight: 800;
+  letter-spacing: .42em;
+  padding-left: calc(13px + .42em) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.otp-meta-card,
+.otp-attempt-card {
+  padding: 14px 15px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fffafd, #f8fffb);
+}
+
+.otp-meta-topline,
+.otp-attempt-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.otp-meta-label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .09em;
+}
+
+.otp-time-value {
+  color: var(--forest-dark);
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+}
+
+.otp-countdown {
+  margin: 5px 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: left;
+}
+
+.otp-progress-track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f1e7eb;
+}
+
+.otp-progress-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--forest), var(--mint-strong));
+  transition: width .4s linear;
+}
+
+.otp-attempt-card {
+  background: #fff;
+}
+
+.otp-attempt-topline strong {
+  color: var(--forest-dark);
+  font-size: 12px;
+}
+
+.otp-attempt-dots {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0 7px;
+}
+
+.otp-attempt-dots span {
+  flex: 1;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--mint-strong);
+}
+
+.otp-attempt-dots span.used {
+  background: #d9a0ad;
+}
+
+#otp-attempt-help {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.resend-code-button {
+  justify-self: center;
+  width: auto;
+  min-height: 34px;
+  margin: -4px 0 0;
+  padding: 7px 12px;
+  color: var(--forest);
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.resend-code-button:disabled {
+  color: #99919a;
+  cursor: not-allowed;
+}
+
+#recovery-code-section.otp-locked #recovery-code {
+  color: #9a9298;
+  background: #f6f3f4;
+  border-color: #e5dfe2;
+  cursor: not-allowed;
+}
+
+#recovery-code-section .primary-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+
+  .otp-meta-card,
+  .otp-attempt-card {
+    padding: 12px;
+  }
+
+  #recovery-code {
+    font-size: 22px !important;
+  }
+}
