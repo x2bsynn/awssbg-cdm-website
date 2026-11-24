@@ -1,25 +1,21 @@
 {
-  "dependencies": {
-    "oidc-client-ts": "^3.5.0"
-  },
   "name": "awssbg-cdm-website",
   "version": "1.0.0",
+  "private": true,
   "description": "Official website for the AWS Student Builder Group at Colegio de Muntinlupa.",
-  "main": "index.js",
-  "devDependencies": {},
+  "main": "server.js",
+  "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "oidc-client-ts": "^3.5.0"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/x2bsynn/awssbg-cdm-website.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/x2bsynn/awssbg-cdm-website/issues"
-  },
-  "homepage": "https://github.com/x2bsynn/awssbg-cdm-website#readme"
+  "license": "ISC"
 }

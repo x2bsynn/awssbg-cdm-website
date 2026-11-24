@@ -45,28 +45,19 @@
         <input id="recovery-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
           pattern="[0-9]{6}" placeholder="Enter verification code">
 
-        <div class="otp-meta-card">
-          <div class="otp-meta-topline">
-            <span class="otp-meta-label">CODE EXPIRATION</span>
-            <strong id="otp-time-value" class="otp-time-value">05:00</strong>
+        <div class="otp-compact-status">
+          <div class="otp-compact-topline">
+            <span id="otp-countdown" class="otp-countdown" role="timer" aria-live="off">
+              Code expires in 05:00
+            </span>
+            <strong id="otp-attempt-count" class="otp-attempt-count">5 attempts left</strong>
           </div>
-          <p id="otp-countdown" class="otp-countdown" role="timer" aria-live="off">
-            Your verification code is valid for five minutes.
-          </p>
           <div class="otp-progress-track" aria-hidden="true">
             <span id="otp-progress-bar" class="otp-progress-bar"></span>
           </div>
-        </div>
-
-        <div id="otp-attempt-card" class="otp-attempt-card" aria-live="polite">
-          <div class="otp-attempt-topline">
-            <span class="otp-meta-label">VERIFICATION ATTEMPTS</span>
-            <strong id="otp-attempt-count">5 of 5 remaining</strong>
-          </div>
-          <div class="otp-attempt-dots" id="otp-attempt-dots" aria-hidden="true">
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <p id="otp-attempt-help">You have five attempts to enter the correct code.</p>
+          <p id="otp-attempt-help" class="otp-attempt-help">
+            You can try up to five times.
+          </p>
         </div>
 
         <button id="continue-to-password" class="primary-button" type="button">Verify Code</button>
@@ -100,6 +91,7 @@
       signIn,
       confirmSignIn,
       fetchAuthSession,
+      getCurrentUser,
       signOut
     } from "./amplify.js";
 
@@ -117,6 +109,12 @@
     const form = document.getElementById("login-form");
     const loginButton = document.getElementById("login-button");
     const status = document.getElementById("status");
+
+    // Keep the sign-in form hidden until an existing Cognito session has been
+    // checked. This avoids briefly showing the login form to administrators
+    // who are already signed in.
+    form.hidden = true;
+    setStatus("Checking your administrator session...", "loading");
 
     const pageHeading = document.getElementById("auth-heading");
     const description = document.getElementById("auth-description");
@@ -169,11 +167,9 @@
     const otpCountdown =
       document.getElementById("otp-countdown");
 
-    const otpTimeValue = document.getElementById("otp-time-value");
     const otpProgressBar = document.getElementById("otp-progress-bar");
     const otpAttemptCount = document.getElementById("otp-attempt-count");
     const otpAttemptHelp = document.getElementById("otp-attempt-help");
-    const otpAttemptDots = document.getElementById("otp-attempt-dots");
 
     const continueButton =
       document.getElementById("continue-to-password");
@@ -212,6 +208,65 @@
     }
 
     // ==========================================
+    // EXISTING SESSION CHECK
+    // ==========================================
+    // Amplify refreshes an expired access/ID token automatically when a valid
+    // refresh token is available. Only a verified Cognito Admins-group member
+    // is redirected to the dashboard. The dashboard repeats this check itself.
+    async function redirectIfAdministratorSessionExists() {
+      try {
+        await getCurrentUser();
+        const session = await fetchAuthSession();
+        const idToken = session.tokens?.idToken;
+
+        if (!idToken) {
+          form.hidden = false;
+          setStatus("Your session has expired. Please sign in again.", "info");
+          return;
+        }
+
+        const groups = idToken.payload?.["cognito:groups"] ?? [];
+        const isAdministrator =
+          Array.isArray(groups) && groups.includes("Admins");
+
+        if (isAdministrator) {
+          setStatus("Administrator session verified. Opening dashboard...", "success");
+          window.location.replace("/admin/dashboard/dashboard.html");
+          return;
+        }
+
+        // A signed-in account without the Admins group must not enter the
+        // administration portal. Clear its local Cognito session first.
+        try {
+          await signOut();
+        } catch (signOutError) {
+          console.error("Unable to clear non-admin session:", signOutError);
+        }
+
+        form.hidden = false;
+        passwordInput.value = "";
+        setStatus(
+          "This account does not have administrator access. Please use an authorized admin account.",
+          "error"
+        );
+      } catch (error) {
+        // No session, expired refresh token, or an unavailable auth service:
+        // leave the regular sign-in form available instead of trapping users.
+        console.info("No reusable administrator session was found:", error);
+        form.hidden = false;
+
+        const accessDenied =
+          new URLSearchParams(window.location.search).get("error") === "access-denied";
+
+        if (accessDenied) {
+          setStatus("Access denied. This account is not authorized to use the admin dashboard.", "error");
+        } else {
+          setStatus("");
+        }
+      }
+    }
+
+    // ==========================================
     // RECOVERY API HELPER
     // ==========================================
 
@@ -242,7 +297,10 @@
         error.code = result.code || "RECOVERY_REQUEST_FAILED";
         error.attemptsRemaining = Number.isInteger(result.attemptsRemaining)
           ? result.attemptsRemaining
-          : null;
+          : Number.isInteger(result.remainingAttempts)
+            ? result.remainingAttempts
+            : null;
+        error.remainingAttempts = error.attemptsRemaining;
         throw error;
       }
 
@@ -278,12 +336,13 @@
       );
 
       const time = formatCountdown(remainingSeconds);
-      otpTimeValue.textContent = time;
+      otpCountdown.textContent = remainingSeconds <= 0
+        ? "Code expired"
+        : `Code expires in ${time}`;
       otpProgressBar.style.width = `${(remainingSeconds / OTP_VALIDITY_SECONDS) * 100}%`;
 
       if (remainingSeconds <= 0) {
         stopOtpCountdown();
-        otpCountdown.textContent = "This code has expired. Request a new code to continue.";
         resendCodeButton.textContent = "Send a new code";
         resendCodeButton.disabled = false;
         return;
@@ -299,7 +358,7 @@
       // Start from the request time, not the response time. The Lambda creates
       // the challenge before SES finishes sending the email.
       otpExpiresAt = requestStartedAt + OTP_VALIDITY_SECONDS * 1000;
-      otpTimeValue.textContent = "05:00";
+      otpCountdown.textContent = "Code expires in 05:00";
       otpProgressBar.style.width = "100%";
       resendCodeButton.disabled = true;
       updateOtpCountdown();
@@ -309,15 +368,12 @@
     function renderOtpAttempts(remaining = 5) {
       otpAttemptsRemaining = Math.max(0, Math.min(5, remaining));
       const used = 5 - otpAttemptsRemaining;
-      otpAttemptCount.textContent = `${otpAttemptsRemaining} of 5 remaining`;
+      otpAttemptCount.textContent = `${otpAttemptsRemaining} ${otpAttemptsRemaining === 1 ? "attempt" : "attempts"} left`;
       otpAttemptHelp.textContent = otpAttemptsRemaining === 0
-        ? "This verification code is locked. Wait for it to expire, then request a new one."
-        : `${used} incorrect ${used === 1 ? "attempt" : "attempts"}. ${otpAttemptsRemaining} ${otpAttemptsRemaining === 1 ? "attempt" : "attempts"} left.`;
-
-      [...otpAttemptDots.children].forEach((dot, index) => {
-        dot.classList.toggle("used", index < used);
-        dot.classList.toggle("remaining", index >= used);
-      });
+        ? "This code is locked. Request a new code after it expires."
+        : used === 0
+          ? "Up to five verification attempts are allowed."
+          : `${used} incorrect ${used === 1 ? "attempt" : "attempts"} used.`;
 
       otpLocked = otpAttemptsRemaining === 0;
       recoveryCode.disabled = otpLocked;
@@ -751,11 +807,17 @@
 
         recoveryResetToken = null;
 
-        if (error.code === "ATTEMPTS_EXCEEDED" || error.attemptsRemaining === 0) {
+        const attemptsLeft = Number.isInteger(error.attemptsRemaining)
+          ? error.attemptsRemaining
+          : Number.isInteger(error.remainingAttempts)
+            ? error.remainingAttempts
+            : null;
+
+        if (error.code === "ATTEMPTS_EXCEEDED" || attemptsLeft === 0) {
           lockOtpChallenge();
         } else {
-          if (error.attemptsRemaining !== null) {
-            renderOtpAttempts(error.attemptsRemaining);
+          if (attemptsLeft !== null) {
+            renderOtpAttempts(attemptsLeft);
           }
           setStatus(
             error.message || "That code is incorrect or expired. Check the code and try again.",
@@ -918,6 +980,9 @@
 
       setStatus("");
     });
+
+    // Run only after the page controls and event handlers are ready.
+    await redirectIfAdministratorSessionExists();
   </script>
 
 </body>

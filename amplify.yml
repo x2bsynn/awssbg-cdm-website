@@ -1,0 +1,13 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Preparing AWSSBG-CDM static website"
+    build:
+      commands:
+        - echo "No frontend compilation is required"
+  artifacts:
+    baseDirectory: public
+    files:
+      - "**/*"

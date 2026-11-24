@@ -1,3 +1,4 @@
+
 /* =========================================
    AWSSBG-CDM Admin Authentication
    Shared layout for login, recovery and
@@ -29,9 +30,7 @@
   --transition: 180ms ease;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -48,8 +47,8 @@ body:has(.login-container) {
   place-items: center;
   padding: clamp(14px, 3vh, 30px) 16px;
   background:
-    radial-gradient(ellipse at 8% 8%, rgba(245, 196, 208, .48), transparent 38%),
-    radial-gradient(ellipse at 95% 92%, rgba(186, 243, 223, .55), transparent 35%),
+    radial-gradient(ellipse at 8% 8%, rgba(245,196,208,.48), transparent 38%),
+    radial-gradient(ellipse at 95% 92%, rgba(186,243,223,.55), transparent 35%),
     linear-gradient(145deg, #fffdf8 0%, #fff9fb 52%, #f6fcf9 100%);
 }
 
@@ -60,8 +59,8 @@ body:has(.login-container) {
   padding: clamp(25px, 4vh, 38px) clamp(20px, 5vw, 36px) 28px;
   overflow: hidden;
   text-align: left;
-  background: rgba(255, 255, 255, .97);
-  border: 1px solid rgba(240, 223, 229, .9);
+  background: rgba(255,255,255,.97);
+  border: 1px solid rgba(240,223,229,.9);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   animation: login-enter 350ms ease both;
@@ -94,7 +93,7 @@ body:has(.login-container) {
   text-align: center;
 }
 
-.login-container>p:not(#status) {
+.login-container > p:not(#status) {
   margin: 8px 0 0;
   color: var(--muted);
   font-size: 14px;
@@ -168,20 +167,18 @@ body:has(.login-container) {
 }
 
 #login-form input::placeholder,
-#forgot-password-panel input::placeholder {
-  color: #a39aa2;
-}
+#forgot-password-panel input::placeholder { color: #a39aa2; }
 
 #login-form input:focus,
 #forgot-password-panel input:focus {
   outline: none;
   background: var(--white);
   border-color: var(--forest);
-  box-shadow: 0 0 0 3px rgba(245, 196, 208, .35);
+  box-shadow: 0 0 0 3px rgba(245,196,208,.35);
 }
 
 .primary-button,
-#login-form>button {
+#login-form > button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -197,24 +194,24 @@ body:has(.login-container) {
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(217, 111, 145, .12);
+  box-shadow: 0 4px 12px rgba(217,111,145,.12);
   transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
 }
 
 .primary-button:hover:not(:disabled),
-#login-form>button:hover:not(:disabled) {
+#login-form > button:hover:not(:disabled) {
   background: var(--pink-hover);
-  box-shadow: 0 6px 16px rgba(217, 111, 145, .18);
+  box-shadow: 0 6px 16px rgba(217,111,145,.18);
 }
 
 .primary-button:active:not(:disabled),
-#login-form>button:active:not(:disabled) {
+#login-form > button:active:not(:disabled) {
   transform: translateY(1px);
   box-shadow: none;
 }
 
 .primary-button:disabled,
-#login-form>button:disabled {
+#login-form > button:disabled {
   opacity: .65;
   cursor: wait;
 }
@@ -268,7 +265,7 @@ body:has(.login-container) {
   text-align: center;
 }
 
-#forgot-password-panel>p {
+#forgot-password-panel > p {
   margin: 0 0 8px;
   color: var(--muted);
   font-size: 13px;
@@ -293,91 +290,36 @@ body:has(.login-container) {
   text-align: center;
 }
 
-[hidden] {
-  display: none !important;
-}
+[hidden] { display: none !important; }
 
-button,
-a,
-input,
-select,
-textarea {
-  font-family: inherit;
-}
-
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible {
+button, a, input, select, textarea { font-family: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible {
   outline: 2px solid var(--forest);
   outline-offset: 3px;
 }
 
 @keyframes login-enter {
-  from {
-    opacity: 0;
-    transform: translateY(9px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 480px) {
-  .login-container {
-    padding: 30px 22px 24px;
-    border-radius: 19px;
-  }
-
-  .login-logo {
-    width: 62px;
-    height: 62px;
-  }
+  .login-container { padding: 30px 22px 24px; border-radius: 19px; }
+  .login-logo { width: 62px; height: 62px; }
 }
 
 @media (max-height: 700px) {
-  body:has(.login-container) {
-    padding-top: 12px;
-    padding-bottom: 12px;
-  }
-
-  .login-container {
-    padding-top: 22px;
-    padding-bottom: 20px;
-  }
-
-  .login-logo {
-    width: 52px;
-    height: 52px;
-    margin-bottom: 10px;
-  }
-
-  .login-divider {
-    margin: 13px 0;
-  }
-
-  .login-security-note {
-    margin-top: 12px;
-    padding-top: 10px;
-  }
+  body:has(.login-container) { padding-top: 12px; padding-bottom: 12px; }
+  .login-container { padding-top: 22px; padding-bottom: 20px; }
+  .login-logo { width: 52px; height: 52px; margin-bottom: 10px; }
+  .login-divider { margin: 13px 0; }
+  .login-security-note { margin-top: 12px; padding-top: 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .login-container {
-    animation: none;
-  }
-
-  .primary-button,
-  #login-form>button,
-  input {
-    transition: none;
-  }
+  .login-container { animation: none; }
+  .primary-button, #login-form > button, input { transition: none; }
 }
 
 
@@ -637,71 +579,63 @@ tbody tr:hover {
 
 
 /* =========================================
-   Password recovery OTP experience
+   Compact password recovery OTP experience
 ========================================= */
 
 #forgot-password-panel {
-  gap: 14px;
+  gap: 12px;
 }
 
 #recovery-code-section {
   display: grid;
-  gap: 11px;
+  gap: 9px;
 }
 
-#recovery-code-section[hidden] {
-  display: none;
-}
+#recovery-code-section[hidden] { display: none; }
 
 #recovery-code {
-  min-height: 58px !important;
+  min-height: 48px !important;
   margin: 0 !important;
   text-align: center;
-  font-size: 25px !important;
-  font-weight: 800;
-  letter-spacing: .42em;
-  padding-left: calc(13px + .42em) !important;
+  font-size: 22px !important;
+  font-weight: 750;
+  letter-spacing: .38em;
+  padding-left: calc(12px + .38em) !important;
   font-variant-numeric: tabular-nums;
 }
 
-.otp-meta-card,
-.otp-attempt-card {
-  padding: 14px 15px;
+.otp-compact-status {
+  padding: 10px 12px 9px;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  background: linear-gradient(135deg, #fffafd, #f8fffb);
+  border-radius: 10px;
+  background: #fffafd;
 }
 
-.otp-meta-topline,
-.otp-attempt-topline {
+.otp-compact-topline {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-}
-
-.otp-meta-label {
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .09em;
-}
-
-.otp-time-value {
-  color: var(--forest-dark);
-  font-size: 21px;
-  font-variant-numeric: tabular-nums;
+  gap: 8px;
 }
 
 .otp-countdown {
-  margin: 5px 0 10px;
-  color: var(--muted);
+  margin: 0;
+  color: var(--forest-dark);
   font-size: 12px;
-  text-align: left;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.otp-attempt-count {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .otp-progress-track {
-  height: 6px;
+  height: 4px;
+  margin-top: 8px;
   overflow: hidden;
   border-radius: 999px;
   background: #f1e7eb;
@@ -713,53 +647,27 @@ tbody tr:hover {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--forest), var(--mint-strong));
-  transition: width .4s linear;
+  transition: width .25s linear;
 }
 
-.otp-attempt-card {
-  background: #fff;
-}
-
-.otp-attempt-topline strong {
-  color: var(--forest-dark);
-  font-size: 12px;
-}
-
-.otp-attempt-dots {
-  display: flex;
-  gap: 6px;
-  margin: 10px 0 7px;
-}
-
-.otp-attempt-dots span {
-  flex: 1;
-  height: 5px;
-  border-radius: 999px;
-  background: var(--mint-strong);
-}
-
-.otp-attempt-dots span.used {
-  background: #d9a0ad;
-}
-
-#otp-attempt-help {
-  margin: 0;
+.otp-attempt-help {
+  margin: 6px 0 0;
   color: var(--muted);
-  font-size: 11px;
-  line-height: 1.5;
+  font-size: 10px;
+  line-height: 1.35;
 }
 
 .resend-code-button {
   justify-self: center;
   width: auto;
-  min-height: 34px;
-  margin: -4px 0 0;
-  padding: 7px 12px;
+  min-height: 30px;
+  margin: -3px 0 0;
+  padding: 5px 9px;
   color: var(--forest);
   background: transparent;
   border: 0;
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -781,14 +689,10 @@ tbody tr:hover {
   cursor: not-allowed;
 }
 
-@media (max-width: 480px) {
-
-  .otp-meta-card,
-  .otp-attempt-card {
-    padding: 12px;
-  }
-
-  #recovery-code {
-    font-size: 22px !important;
+@media (max-width: 380px) {
+  .otp-compact-topline {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
 }

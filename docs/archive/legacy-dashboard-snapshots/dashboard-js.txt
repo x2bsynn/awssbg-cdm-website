@@ -1,3 +1,7 @@
+/*
+  Working backup/snapshot of an earlier dashboard.js.
+  Reference-only file; dashboard.html loads dashboard.js, not this .txt copy.
+*/
 import { fetchAuthSession, getCurrentUser, signOut } from "../amplify.js";
 
 const API_BASE =

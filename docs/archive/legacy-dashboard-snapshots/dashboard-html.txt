@@ -1,3 +1,7 @@
+<!--
+  Working backup/snapshot of an earlier dashboard.html.
+  Reference-only file; the live entry is dashboard.html.
+-->
 <!doctype html>
 <html lang="en">
 
