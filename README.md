@@ -286,3 +286,7 @@ For additional architecture details and the public/private maintenance checklist
 
 - **Official website:** <https://www.awssbg-cdm.live>
 - **GitHub repository:** <https://github.com/x2bsynn/awssbg-cdm-website>
+- **LinkedIn:** <https://www.linkedin.com/company/awssbg-cdm/>
+- **Meetup:** <https://www.meetup.com/aws-sbg-at-colegio-de-muntinlupa/>
+- **Facebook:** <https://www.facebook.com/awssbg.cdm/>
+- **Instagram:** <https://www.instagram.com/awssbg_cdm>
