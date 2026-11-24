@@ -1,5 +1,5 @@
 
-import { UserManager } from "https://esm.sh/oidc-client-ts@3.5.0";
+import { UserManager } from "oidc-client-ts";
 
 const baseUrl = window.location.origin;
 

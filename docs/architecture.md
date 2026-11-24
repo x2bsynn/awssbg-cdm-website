@@ -23,3 +23,9 @@ When adding a page or asset:
 4. Add/update tests when changing routing or server behavior.
 5. Run `npm test` and syntax-check changed JavaScript before merging.
 6. Update this document and `README.md` when the architecture changes.
+
+## Admin Portal frontend dependencies
+
+AWS Amplify Auth and `oidc-client-ts` are maintained as npm dependencies and bundled for the browser by `scripts/build-admin.js`. Their source modules live in `src/admin/`; generated browser bundles are written to `public/admin/amplify.js` and `public/admin/auth.js`. The login page and dashboard preload the Amplify bundle, while the Cognito callback page preloads the OIDC bundle. Do not hand-edit generated bundle files.
+
+The root `amplify.yml` installs build dependencies and runs `npm run build:admin` before publishing `public/`. Local `npm run dev` and `npm start` run the same build automatically.

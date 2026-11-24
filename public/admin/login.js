@@ -1,17 +1,4 @@
-import { Amplify } from "https://esm.sh/aws-amplify@6";
-import { signIn } from "https://esm.sh/aws-amplify@6/auth";
-
-Amplify.configure({
-  Auth: {
-    Cognito: {
-      userPoolId: "us-east-1_Z8XPiGmrk",
-      userPoolClientId: "7l1jvkjda7pql65kla7kqv4kon",
-      loginWith: {
-        email: true,
-      },
-    },
-  },
-});
+import { signIn } from "./amplify.js";
 
 const form = document.getElementById("login-form");
 const loginButton = document.getElementById("login-button");

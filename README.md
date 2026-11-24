@@ -79,3 +79,22 @@ npm test
 - Keep backend/runtime code at the repository root or in a dedicated source directory, never under `public/`.
 - Keep generated build output, dependency directories, logs, and secrets out of version control.
 - Use Git history for source history; keep only intentional reference snapshots in `docs/archive/`.
+## Admin Portal dependency build
+
+The Admin Portal bundles AWS Amplify and `oidc-client-ts` locally. The browser does not load these libraries from `esm.sh`.
+
+Install dependencies and start the local server:
+
+```bash
+npm install
+npm run dev
+```
+
+`npm run dev` and `npm start` automatically build the browser bundles first. To preview the static frontend, build it before serving `public/`:
+
+```bash
+npm run build:admin
+npx serve public -l 3001
+```
+
+AWS Amplify Hosting runs `npm install --include=dev` and `npm run build:admin` using the root `amplify.yml`, then publishes `public/`. Commit the updated `package-lock.json` after running `npm install` locally so local and hosted installs use the same dependency versions.

@@ -64,3 +64,34 @@ test("admin portal checks for an existing Cognito administrator session", () => 
   assert.match(loginPage, /groups\.includes\("Admins"\)/);
   assert.match(loginPage, /\/admin\/dashboard\/dashboard\.html/);
 });
+
+
+test("Admin Portal dependencies are bundled locally and preloaded", () => {
+  const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), "utf8"));
+  const buildScript = fs.readFileSync(path.join(__dirname, "../scripts/build-admin.js"), "utf8");
+  const amplifySource = fs.readFileSync(path.join(__dirname, "../src/admin/amplify.js"), "utf8");
+  const oidcSource = fs.readFileSync(path.join(__dirname, "../src/admin/auth.js"), "utf8");
+  const loginPage = fs.readFileSync(path.join(__dirname, "../public/admin/index.html"), "utf8");
+  const callbackPage = fs.readFileSync(path.join(__dirname, "../public/admin/callback.html"), "utf8");
+  const dashboardPage = fs.readFileSync(path.join(__dirname, "../public/admin/dashboard/dashboard.html"), "utf8");
+
+  assert.ok(packageJson.dependencies["aws-amplify"]);
+  assert.ok(packageJson.dependencies["oidc-client-ts"]);
+  assert.ok(packageJson.devDependencies.esbuild);
+  assert.match(buildScript, /bundle:\s*true/);
+  assert.match(buildScript, /platform:\s*["']browser["']/);
+  assert.match(amplifySource, /from ["']aws-amplify["']/);
+  assert.match(amplifySource, /from ["']aws-amplify\/auth["']/);
+  for (const authMethod of ["signIn", "confirmSignIn", "signOut", "fetchAuthSession", "getCurrentUser", "resetPassword", "confirmResetPassword"]) {
+    assert.match(amplifySource, new RegExp(`\\b${authMethod}\\b`));
+  }
+  assert.match(amplifySource, /userPoolId: ["']us-east-1_Z8XPiGmrk["']/);
+  assert.match(amplifySource, /userPoolClientId: ["']7l1jvkjda7pql65kla7kqv4kon["']/);
+  assert.match(oidcSource, /from ["']oidc-client-ts["']/);
+  assert.doesNotMatch(amplifySource + oidcSource, /https:\/\/esm\.sh/);
+  assert.match(loginPage, /rel="modulepreload" href="\.\/amplify\.js"/);
+  assert.match(loginPage, /id="status"[^>]*>Checking your administrator session/);
+  assert.match(loginPage, /id="login-form" hidden/);
+  assert.match(callbackPage, /rel="modulepreload" href="\.\/auth\.js"/);
+  assert.match(dashboardPage, /rel="modulepreload" href="\.\.\/amplify\.js"/);
+});

@@ -3,11 +3,14 @@ frontend:
   phases:
     preBuild:
       commands:
-        - echo "Preparing AWSSBG-CDM static website"
+        - npm install --include=dev --no-audit --no-fund
     build:
       commands:
-        - echo "No frontend compilation is required"
+        - npm run build:admin
   artifacts:
     baseDirectory: public
     files:
       - "**/*"
+  cache:
+    paths:
+      - node_modules/**/*

@@ -6,16 +6,23 @@
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node server.js",
+    "build:admin": "node scripts/build-admin.js",
+    "predev": "npm run build:admin",
     "dev": "node --watch server.js",
+    "prestart": "npm run build:admin",
+    "start": "node server.js",
     "test": "node --test"
   },
   "dependencies": {
-    "oidc-client-ts": "^3.5.0"
+    "oidc-client-ts": "^3.5.0",
+    "aws-amplify": "^6.15.0"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/x2bsynn/awssbg-cdm-website.git"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
 }

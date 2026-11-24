@@ -1,4 +1,4 @@
-import { Amplify } from "https://esm.sh/aws-amplify@6";
+import { Amplify } from "aws-amplify";
 import {
   signIn,
   confirmSignIn,
@@ -7,7 +7,7 @@ import {
   getCurrentUser,
   resetPassword,
   confirmResetPassword,
-} from "https://esm.sh/aws-amplify@6/auth";
+} from "aws-amplify/auth";
 
 Amplify.configure({
   Auth: {
