@@ -288,7 +288,7 @@ a {
 }
 
 .brand-name {
-  font: 700 14px/1.25 var(--font-display);
+  font: 700 1.15rem/1.25 var(--font-display);
   color: var(--ink);
   white-space: normal;
 }
@@ -617,7 +617,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: var(--s3);
-  width: 100%;
+  /* width: 100%; */
   min-height: 44px;
   padding: 0 var(--s3);
   border: 1px solid var(--field-line);
