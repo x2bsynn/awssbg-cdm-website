@@ -308,10 +308,10 @@ export function enhanceTable(table) {
       `<span class="standard-table-range">Showing <b>${firstRecordNumber}–${lastRecordNumber}</b> of <b>${recordCount}</b> records</span>` +
       `<span class="standard-page-size"><label>Rows per page</label><select aria-label="Rows per page">${PAGE_SIZE_OPTIONS.map((sizeOption) => `<option value="${sizeOption}"${sizeOption === tableState.pageSize ? " selected" : ""}>${sizeOption}</option>`).join("")}</select></span>` +
       `<span class="standard-page-controls">` +
-      `<button type="button" class="standard-page-step" data-page="${tableState.currentPage - 1}" aria-label="Previous page"${tableState.currentPage <= 1 ? " disabled" : ""}>${PREVIOUS_ICON_SVG}<span>Previous</span></button>` +
+      `<button type="button" class="standard-page-step" data-page="${tableState.currentPage - 1}" aria-label="Previous page"${tableState.currentPage <= 1 ? " disabled" : ""}>${PREVIOUS_ICON_SVG}<span></span></button>` +
       `<span class="standard-page-numbers">${pageButtons}</span>` +
       `<span class="standard-page-status">Page ${tableState.currentPage} of ${pageCount}</span>` +
-      `<button type="button" class="standard-page-step" data-page="${tableState.currentPage + 1}" aria-label="Next page"${tableState.currentPage >= pageCount ? " disabled" : ""}><span>Next</span>${NEXT_ICON_SVG}</button>` +
+      `<button type="button" class="standard-page-step" data-page="${tableState.currentPage + 1}" aria-label="Next page"${tableState.currentPage >= pageCount ? " disabled" : ""}><span></span>${NEXT_ICON_SVG}</button>` +
       `</span>`;
   }
 
