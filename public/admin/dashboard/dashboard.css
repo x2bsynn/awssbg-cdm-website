@@ -3913,11 +3913,11 @@ body:has(#officer-form-panel[open]) {
   }
 
   #officer-birthdate-calendar .officer-calendar-selectors select::picker-icon {
-    content: "⌄";
-    flex-shrink: 0;
-    color: var(--accent-ink);
-    font-size: 19px;
-    line-height: 1;
+    content: "";
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    background: center / 16px 16px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a8456c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     transition: rotate 180ms ease;
   }
 
