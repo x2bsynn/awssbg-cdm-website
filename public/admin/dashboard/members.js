@@ -52,7 +52,8 @@ const getAcademicYearStart = (academicYear) => Number(academicYear.slice(0, 4));
  * @param {*} academicYear - Text in YYYY-YYYY format.
  * @returns {string} The previous academic year.
  */
-const getPreviousAcademicYear = (academicYear) => `${getAcademicYearStart(academicYear) - 1}-${getAcademicYearStart(academicYear)}`;
+const getPreviousAcademicYear = (academicYear) =>
+  `${getAcademicYearStart(academicYear) - 1}-${getAcademicYearStart(academicYear)}`;
 const getSelectableAcademicYears = () => getAcademicYearChoices();
 /**
  * Makes the two-letter initials shown in a member's avatar circle.
@@ -76,7 +77,8 @@ function sample() {
   let seed = 20260;
   const getNextRandomNumber = () =>
     (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
-  const pick = (choices) => choices[Math.floor(getNextRandomNumber() * choices.length)];
+  const pick = (choices) =>
+    choices[Math.floor(getNextRandomNumber() * choices.length)];
   const SAMPLE_FIRST_NAMES = [
     "Aira",
     "Bianca",
@@ -128,7 +130,9 @@ function sample() {
     const joinedAY = pick(selectableAcademicYears),
       records = [];
     let isStillMember = true;
-    for (const academicYear of selectableAcademicYears.filter((candidateYear) => candidateYear >= joinedAY)) {
+    for (const academicYear of selectableAcademicYears.filter(
+      (candidateYear) => candidateYear >= joinedAY,
+    )) {
       const first = academicYear === joinedAY;
       if (!(first || getNextRandomNumber() < (isStillMember ? 0.72 : 0.2))) {
         isStillMember = false;
@@ -137,11 +141,20 @@ function sample() {
       isStillMember = true;
       records.push({
         ay: academicYear,
-        status: academicYear === currentAcademicYear && !first && getNextRandomNumber() < 0.15 ? "pending" : "renewed",
+        status:
+          academicYear === currentAcademicYear &&
+          !first &&
+          getNextRandomNumber() < 0.15
+            ? "pending"
+            : "renewed",
         renewalDate: `${getAcademicYearStart(academicYear)}-${pick(["08", "09", "10"])}-${padWithZero(1 + Math.floor(getNextRandomNumber() * 27))}`,
       });
     }
-    const recent = records.some((renewalRecord) => renewalRecord.ay === currentAcademicYear || renewalRecord.ay === getPreviousAcademicYear(currentAcademicYear));
+    const recent = records.some(
+      (renewalRecord) =>
+        renewalRecord.ay === currentAcademicYear ||
+        renewalRecord.ay === getPreviousAcademicYear(currentAcademicYear),
+    );
     const first = pick(SAMPLE_FIRST_NAMES),
       last = pick(SAMPLE_LAST_NAMES),
       slug = `${first}.${last}`.toLowerCase();
@@ -230,25 +243,41 @@ const getLastRenewalDate = (member) =>
   Produces counts used by Members, Overview, and Reports.
   The selected academic year determines which renewal record is counted.
 */
-export function getMembershipStatistics(academicYear = academicYearSelection.selected) {
+export function getMembershipStatistics(
+  academicYear = academicYearSelection.selected,
+) {
   const membersWithStatus = members
     .map((member) => ({ m: member, s: getMemberStatus(member, academicYear) }))
     .filter((memberEntry) => memberEntry.s);
-  const countWithStatus = (statusName) => membersWithStatus.filter((memberEntry) => memberEntry.s === statusName).length;
+  const countWithStatus = (statusName) =>
+    membersWithStatus.filter((memberEntry) => memberEntry.s === statusName)
+      .length;
   const prevActive = members.filter(
-    (member) => getMemberStatus(member, getPreviousAcademicYear(academicYear)) === "Active",
+    (member) =>
+      getMemberStatus(member, getPreviousAcademicYear(academicYear)) ===
+      "Active",
   );
-  const kept = prevActive.filter((member) => getMemberStatus(member, academicYear) === "Active").length;
+  const kept = prevActive.filter(
+    (member) => getMemberStatus(member, academicYear) === "Active",
+  ).length;
   return {
     total: membersWithStatus.length,
     active: countWithStatus("Active"),
     inactive: countWithStatus("Inactive"),
-    newMemberCount: membersWithStatus.filter((memberEntry) => memberEntry.s === "Active" && memberEntry.m.joinedAY === academicYear).length,
-    returning: membersWithStatus.filter((memberEntry) => memberEntry.s === "Active" && memberEntry.m.joinedAY < academicYear).length,
+    newMemberCount: membersWithStatus.filter(
+      (memberEntry) =>
+        memberEntry.s === "Active" && memberEntry.m.joinedAY === academicYear,
+    ).length,
+    returning: membersWithStatus.filter(
+      (memberEntry) =>
+        memberEntry.s === "Active" && memberEntry.m.joinedAY < academicYear,
+    ).length,
     renewalRate: prevActive.length
       ? Math.round((kept / prevActive.length) * 100)
       : null,
-    growth: prevActive.length ? countWithStatus("Active") - prevActive.length : null,
+    growth: prevActive.length
+      ? countWithStatus("Active") - prevActive.length
+      : null,
   };
 }
 
@@ -321,11 +350,14 @@ function getFilteredMemberRows() {
     .filter(
       ({ m: member, s: status }) =>
         (!searchText ||
-          [member.name, member.studentNumber, member.id].some((searchableValue) =>
-            searchableValue.toLowerCase().includes(searchText),
+          [member.name, member.studentNumber, member.id].some(
+            (searchableValue) =>
+              searchableValue.toLowerCase().includes(searchText),
           )) &&
-        (!memberTableState.program || member.program === memberTableState.program) &&
-        (!memberTableState.year || member.yearLevel === memberTableState.year) &&
+        (!memberTableState.program ||
+          member.program === memberTableState.program) &&
+        (!memberTableState.year ||
+          member.yearLevel === memberTableState.year) &&
         (!memberTableState.status || status === memberTableState.status),
     )
     .sort((firstEntry, secondEntry) =>
@@ -345,11 +377,17 @@ function getFilteredMemberRows() {
 */
 function renderTable() {
   const academicYear = academicYearSelection.selected,
-    all = members.map((member) => getMemberStatus(member, academicYear)).filter(Boolean),
+    all = members
+      .map((member) => getMemberStatus(member, academicYear))
+      .filter(Boolean),
     list = getFilteredMemberRows();
   getElementById("m-chips").innerHTML = [
     ["", "All", all.length],
-    ...STATUSES.map((statusName) => [statusName, statusName, all.filter((statusOfMember) => statusOfMember === statusName).length]),
+    ...STATUSES.map((statusName) => [
+      statusName,
+      statusName,
+      all.filter((statusOfMember) => statusOfMember === statusName).length,
+    ]),
   ]
     .map(
       ([statusValue, statusLabel, statusCount]) =>
@@ -381,7 +419,9 @@ function renderTable() {
   Renewal, restore/archive, edit, and close actions are handled here.
 */
 function openProfile(memberId) {
-  const member = members.find((candidateMember) => candidateMember.id === memberId);
+  const member = members.find(
+    (candidateMember) => candidateMember.id === memberId,
+  );
   if (!member) return;
   const academicYear = academicYearSelection.selected,
     status = getMemberStatus(member, academicYear) ?? "Not yet a member",
@@ -394,7 +434,9 @@ function openProfile(memberId) {
     <div><dt>Joined</dt><dd>${formatAcademicYearLabel(member.joinedAY)}</dd></div><div><dt>Terms as member</dt><dd>${getMembershipTermCount(member)}</dd></div>
     <div><dt>Last renewal</dt><dd>${formatDate(getLastRenewalDate(member))}</dd></div><div><dt>Validity (${formatAcademicYearLabel(academicYear)})</dt><dd>${valid ? `Until ${formatDate(getAcademicYearDateRange(academicYear).end)}` : "Not valid"}</dd></div></dl>
     <h4>Renewal history</h4><ul class="m-hist">${[...member.records]
-      .sort((firstRecord, secondRecord) => secondRecord.ay.localeCompare(firstRecord.ay))
+      .sort((firstRecord, secondRecord) =>
+        secondRecord.ay.localeCompare(firstRecord.ay),
+      )
       .map(
         (renewalRecord) =>
           `<li><span>${formatAcademicYearLabel(renewalRecord.ay)}</span><span>${renewalRecord.status === "renewed" ? "Active" : "Inactive"} · ${formatDate(renewalRecord.renewalDate)}</span></li>`,
@@ -413,15 +455,25 @@ function openProfile(memberId) {
       profileDialog.close();
       openForm(memberId);
     } else if (clickedAction === "renew") {
-      const existingRecord = member.records.find((renewalRecord) => renewalRecord.ay === academicYear),
+      const existingRecord = member.records.find(
+          (renewalRecord) => renewalRecord.ay === academicYear,
+        ),
         date = getTodayInManila();
-      if (existingRecord) Object.assign(existingRecord, { status: "renewed", renewalDate: date });
-      else member.records.push({ ay: academicYear, status: "renewed", renewalDate: date });
+      if (existingRecord)
+        Object.assign(existingRecord, { status: "renewed", renewalDate: date });
+      else
+        member.records.push({
+          ay: academicYear,
+          status: "renewed",
+          renewalDate: date,
+        });
       member.archived = false;
       save(members);
       profileDialog.close();
       renderTable();
-      showToastMessage(`${member.name} renewed for ${formatAcademicYearLabel(academicYear)}.`);
+      showToastMessage(
+        `${member.name} renewed for ${formatAcademicYearLabel(academicYear)}.`,
+      );
     } else if (clickedAction === "archive") {
       if (
         !member.archived &&
@@ -435,7 +487,11 @@ function openProfile(memberId) {
       save(members);
       profileDialog.close();
       renderTable();
-      showToastMessage(member.archived ? `${member.name} archived.` : `${member.name} restored.`);
+      showToastMessage(
+        member.archived
+          ? `${member.name} archived.`
+          : `${member.name} restored.`,
+      );
     }
   });
 }
@@ -445,8 +501,11 @@ function openProfile(memberId) {
   Submitting a new member creates a renewal record for its joined academic year.
 */
 function openForm(memberId) {
-  const member = memberId ? members.find((candidateMember) => candidateMember.id === memberId) : null,
-    getEscapedMemberValue = (fieldName) => escapeHtml(member?.[fieldName] ?? "");
+  const member = memberId
+      ? members.find((candidateMember) => candidateMember.id === memberId)
+      : null,
+    getEscapedMemberValue = (fieldName) =>
+      escapeHtml(member?.[fieldName] ?? "");
   const opts = (list, selectedValue) =>
     list
       .map(
@@ -459,7 +518,10 @@ function openForm(memberId) {
     <label>Full name *<input name="name" value="${getEscapedMemberValue("name")}" maxlength="150"></label>
     <label>Student number *<input name="studentNumber" value="${getEscapedMemberValue("studentNumber")}" inputmode="numeric" maxlength="30"></label>
     <label>Program *<select name="program"><option value="">Select</option>${opts(
-      Object.entries(ACADEMIC_PROGRAMS).map(([programCode, programName]) => [programCode, programName]),
+      Object.entries(ACADEMIC_PROGRAMS).map(([programCode, programName]) => [
+        programCode,
+        programName,
+      ]),
       member?.program,
     )}</select></label>
     <label>Year level *<select name="yearLevel"><option value="">Select</option>${opts(
@@ -468,16 +530,19 @@ function openForm(memberId) {
     )}</select></label>
     <label>Birthday *<input name="birthdate" type="date" value="${getEscapedMemberValue("birthdate")}" max="${getTodayInManila()}"></label>
     <label>Academic year joined<select name="joinedAY"${member ? " disabled" : ""}>${opts(
-      getSelectableAcademicYears().map((academicYear) => [academicYear, formatAcademicYearLabel(academicYear)]),
+      getSelectableAcademicYears().map((academicYear) => [
+        academicYear,
+        formatAcademicYearLabel(academicYear),
+      ]),
       member?.joinedAY ?? academicYearSelection.selected,
     )}</select></label>
     <label>CDM email *<input name="cdmEmail" type="email" value="${getEscapedMemberValue("cdmEmail")}" placeholder="name@cdm.edu.ph"></label>
     <label>Personal email<input name="personalEmail" type="email" value="${getEscapedMemberValue("personalEmail")}"></label>
     <p class="m-err" role="alert" hidden></p>
     <div class="mact"><button type="button" class="button button-light" data-a="cancel">Cancel</button><button type="submit" class="button button-primary">${member ? "Save changes" : "Add member"}</button></div></form>`);
-  formDialog.querySelector('[data-a="cancel"]').addEventListener("click", () =>
-    formDialog.close(),
-  );
+  formDialog
+    .querySelector('[data-a="cancel"]')
+    .addEventListener("click", () => formDialog.close());
   formDialog.querySelector("form").addEventListener("submit", (submitEvent) => {
     submitEvent.preventDefault();
     const formValues = Object.fromEntries(new FormData(submitEvent.target)),
@@ -490,7 +555,9 @@ function openForm(memberId) {
       : !/^\d{5,30}$/.test(formValues.studentNumber)
         ? "Student number must be digits only (at least 5)."
         : members.some(
-              (otherMember) => otherMember.studentNumber === formValues.studentNumber && otherMember.id !== memberId,
+              (otherMember) =>
+                otherMember.studentNumber === formValues.studentNumber &&
+                otherMember.id !== memberId,
             )
           ? "That student number already exists."
           : !formValues.program || !formValues.yearLevel
@@ -520,7 +587,12 @@ function openForm(memberId) {
       });
     else {
       const next =
-        Math.max(0, ...members.map((existingMember) => Number(existingMember.id.slice(4)))) + 1;
+        Math.max(
+          0,
+          ...members.map((existingMember) =>
+            Number(existingMember.id.slice(4)),
+          ),
+        ) + 1;
       members.push({
         id: `SBG-${String(next).padStart(4, "0")}`,
         name: formValues.name,
@@ -533,7 +605,11 @@ function openForm(memberId) {
         joinedAY: formValues.joinedAY,
         archived: false,
         records: [
-          { ay: formValues.joinedAY, status: "renewed", renewalDate: getTodayInManila() },
+          {
+            ay: formValues.joinedAY,
+            status: "renewed",
+            renewalDate: getTodayInManila(),
+          },
         ],
       });
     }
@@ -550,7 +626,8 @@ function openForm(memberId) {
 */
 function exportCsv() {
   const list = getFilteredMemberRows(),
-    quoteCsvCell = (cellValue) => `"${String(cellValue ?? "").replace(/"/g, '""')}"`;
+    quoteCsvCell = (cellValue) =>
+      `"${String(cellValue ?? "").replace(/"/g, '""')}"`;
   const head = [
     "Member ID",
     "Name",
@@ -607,7 +684,8 @@ function init() {
     <div id="m-chips" class="chips"></div>
     <div class="table-wrap"><table class="m-table"><thead><tr><th>Member</th><th>Student no.</th><th>Program</th><th>Year</th><th>Status</th><th>Joined</th><th>Terms</th><th>Last renewal</th><th></th></tr></thead><tbody id="m-body"></tbody></table></div>
     `;
-  const addListenerById = (elementId, eventName, eventHandler) => getElementById(elementId).addEventListener(eventName, eventHandler);
+  const addListenerById = (elementId, eventName, eventHandler) =>
+    getElementById(elementId).addEventListener(eventName, eventHandler);
   addListenerById("m-add", "click", () => openForm(null));
   addListenerById("m-export", "click", exportCsv);
   addListenerById("m-reset", "click", async () => {
@@ -657,11 +735,17 @@ export const getRecentRenewals = (maximumItems = 6) =>
   members
     .flatMap((member) =>
       member.records
-        .filter((renewalRecord) => renewalRecord.status === "renewed" && renewalRecord.renewalDate <= getTodayInManila())
+        .filter(
+          (renewalRecord) =>
+            renewalRecord.status === "renewed" &&
+            renewalRecord.renewalDate <= getTodayInManila(),
+        )
         .map((renewalRecord) => ({
           date: renewalRecord.renewalDate,
           text: `${member.name} renewed membership for ${formatAcademicYearLabel(renewalRecord.ay)}`,
         })),
     )
-    .sort((firstItem, secondItem) => secondItem.date.localeCompare(firstItem.date))
+    .sort((firstItem, secondItem) =>
+      secondItem.date.localeCompare(firstItem.date),
+    )
     .slice(0, maximumItems);
