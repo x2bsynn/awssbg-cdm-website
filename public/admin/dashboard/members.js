@@ -13,7 +13,7 @@ import {
   getAcademicYearChoices,
 } from "./ay.js";
 import {
-  escapeHtml,
+  escapeHtml, 
   formatDate,
   getElementById,
   showToastMessage,
