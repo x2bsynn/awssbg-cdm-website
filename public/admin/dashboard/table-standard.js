@@ -95,7 +95,11 @@ function detectColumnType(headerText, dataRows, columnIndex) {
     .map((tableRow) => getCellText(tableRow, columnIndex))
     .filter(Boolean);
 
-  if (/date|time|period|birthday|registered|academic year|a\.y/.test(lowerCaseHeader)) {
+  if (
+    /date|time|period|birthday|registered|academic year|a\.y/.test(
+      lowerCaseHeader,
+    )
+  ) {
     return "date";
   }
 
@@ -155,10 +159,19 @@ function buildPageButtonList(currentPage, pageCount) {
     return Array.from({ length: pageCount }, (_, pageIndex) => pageIndex + 1);
   }
 
-  const pagesToShow = new Set([1, pageCount, currentPage - 1, currentPage, currentPage + 1]);
-  if (currentPage <= 3) [2, 3, 4].forEach((pageNumber) => pagesToShow.add(pageNumber));
+  const pagesToShow = new Set([
+    1,
+    pageCount,
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+  ]);
+  if (currentPage <= 3)
+    [2, 3, 4].forEach((pageNumber) => pagesToShow.add(pageNumber));
   if (currentPage >= pageCount - 2) {
-    [pageCount - 3, pageCount - 2, pageCount - 1].forEach((pageNumber) => pagesToShow.add(pageNumber));
+    [pageCount - 3, pageCount - 2, pageCount - 1].forEach((pageNumber) =>
+      pagesToShow.add(pageNumber),
+    );
   }
 
   const buttonList = [];
@@ -212,7 +225,8 @@ export function enhanceTable(table) {
 
   function readDataRowsFromTableBody() {
     return [...tableBody.children].filter(
-      (tableRow) => tableRow.matches("tr") && !tableRow.querySelector("td.empty-cell"),
+      (tableRow) =>
+        tableRow.matches("tr") && !tableRow.querySelector("td.empty-cell"),
     );
   }
 
@@ -257,14 +271,23 @@ export function enhanceTable(table) {
     // 3. Sorting: order rows by the chosen column, using the right comparison for its type.
     const sortIndex = tableState.sortColumnIndex;
     if (sortIndex !== null) {
-      const columnType = detectColumnType(headerCells[sortIndex].textContent, dataRows, sortIndex);
+      const columnType = detectColumnType(
+        headerCells[sortIndex].textContent,
+        dataRows,
+        sortIndex,
+      );
       matchingRows.sort((firstRow, secondRow) => {
         const firstValue = getCellText(firstRow, sortIndex);
         const secondValue = getCellText(secondRow, sortIndex);
         let comparisonResult;
 
-        if (columnType === "number" && looksLikeNumber(firstValue) && looksLikeNumber(secondValue)) {
-          comparisonResult = parseNumberText(firstValue) - parseNumberText(secondValue);
+        if (
+          columnType === "number" &&
+          looksLikeNumber(firstValue) &&
+          looksLikeNumber(secondValue)
+        ) {
+          comparisonResult =
+            parseNumberText(firstValue) - parseNumberText(secondValue);
         } else if (columnType === "date") {
           const firstTime = Date.parse(firstValue);
           const secondTime = Date.parse(secondValue);
@@ -279,7 +302,9 @@ export function enhanceTable(table) {
             sensitivity: "base",
           });
         }
-        return tableState.sortDirection === "asc" ? comparisonResult : -comparisonResult;
+        return tableState.sortDirection === "asc"
+          ? comparisonResult
+          : -comparisonResult;
       });
     }
     return matchingRows;
@@ -293,8 +318,13 @@ export function enhanceTable(table) {
    * @param {number} recordCount - Total rows that match the search and filters.
    */
   function renderPager(pagerElement, pageCount, recordCount) {
-    const firstRecordNumber = recordCount ? (tableState.currentPage - 1) * tableState.pageSize + 1 : 0;
-    const lastRecordNumber = Math.min(tableState.currentPage * tableState.pageSize, recordCount);
+    const firstRecordNumber = recordCount
+      ? (tableState.currentPage - 1) * tableState.pageSize + 1
+      : 0;
+    const lastRecordNumber = Math.min(
+      tableState.currentPage * tableState.pageSize,
+      recordCount,
+    );
 
     const pageButtons = buildPageButtonList(tableState.currentPage, pageCount)
       .map((pageItem) =>
@@ -321,7 +351,10 @@ export function enhanceTable(table) {
    */
   function renderTable() {
     const visibleRows = getVisibleRows();
-    const pageCount = Math.max(1, Math.ceil(visibleRows.length / tableState.pageSize));
+    const pageCount = Math.max(
+      1,
+      Math.ceil(visibleRows.length / tableState.pageSize),
+    );
     tableState.currentPage = Math.min(tableState.currentPage, pageCount);
 
     // Leave placeholder messages (for example "Loading...") alone when there is no data at all.
@@ -336,8 +369,7 @@ export function enhanceTable(table) {
       } else {
         // No row matches the search or filters.
         const messageRow = document.createElement("tr");
-        messageRow.innerHTML =
-          `<td colspan="${headerCells.length}" class="empty-cell">No records match the active search or filters.</td>`;
+        messageRow.innerHTML = `<td colspan="${headerCells.length}" class="empty-cell">No records match the active search or filters.</td>`;
         tableBody.append(messageRow);
       }
     }
@@ -376,16 +408,19 @@ export function enhanceTable(table) {
   });
 
   // ---------- search box ----------
-  searchToolbar.querySelector("input").addEventListener("input", (inputEvent) => {
-    tableState.searchText = inputEvent.target.value;
-    tableState.currentPage = 1;
-    renderTable();
-  });
+  searchToolbar
+    .querySelector("input")
+    .addEventListener("input", (inputEvent) => {
+      tableState.searchText = inputEvent.target.value;
+      tableState.currentPage = 1;
+      renderTable();
+    });
 
   // ---------- column header controls ----------
   headerCells.forEach((headerCell, columnIndex) => {
     const headerText = toText(headerCell.textContent).trim();
-    if (!headerText || NON_DATA_COLUMN_NAMES.includes(headerText.toLowerCase())) return;
+    if (!headerText || NON_DATA_COLUMN_NAMES.includes(headerText.toLowerCase()))
+      return;
 
     const originalHeaderHtml = headerCell.innerHTML;
     headerCell.classList.add("standard-sortable");
@@ -399,82 +434,107 @@ export function enhanceTable(table) {
     // Sort button: first click = ascending, second click = descending.
     headerCell.querySelector(".standard-sort").addEventListener("click", () => {
       if (tableState.sortColumnIndex === columnIndex) {
-        tableState.sortDirection = tableState.sortDirection === "asc" ? "desc" : "asc";
+        tableState.sortDirection =
+          tableState.sortDirection === "asc" ? "desc" : "asc";
       } else {
         tableState.sortColumnIndex = columnIndex;
         tableState.sortDirection = "asc";
       }
-      headerCells.forEach((otherHeader) => otherHeader.removeAttribute("aria-sort"));
+      headerCells.forEach((otherHeader) =>
+        otherHeader.removeAttribute("aria-sort"),
+      );
       headerCell.setAttribute(
         "aria-sort",
         tableState.sortDirection === "asc" ? "ascending" : "descending",
       );
-      headerCells.forEach((otherHeader) => otherHeader.removeAttribute("data-sort"));
+      headerCells.forEach((otherHeader) =>
+        otherHeader.removeAttribute("data-sort"),
+      );
       headerCell.dataset.sort = tableState.sortDirection;
       tableState.currentPage = 1;
       renderTable();
     });
 
     // Filter button: opens a small box listing every value in the column.
-    headerCell.querySelector(".standard-filter").addEventListener("click", (clickEvent) => {
-      clickEvent.stopPropagation();
-      closeFilterPopover();
+    headerCell
+      .querySelector(".standard-filter")
+      .addEventListener("click", (clickEvent) => {
+        clickEvent.stopPropagation();
+        closeFilterPopover();
 
-      const distinctValues = [
-        ...new Set(dataRows.map((tableRow) => getCellText(tableRow, columnIndex)).filter(Boolean)),
-      ].sort((firstValue, secondValue) =>
-        firstValue.localeCompare(secondValue, undefined, { numeric: true }),
-      );
-      const alreadySelected = tableState.columnFilters.get(columnIndex) ?? new Set();
+        const distinctValues = [
+          ...new Set(
+            dataRows
+              .map((tableRow) => getCellText(tableRow, columnIndex))
+              .filter(Boolean),
+          ),
+        ].sort((firstValue, secondValue) =>
+          firstValue.localeCompare(secondValue, undefined, { numeric: true }),
+        );
+        const alreadySelected =
+          tableState.columnFilters.get(columnIndex) ?? new Set();
 
-      const filterPopover = document.createElement("div");
-      filterPopover.className = "standard-filter-popover";
-      filterPopover.innerHTML =
-        `<strong>Filter ${headerText}</strong>` +
-        `<div class="standard-filter-options">${distinctValues
-          .map(
-            (valueText) =>
-              `<label><input type="checkbox" value="${valueText.replace(/"/g, "&quot;")}"${alreadySelected.has(valueText) ? " checked" : ""}><span>${valueText.replace(/</g, "&lt;")}</span></label>`,
-          )
-          .join("")}</div>` +
-        '<div class="standard-filter-actions"><button type="button" data-clear>Clear</button><button type="button" data-close>Done</button></div>';
-      document.body.append(filterPopover);
-      openFilterPopover = filterPopover;
+        const filterPopover = document.createElement("div");
+        filterPopover.className = "standard-filter-popover";
+        filterPopover.innerHTML =
+          `<strong>Filter ${headerText}</strong>` +
+          `<div class="standard-filter-options">${distinctValues
+            .map(
+              (valueText) =>
+                `<label><input type="checkbox" value="${valueText.replace(/"/g, "&quot;")}"${alreadySelected.has(valueText) ? " checked" : ""}><span>${valueText.replace(/</g, "&lt;")}</span></label>`,
+            )
+            .join("")}</div>` +
+          '<div class="standard-filter-actions"><button type="button" data-clear>Clear</button><button type="button" data-close>Done</button></div>';
+        document.body.append(filterPopover);
+        openFilterPopover = filterPopover;
 
-      // Place the box under the header, kept inside the visible screen area.
-      const headerBox = headerCell.getBoundingClientRect();
-      const popoverWidth = Math.min(260, window.innerWidth - 16);
-      filterPopover.style.left = `${Math.max(8, Math.min(window.innerWidth - popoverWidth - 8, headerBox.left))}px`;
-      filterPopover.style.top = `${Math.max(8, headerBox.bottom + 8)}px`;
+        // Place the box under the header, kept inside the visible screen area.
+        const headerBox = headerCell.getBoundingClientRect();
+        const popoverWidth = Math.min(260, window.innerWidth - 16);
+        filterPopover.style.left = `${Math.max(8, Math.min(window.innerWidth - popoverWidth - 8, headerBox.left))}px`;
+        filterPopover.style.top = `${Math.max(8, headerBox.bottom + 8)}px`;
 
-      filterPopover.querySelectorAll("input").forEach((checkbox) =>
-        checkbox.addEventListener("change", () => {
-          const ticked = new Set(
-            [...filterPopover.querySelectorAll("input:checked")].map((box) => box.value),
-          );
-          if (ticked.size) tableState.columnFilters.set(columnIndex, ticked);
-          else tableState.columnFilters.delete(columnIndex);
-          headerCell.classList.toggle("has-filter", ticked.size > 0);
-          tableState.currentPage = 1;
-          renderTable();
-        }),
-      );
-      filterPopover.querySelector("[data-clear]").addEventListener("click", () => {
-        tableState.columnFilters.delete(columnIndex);
-        filterPopover.querySelectorAll("input").forEach((checkbox) => (checkbox.checked = false));
-        headerCell.classList.remove("has-filter");
-        tableState.currentPage = 1;
-        renderTable();
+        filterPopover.querySelectorAll("input").forEach((checkbox) =>
+          checkbox.addEventListener("change", () => {
+            const ticked = new Set(
+              [...filterPopover.querySelectorAll("input:checked")].map(
+                (box) => box.value,
+              ),
+            );
+            if (ticked.size) tableState.columnFilters.set(columnIndex, ticked);
+            else tableState.columnFilters.delete(columnIndex);
+            headerCell.classList.toggle("has-filter", ticked.size > 0);
+            tableState.currentPage = 1;
+            renderTable();
+          }),
+        );
+        filterPopover
+          .querySelector("[data-clear]")
+          .addEventListener("click", () => {
+            tableState.columnFilters.delete(columnIndex);
+            filterPopover
+              .querySelectorAll("input")
+              .forEach((checkbox) => (checkbox.checked = false));
+            headerCell.classList.remove("has-filter");
+            tableState.currentPage = 1;
+            renderTable();
+          });
+        filterPopover
+          .querySelector("[data-close]")
+          .addEventListener("click", closeFilterPopover);
       });
-      filterPopover
-        .querySelector("[data-close]")
-        .addEventListener("click", closeFilterPopover);
-    });
   });
 
   // ---------- first draw ----------
-  tableWrapper.insertBefore(topPager, table);
-  tableWrapper.append(bottomPager);
+
+  // Keep the top pager outside the horizontally scrollable table.
+  tableWrapper.parentElement.insertBefore(topPager, tableWrapper);
+
+  // Keep the bottom pager outside the horizontally scrollable table.
+  tableWrapper.parentElement.insertBefore(
+    bottomPager,
+    tableWrapper.nextSibling,
+  );
   dataRows = readDataRowsFromTableBody();
   renderTable();
   tableBodyObserver.observe(tableBody, { childList: true });

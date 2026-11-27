@@ -1,3 +1,4 @@
+import { bindBirthdatePicker, formatBirthdate } from "./birthdate-picker.js";
 /*
   Members module.
   Uses browser localStorage sample data until a members backend is connected.
@@ -528,7 +529,30 @@ function openForm(memberId) {
       YEARS.map((yearLevel) => [yearLevel, yearLevel]),
       member?.yearLevel,
     )}</select></label>
-    <label>Birthday *<input name="birthdate" type="date" value="${getEscapedMemberValue("birthdate")}" max="${getTodayInManila()}"></label>
+    <div class="member-birthdate-field">
+      <label for="member-date-trigger">Birthday *</label>
+      <div class="birthdate-picker-wrap member-birthdate-wrap">
+        <button id="member-date-trigger" type="button" class="officer-date-trigger member-date-trigger" data-birthdate="trigger" aria-haspopup="dialog" aria-expanded="false">
+          <span data-birthdate="display">${formatBirthdate(member?.birthdate)}</span><span class="date-trigger-icon" aria-hidden="true"><i data-icon="calendar-days"></i></span>
+        </button>
+        <input name="birthdate" type="hidden" data-birthdate="input" value="${getEscapedMemberValue("birthdate")}" required>
+        <div id="member-birthdate-calendar" class="officer-birthdate-calendar member-birthdate-popover" data-birthdate="calendar" hidden>
+          <div class="officer-calendar-heading">
+            <div class="officer-calendar-selectors">
+              <label class="sr-only">Month</label><select id="member-birthdate-month-select" data-birthdate="month-select" aria-label="Birth month"></select>
+              <label class="sr-only">Year</label><select id="member-birthdate-year-select" data-birthdate="year-select" aria-label="Birth year"></select>
+            </div>
+            <div class="officer-calendar-navigation">
+              <button type="button" data-birthdate="prev" aria-label="Previous month"><i data-icon="chevron-left"></i></button>
+              <button type="button" data-birthdate="next" aria-label="Next month"><i data-icon="chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="calendar-weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+          <div class="calendar-days" data-birthdate="days"></div>
+          <div class="officer-calendar-footer"><button type="button" data-birthdate="clear">Clear</button><button type="button" data-birthdate="today">Jump to today</button></div>
+        </div>
+      </div>
+    </div>
     <label>Academic year joined<select name="joinedAY"${member ? " disabled" : ""}>${opts(
       getSelectableAcademicYears().map((academicYear) => [
         academicYear,
@@ -540,6 +564,24 @@ function openForm(memberId) {
     <label>Personal email<input name="personalEmail" type="email" value="${getEscapedMemberValue("personalEmail")}"></label>
     <p class="m-err" role="alert" hidden></p>
     <div class="mact"><button type="button" class="button button-light" data-a="cancel">Cancel</button><button type="submit" class="button button-primary">${member ? "Save changes" : "Add member"}</button></div></form>`);
+  const memberDatePopover = formDialog.querySelector("[data-birthdate=calendar]");
+  const memberDateTrigger = formDialog.querySelector("[data-birthdate=trigger]");
+  // Keep the popup inside the native dialog's top layer, outside its scrolling form.
+  formDialog.append(memberDatePopover);
+  const positionMemberCalendar = () => {
+    if (memberDatePopover.hidden) return;
+    const rect = memberDateTrigger.getBoundingClientRect();
+    const width = Math.min(440, window.innerWidth - 24, Math.max(306, rect.width));
+    memberDatePopover.style.width = `${width}px`;
+    memberDatePopover.style.left = `${Math.max(8, Math.min(window.innerWidth-width-8,rect.left))}px`;
+    const height = memberDatePopover.offsetHeight;
+    memberDatePopover.style.top = `${Math.max(8, Math.min(rect.bottom+8,window.innerHeight-height-8))}px`;
+  };
+  const picker = bindBirthdatePicker(formDialog,{onLayout:positionMemberCalendar});
+  window.addEventListener("resize",positionMemberCalendar);
+  window.addEventListener("scroll",positionMemberCalendar,true);
+  formDialog.addEventListener("close",()=>{picker.destroy();window.removeEventListener("resize",positionMemberCalendar);window.removeEventListener("scroll",positionMemberCalendar,true);},{once:true});
+
   formDialog
     .querySelector('[data-a="cancel"]')
     .addEventListener("click", () => formDialog.close());

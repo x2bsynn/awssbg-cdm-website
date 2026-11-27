@@ -32,7 +32,7 @@
 <body>
   <div class="app" hidden>
     <aside class="sidebar" id="sidebar">
-      <div class="brand">
+      <div class="brand" id="sidebar-brand-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" title="Toggle sidebar">
         <img class="brand-logo" src="../../assets/awssbg-cdm-logo.svg" alt="AWSSBG-CDM logo" />
         <div class="brand-text">
           <div class="brand-name">AWS Student <br> Builder Group</div>
@@ -42,10 +42,27 @@
 
       <div class="nav-label">Menu</div>
       <nav class="nav-list" id="nav-list" aria-label="Main navigation"></nav>
+      <button id="theme-toggle" class="nav-item sidebar-theme-toggle" type="button" data-tip="Light mode" aria-label="Switch theme"></button>
 
       <div class="sidebar-bottom">
-        <button id="sidebar-toggle" class="nav-item nav-collapse" type="button" aria-expanded="true"
-          data-tip="Collapse sidebar"></button>
+        <div class="profile-wrap sidebar-profile-wrap">
+          <button id="profile-button" class="profile-button sidebar-profile-button" type="button" aria-expanded="false" aria-haspopup="true" data-tip="Account">
+            <span class="avatar" id="profile-avatar"><i data-icon="user-round"></i></span>
+            <span class="sidebar-profile-copy">
+              <span class="profile-name" id="profile-name">Administrator</span>
+              <span class="profile-role" id="profile-role">Administrator</span>
+            </span>
+            <span class="profile-chevron"><i data-icon="chevron-down"></i></span>
+          </button>
+          <div id="profile-menu" class="profile-menu" hidden>
+            <div class="profile-email" id="profile-email">Signed-in account</div>
+            <button id="profile-refresh" type="button">Refresh dashboard</button>
+            <button id="logout-button" class="signout" type="button">Sign out</button>
+          </div>
+        </div>
+        <div class="sidebar-utility-row">
+          <button id="sidebar-toggle" class="nav-item nav-collapse" type="button" aria-expanded="true" data-tip="Collapse sidebar" aria-label="Collapse sidebar"></button>
+        </div>
       </div>
     </aside>
     <div class="scrim" id="nav-scrim"></div>
@@ -67,29 +84,6 @@
             <select id="ay-select" class="ay-select-source" aria-label="Academic year" tabindex="-1"
               aria-hidden="true"></select>
             <div id="ay-menu" class="ay-menu" role="listbox" aria-label="Academic year" hidden></div>
-          </div>
-          <button id="theme-toggle" class="icon-btn" type="button"></button>
-        </div>
-        <div class="profile-wrap">
-          <button id="profile-button" class="profile-button" type="button" aria-expanded="false" aria-haspopup="true">
-            <span class="avatar" id="profile-avatar">A</span>
-            <span>
-              <span class="profile-name" id="profile-name">Administrator</span>
-              <span class="profile-role" id="profile-role">Administrator</span>
-            </span>
-            <span class="profile-chevron"><i data-icon="chevron-down"></i></span>
-          </button>
-
-          <div id="profile-menu" class="profile-menu" hidden>
-            <div class="profile-email" id="profile-email">
-              Signed-in account
-            </div>
-            <button id="profile-refresh" type="button">
-              Refresh dashboard
-            </button>
-            <button id="logout-button" class="signout" type="button">
-              Sign out
-            </button>
           </div>
         </div>
       </header>
@@ -497,33 +491,33 @@
                     <div class="field">
                       <label for="officer-birthdate-trigger">Birthdate *</label>
                       <div class="birthdate-picker-wrap">
-                        <button class="officer-date-trigger" type="button" id="officer-birthdate-trigger"
+                        <button class="officer-date-trigger" type="button" id="officer-birthdate-trigger" data-birthdate="trigger"
                           aria-expanded="false" aria-controls="officer-birthdate-calendar">
-                          <span id="officer-birthdate-display">Choose a birthdate</span><span class="date-trigger-icon"
+                          <span id="officer-birthdate-display" data-birthdate="display">Choose a birthdate</span><span class="date-trigger-icon"
                             aria-hidden="true"><i data-icon="calendar-days"></i></span>
                         </button>
-                        <input type="hidden" id="officer-birthdate" name="birthdate" required>
-                        <div class="officer-birthdate-calendar" id="officer-birthdate-calendar" hidden>
+                        <input type="hidden" id="officer-birthdate" data-birthdate="input" name="birthdate" required>
+                        <div class="officer-birthdate-calendar" id="officer-birthdate-calendar" data-birthdate="calendar" hidden>
                           <div class="officer-calendar-heading">
                             <div class="officer-calendar-selectors">
                               <label class="sr-only" for="officer-birthdate-month-select">Month</label>
-                              <select id="officer-birthdate-month-select" aria-label="Birth month"></select>
+                              <select id="officer-birthdate-month-select" data-birthdate="month-select" aria-label="Birth month"></select>
                               <label class="sr-only" for="officer-birthdate-year-select">Year</label>
-                              <select id="officer-birthdate-year-select" aria-label="Birth year"></select>
+                              <select id="officer-birthdate-year-select" data-birthdate="year-select" aria-label="Birth year"></select>
                             </div>
                             <div class="officer-calendar-navigation">
-                              <button id="officer-birthdate-prev" type="button" aria-label="Previous month"><i
+                              <button id="officer-birthdate-prev" data-birthdate="prev" type="button" aria-label="Previous month"><i
                                   data-icon="chevron-left"></i></button>
-                              <button id="officer-birthdate-next" type="button" aria-label="Next month"><i
+                              <button id="officer-birthdate-next" data-birthdate="next" type="button" aria-label="Next month"><i
                                   data-icon="chevron-right"></i></button>
                             </div>
                           </div>
                           <div class="calendar-weekdays">
                             <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
                           </div>
-                          <div class="calendar-days" id="officer-birthdate-days"></div>
-                          <div class="officer-calendar-footer"><button id="officer-birthdate-clear"
-                              type="button">Clear</button><button id="officer-birthdate-today" type="button">Jump to
+                          <div class="calendar-days" id="officer-birthdate-days" data-birthdate="days"></div>
+                          <div class="officer-calendar-footer"><button id="officer-birthdate-clear" data-birthdate="clear"
+                              type="button">Clear</button><button id="officer-birthdate-today" data-birthdate="today" type="button">Jump to
                               today</button></div>
                         </div>
                       </div>

@@ -1,3 +1,4 @@
+import { bindBirthdatePicker, formatBirthdate } from "./birthdate-picker.js";
 /*
   Dashboard operations module.
   Handles Cognito authorization, events, officer records, officer/modals,
@@ -412,10 +413,10 @@ getElementById("time-clear").addEventListener("click", () => {
 getElementById("time-cancel").addEventListener("click", closeTimePicker);
 
 document.addEventListener("click", (event) => {
-  if (!event.target.closest("#date-picker")) {
+  if (!event.target.closest("#date-picker") && !calendarPopup.contains(event.target)) {
     closeCustomPopup(dateTrigger, calendarPopup);
   }
-  if (!event.target.closest("#time-picker")) {
+  if (!event.target.closest("#time-picker") && !timePopup.contains(event.target)) {
     closeCustomPopup(timeTrigger, timePopup);
   }
 });
@@ -479,16 +480,9 @@ function setProfile(authenticatedUser) {
     profile.username ||
     "Administrator";
 
-  const initials = fullName
-    .split(/[\s@._-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0].toUpperCase())
-    .join("");
-
   getElementById("profile-name").textContent = fullName;
   getElementById("profile-email").textContent = email;
-  getElementById("profile-avatar").textContent = initials || "A";
+  // Keep the sidebar account avatar as an icon rather than replacing it with initials.
   getElementById("welcome-name").textContent = fullName.split(/\s+/)[0];
 }
 
@@ -1682,7 +1676,7 @@ function setupOfficerDropdown(dropdown) {
   function positionDropdown() {
     if (menu.hidden) return;
     const rect = trigger.getBoundingClientRect();
-    const width = Math.max(rect.width, 190);
+    const width = rect.width;
     const height = Math.min(menu.scrollHeight || 260, 260);
     let top = rect.bottom + 8;
     if (top + height > window.innerHeight - 8)
@@ -1746,7 +1740,7 @@ function setupOfficerDropdown(dropdown) {
     dropdown.classList.toggle("open", opening);
     trigger.setAttribute("aria-expanded", String(opening));
     if (opening) {
-      document.body.append(menu);
+      (dropdown.closest("dialog") || document.body).append(menu);
       positionDropdown();
     }
   });
@@ -1773,7 +1767,7 @@ function setupOfficerDropdown(dropdown) {
       menu.hidden = false;
       dropdown.classList.add("open");
       trigger.setAttribute("aria-expanded", "true");
-      document.body.append(menu);
+      (dropdown.closest("dialog") || document.body).append(menu);
       positionDropdown();
       options()[0]?.focus({ preventScroll: true });
     }
@@ -1811,7 +1805,7 @@ window.addEventListener("resize", () => {
       const trigger = menu._ownerTrigger;
       if (!trigger) return;
       const rect = trigger.getBoundingClientRect();
-      const width = Math.max(rect.width, 190);
+      const width = rect.width;
       const height = Math.min(menu.scrollHeight || 260, 260);
       let top = rect.bottom + 8;
       if (top + height > window.innerHeight - 8)
@@ -1842,7 +1836,7 @@ window.addEventListener(
           dropdown.append(menu);
           return;
         }
-        const width = Math.max(rect.width, 190);
+        const width = rect.width;
         const height = Math.min(menu.scrollHeight || 260, 260);
         let top = rect.bottom + 8;
         if (top + height > window.innerHeight - 8)
@@ -1938,7 +1932,7 @@ function enhanceOfficerFormSelect(select) {
     menu.hidden = !opening;
     trigger.setAttribute("aria-expanded", String(opening));
     if (opening) {
-      document.body.append(menu);
+      (dropdown.closest("dialog") || document.body).append(menu);
       positionBasicMenu();
     }
   });
@@ -1960,7 +1954,7 @@ function enhanceOfficerFormSelect(select) {
   function positionBasicMenu() {
     if (menu.hidden) return;
     const rect = trigger.getBoundingClientRect();
-    const width = Math.max(rect.width, 190);
+    const width = rect.width;
     const height = Math.min(menu.scrollHeight || 240, 240);
     let top = rect.bottom + 8;
     if (top + height > window.innerHeight - 8)
@@ -1988,7 +1982,7 @@ function enhanceOfficerFormSelect(select) {
       event.preventDefault();
       menu.hidden = false;
       trigger.setAttribute("aria-expanded", "true");
-      document.body.append(menu);
+      (dropdown.closest("dialog") || document.body).append(menu);
       positionBasicMenu();
       items[0]?.focus({ preventScroll: true });
     }
@@ -2073,18 +2067,7 @@ function openOfficerModal(officer = null) {
   getElementById("officer-birthdate").value = "";
   getElementById("officer-birthdate-display").textContent = "Choose a birthdate";
 
-  // Reset the calendar to the current month.
-  const today = new Date();
-  officerBirthdateMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
-  getElementById("officer-birthdate-month-select").value = String(today.getMonth());
-  getElementById("officer-birthdate-year-select").value = String(today.getFullYear());
-
-  // Close the calendar and reset its trigger state.
-  officerBirthdateCalendar.hidden = true;
-  getElementById("officer-birthdate-trigger").setAttribute("aria-expanded", "false");
-
-  renderOfficerBirthdateCalendar();
+  officerBirthdatePicker.reset();
 
   // Reset optional photo selection; intentionally no image preview.
   officerPhotoFile = null;
@@ -2183,206 +2166,8 @@ officerModal.addEventListener("close", restoreOfficerModalFocus);
    OFFICER FORM VALIDATION
 ======================================== */
 
-let officerBirthdateMonth = new Date(
-  new Date().getFullYear(),
-  new Date().getMonth(),
-  1,
-);
-
-const officerBirthdateCalendar = getElementById("officer-birthdate-calendar");
-
-/**
- * Formats a birthdate for display on the birthdate button.
- *
- * @param {*} birthdateIsoText - Date as YYYY-MM-DD, or empty.
- * @returns {string} For example "Mar 4, 2003", or "Choose a birthdate" when empty.
- */
-function formatOfficerBirthdate(birthdateIsoText) {
-  if (!birthdateIsoText) return "Choose a birthdate";
-
-  const [year, month, day] = birthdateIsoText.split("-").map(Number);
-
-  return new Date(year, month - 1, day).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-/**
- * Fills the month and year dropdowns of the birthdate calendar.
- */
-function populateBirthdateSelectors() {
-  const monthSelect = getElementById("officer-birthdate-month-select");
-  const yearSelect = getElementById("officer-birthdate-year-select");
-  const currentYear = new Date().getFullYear();
-
-  monthSelect.replaceChildren();
-
-  for (let month = 0; month < 12; month++) {
-    const option = document.createElement("option");
-    option.value = String(month);
-    option.textContent = new Date(2000, month, 1).toLocaleDateString("en-US", {
-      month: "long",
-    });
-    monthSelect.append(option);
-  }
-
-  yearSelect.replaceChildren();
-
-  for (let year = currentYear; year >= 1900; year--) {
-    const option = document.createElement("option");
-    option.value = String(year);
-    option.textContent = String(year);
-    yearSelect.append(option);
-  }
-}
-
-/**
- * Draws the day grid of the birthdate calendar for the month being viewed.
- */
-function renderOfficerBirthdateCalendar() {
-  const year = officerBirthdateMonth.getFullYear();
-  const month = officerBirthdateMonth.getMonth();
-  const today = new Date();
-
-  today.setHours(0, 0, 0, 0);
-
-  getElementById("officer-birthdate-month-select").value = String(month);
-  getElementById("officer-birthdate-year-select").value = String(year);
-
-  getElementById("officer-birthdate-prev").disabled = year <= 1900 && month === 0;
-  getElementById("officer-birthdate-next").disabled =
-    year === today.getFullYear() && month === today.getMonth();
-
-  const days = getElementById("officer-birthdate-days");
-  days.replaceChildren();
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const numberOfDays = new Date(year, month + 1, 0).getDate();
-  const selected = getElementById("officer-birthdate").value;
-
-  for (let blankDayIndex = 0; blankDayIndex < firstDay; blankDayIndex++) {
-    const spacer = document.createElement("span");
-    spacer.className = "calendar-empty";
-    days.append(spacer);
-  }
-
-  for (let day = 1; day <= numberOfDays; day++) {
-    const date = new Date(year, month, day);
-    const value = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "calendar-day";
-    button.textContent = String(day);
-    button.disabled = date > today;
-
-    if (value === selected) button.classList.add("selected");
-    if (date.getTime() === today.getTime()) button.classList.add("today");
-
-    button.addEventListener("click", () => {
-      getElementById("officer-birthdate").value = value;
-      getElementById("officer-birthdate-display").textContent =
-        formatOfficerBirthdate(value);
-
-      officerBirthdateCalendar.hidden = true;
-      getElementById("officer-birthdate-trigger").setAttribute("aria-expanded", "false");
-      getElementById("officer-birthdate-trigger").focus();
-    });
-
-    days.append(button);
-  }
-}
-
-populateBirthdateSelectors();
-
-
-// Student number is a text field, not an academic-year selector.
-
-getElementById("officer-birthdate-month-select").addEventListener("change", (event) => {
-  officerBirthdateMonth = new Date(
-    officerBirthdateMonth.getFullYear(),
-    Number(event.target.value),
-    1,
-  );
-  renderOfficerBirthdateCalendar();
-});
-
-getElementById("officer-birthdate-year-select").addEventListener("change", (event) => {
-  officerBirthdateMonth = new Date(
-    Number(event.target.value),
-    officerBirthdateMonth.getMonth(),
-    1,
-  );
-  renderOfficerBirthdateCalendar();
-});
-
-const officerBirthdateTrigger = getElementById("officer-birthdate-trigger");
-
-if (officerBirthdateTrigger && officerBirthdateCalendar) {
-  officerBirthdateTrigger.addEventListener("click", () => {
-    const opening = officerBirthdateCalendar.hidden;
-
-    officerBirthdateCalendar.hidden = !opening;
-
-    officerBirthdateTrigger.setAttribute("aria-expanded", String(opening));
-
-    if (opening) {
-      const selected = getElementById("officer-birthdate").value;
-      const parts = selected
-        ? selected.split("-").map(Number)
-        : [new Date().getFullYear(), new Date().getMonth() + 1, 1];
-
-      officerBirthdateMonth = new Date(parts[0], parts[1] - 1, 1);
-
-      renderOfficerBirthdateCalendar();
-    }
-  });
-} else {
-  console.error("Birthdate trigger or calendar element not found.", {
-    trigger: officerBirthdateTrigger,
-    calendar: officerBirthdateCalendar,
-  });
-}
-
-getElementById("officer-birthdate-prev").addEventListener("click", () => {
-  officerBirthdateMonth = new Date(
-    officerBirthdateMonth.getFullYear(),
-    officerBirthdateMonth.getMonth() - 1,
-    1,
-  );
-  renderOfficerBirthdateCalendar();
-});
-
-getElementById("officer-birthdate-next").addEventListener("click", () => {
-  officerBirthdateMonth = new Date(
-    officerBirthdateMonth.getFullYear(),
-    officerBirthdateMonth.getMonth() + 1,
-    1,
-  );
-  renderOfficerBirthdateCalendar();
-});
-
-const officerBirthdateClear = getElementById("officer-birthdate-clear");
-
-if (officerBirthdateClear) {
-  officerBirthdateClear.addEventListener("click", () => {
-    getElementById("officer-birthdate").value = "";
-    getElementById("officer-birthdate-display").textContent = "Choose a birthdate";
-
-    officerBirthdateCalendar.hidden = true;
-
-    officerBirthdateTrigger?.setAttribute("aria-expanded", "false");
-    officerBirthdateTrigger?.focus();
-  });
-}
-
-getElementById("officer-birthdate-today").addEventListener("click", () => {
-  const today = new Date();
-  officerBirthdateMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  renderOfficerBirthdateCalendar();
-});
+const officerBirthdatePicker = bindBirthdatePicker(getElementById("officer-birthdate-trigger").closest(".birthdate-picker-wrap"));
+const formatOfficerBirthdate = formatBirthdate;
 
 // Photo selection only. No image preview is shown; persistent upload storage is separate.
 getElementById("officer-photo-file").addEventListener("change", () => {
@@ -2764,11 +2549,33 @@ getElementById("profile-refresh").addEventListener("click", async () => {
 });
 
 
+function positionSidebarProfileMenu() {
+  const button = getElementById("profile-button");
+  const menu = getElementById("profile-menu");
+  if (!button || !menu || menu.hidden) return;
+
+  const buttonRect = button.getBoundingClientRect();
+  const menuWidth = Math.min(250, window.innerWidth - 24);
+  const menuHeight = Math.min(menu.scrollHeight || 180, window.innerHeight - 24);
+  const left = Math.min(window.innerWidth - menuWidth - 12, buttonRect.right + 10);
+  const top = Math.max(12, Math.min(window.innerHeight - menuHeight - 12, buttonRect.bottom - menuHeight));
+  menu.style.position = "fixed";
+  menu.style.left = `${Math.max(12, left)}px`;
+  menu.style.top = `${top}px`;
+  menu.style.right = "auto";
+  menu.style.bottom = "auto";
+  menu.style.width = `${menuWidth}px`;
+}
+
 getElementById("profile-button").addEventListener("click", () => {
   const menu = getElementById("profile-menu");
   menu.hidden = !menu.hidden;
   getElementById("profile-button").setAttribute("aria-expanded", String(!menu.hidden));
+  if (!menu.hidden) requestAnimationFrame(positionSidebarProfileMenu);
 });
+
+window.addEventListener("resize", positionSidebarProfileMenu);
+window.addEventListener("scroll", positionSidebarProfileMenu, true);
 
 document.addEventListener("click", (event) => {
   if (!event.target.closest(".profile-wrap")) {

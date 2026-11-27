@@ -4038,3 +4038,269 @@ html.theme-anim *::after {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* === Dropdown and form consistency fixes === */
+/* Dropdown menus should match the width of their own trigger, including in dialogs. */
+.generic-select-wrap {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.generic-select-wrap .generic-select-trigger {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.generic-select-menu,
+.officer-select-menu {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: calc(100vw - 16px);
+}
+.officer-select-menu {
+  overflow-x: hidden;
+}
+.m-form input:focus,
+.m-form select:focus,
+.m-form .member-date-trigger:focus-visible,
+#officer-form-panel input:focus,
+#officer-form-panel select:focus,
+#officer-form-panel .officer-select-trigger:focus-visible,
+#officer-birthdate-trigger:focus-visible {
+  outline: 0;
+  border-color: var(--picker-pink, var(--forest)) !important;
+  box-shadow: 0 0 0 4px var(--ring) !important;
+}
+.m-form input,
+.m-form select,
+.m-form .member-date-trigger {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--field-line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 500 13px var(--font-ui);
+}
+.m-form .member-date-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+}
+.brand[role="button"] { cursor: pointer; }
+.brand[role="button"]:focus-visible {
+  outline: 2px solid var(--picker-pink);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+.standard-page-size .generic-select-wrap {
+  width: 78px;
+  min-width: 78px;
+  max-width: 78px;
+  flex: 0 0 78px;
+}
+.standard-page-size .generic-select-wrap .generic-select-trigger {
+  width: 78px;
+  min-height: 38px;
+  padding-inline: 8px;
+}
+.standard-page-size .generic-select-menu {
+  width: 78px;
+  min-width: 78px;
+}
+
+
+/* Member calendar shares the Officer selectors and visual rules. */
+.member-birthdate-field { display:grid; gap:7px; }
+#member-birthdate-calendar { position:fixed; margin:0; max-width:calc(100vw - 16px); max-height:calc(100dvh - 16px); overflow-y:auto; box-sizing:border-box; z-index:var(--z-popover); }
+#member-birthdate-calendar .officer-calendar-selectors select { width:0; }
+#member-date-trigger[aria-expanded="true"] { border-color:var(--forest); }
+/* Account, theme and sidebar controls live together at the bottom of the sidebar. */
+.sidebar-bottom {
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+.sidebar-profile-wrap { position: relative; width: 100%; min-width: 0; }
+.sidebar-profile-button {
+  width: 100%;
+  min-height: 48px;
+  padding: 5px 8px;
+  border-radius: 12px;
+  text-align: left;
+}
+.sidebar-profile-button .avatar { flex: 0 0 36px; }
+.sidebar-profile-button .avatar .ico { width: 19px; height: 19px; }
+.sidebar-profile-copy { min-width: 0; flex: 1 1 auto; overflow: hidden; }
+.sidebar-profile-copy .profile-name,
+.sidebar-profile-copy .profile-role { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sidebar-profile-wrap .profile-menu {
+  position: absolute;
+  left: 0;
+  right: auto;
+  bottom: calc(100% + 8px);
+  width: min(260px, calc(100vw - 32px));
+  z-index: calc(var(--z-sidebar) + 5);
+}
+.sidebar-utility-row { display: flex; align-items: center; gap: 8px; }
+.sidebar-theme-toggle { flex: 1 1 auto; min-width: 0; }
+.sidebar-theme-toggle .nav-text { max-width: 180px; }
+.sidebar-utility-row .nav-collapse {
+  flex: 0 0 var(--nav-icon-box);
+  width: var(--nav-icon-box);
+  height: var(--nav-icon-box);
+  padding: 0;
+  justify-content: center;
+  border-radius: 14px;
+}
+.sidebar-utility-row .nav-collapse .ico { width: 20px; height: 20px; }
+
+@media (min-width: 901px) {
+  html[data-sidebar="collapsed"] .sidebar-profile-button {
+    width: var(--nav-icon-box);
+    height: var(--nav-icon-box);
+    min-height: var(--nav-icon-box);
+    padding: 0;
+    justify-content: center;
+    border-radius: 14px;
+  }
+  html[data-sidebar="collapsed"] .sidebar-profile-copy,
+  html[data-sidebar="collapsed"] .sidebar-profile-button .profile-chevron,
+  html[data-sidebar="collapsed"] .sidebar-theme-toggle .nav-text { display: none; }
+  html[data-sidebar="collapsed"] .sidebar-profile-button .avatar {
+    width: var(--nav-icon-box);
+    height: var(--nav-icon-box);
+    border-radius: 14px;
+    background: var(--hover);
+  }
+  html[data-sidebar="collapsed"] .sidebar-profile-wrap .profile-menu {
+    left: calc(100% + 10px);
+    bottom: 0;
+  }
+  html[data-sidebar="collapsed"] .sidebar-utility-row { justify-content: center; }
+  html[data-sidebar="collapsed"] .sidebar-theme-toggle {
+    flex: 0 0 var(--nav-icon-box);
+    width: var(--nav-icon-box);
+    height: var(--nav-icon-box);
+    padding: 0;
+    justify-content: center;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar-bottom { display: grid !important; }
+  .sidebar-bottom .nav-collapse { display: none !important; }
+  .sidebar-profile-wrap .profile-menu { left: 0; right: auto; bottom: calc(100% + 8px); }
+  .sidebar-theme-toggle { width: 100%; }
+}
+
+@media (min-width: 901px) {
+  .sidebar-profile-button::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    z-index: var(--z-tooltip);
+    padding: 6px 10px;
+    border-radius: var(--r-sm);
+    background: var(--ink);
+    color: var(--cream);
+    font: 500 12px var(--font-ui);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+  html[data-sidebar="collapsed"] .sidebar-profile-button:hover::after,
+  html[data-sidebar="collapsed"] .sidebar-profile-button:focus-visible::after { opacity: 1; }
+}
+
+/* Sidebar utility refinements: theme switch follows Settings; account menu opens to the right. */
+.sidebar > .sidebar-theme-toggle {
+  flex: 0 0 auto;
+  width: 100%;
+  margin: 3px 0 10px;
+}
+.sidebar-bottom {
+  flex: 0 0 auto;
+  margin-top: auto;
+}
+.sidebar-utility-row {
+  display: flex;
+  justify-content: center;
+}
+.sidebar-profile-button {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 48px;
+}
+.sidebar-profile-button .avatar {
+  box-sizing: border-box;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  aspect-ratio: 1 / 1;
+  flex: 0 0 38px;
+  align-self: center;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+}
+.sidebar-profile-wrap .profile-menu {
+  position: fixed !important;
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  z-index: calc(var(--z-sidebar) + 20);
+  width: min(250px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+}
+@media (min-width: 901px) {
+  html[data-sidebar="collapsed"] .sidebar-profile-button {
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    width: var(--nav-icon-box);
+    height: var(--nav-icon-box);
+    min-width: var(--nav-icon-box);
+    min-height: var(--nav-icon-box);
+    max-width: var(--nav-icon-box);
+    padding: 0;
+    margin-inline: auto;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 14px;
+  }
+  html[data-sidebar="collapsed"] .sidebar-profile-button .avatar {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 0 0 100%;
+    border-radius: 14px;
+  }
+  html[data-sidebar="collapsed"] .sidebar > .sidebar-theme-toggle {
+    width: var(--nav-icon-box);
+    height: var(--nav-icon-box);
+    min-height: var(--nav-icon-box);
+    padding: 0;
+    margin: 3px auto 10px;
+    justify-content: center;
+    border-radius: 14px;
+  }
+  html[data-sidebar="collapsed"] .sidebar > .sidebar-theme-toggle .nav-text { display: none; }
+}

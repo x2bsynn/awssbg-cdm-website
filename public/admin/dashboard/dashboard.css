@@ -3291,11 +3291,11 @@ body:has(#officer-form-panel[open]) {
   cursor: pointer;
 }
 
-#officer-birthdate-month-select {
+:is(#officer-birthdate-month-select, #member-birthdate-month-select) {
   flex: 1.3;
 }
 
-#officer-birthdate-year-select {
+:is(#officer-birthdate-year-select, #member-birthdate-year-select) {
   flex: 0.8;
 }
 
@@ -3372,14 +3372,14 @@ body:has(#officer-form-panel[open]) {
 
 #officer-form-panel select:focus-visible,
 #officer-form-panel input:focus-visible,
-#officer-birthdate-trigger:focus-visible {
+:is(#officer-birthdate-trigger, #member-date-trigger):focus-visible {
   outline: 2px solid var(--forest) !important;
   outline-offset: 2px;
   border-color: var(--forest);
   box-shadow: 0 0 0 3px rgb(217 111 145 / 12%);
 }
 
-#officer-birthdate-trigger {
+:is(#officer-birthdate-trigger, #member-date-trigger) {
   min-height: 48px;
   height: 48px;
   width: 100%;
@@ -3394,7 +3394,7 @@ body:has(#officer-form-panel[open]) {
   justify-content: space-between;
 }
 
-#officer-birthdate-trigger:hover {
+:is(#officer-birthdate-trigger, #member-date-trigger):hover {
   border-color: var(--forest);
   background: var(--tint);
   box-shadow: none;
@@ -3410,7 +3410,7 @@ body:has(#officer-form-panel[open]) {
   min-width: 0;
 }
 
-#officer-birthdate-calendar {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) {
   position: relative;
   z-index: 2;
   width: 100%;
@@ -3423,20 +3423,20 @@ body:has(#officer-form-panel[open]) {
   box-shadow: 0 10px 24px rgb(89 51 68 / 10%);
 }
 
-#officer-birthdate-calendar[hidden] {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar)[hidden] {
   display: none !important;
 }
 
-#officer-birthdate-calendar .officer-calendar-heading {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-heading {
   gap: 8px;
   margin-bottom: 12px;
 }
 
-#officer-birthdate-calendar .officer-calendar-selectors {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors {
   min-width: 0;
 }
 
-#officer-birthdate-calendar .officer-calendar-selectors select {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select {
   min-height: 42px;
   padding: 9px 28px 9px 10px;
   border-color: var(--line);
@@ -3444,7 +3444,7 @@ body:has(#officer-form-panel[open]) {
   font-size: 13px;
 }
 
-#officer-birthdate-calendar .officer-calendar-navigation button {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-navigation button {
   flex: 0 0 36px;
   width: 36px;
   height: 36px;
@@ -3454,27 +3454,27 @@ body:has(#officer-form-panel[open]) {
   color: var(--forest-dark);
 }
 
-#officer-birthdate-calendar .calendar-weekdays,
-#officer-birthdate-calendar .calendar-days {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-weekdays,
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 3px;
   text-align: center;
 }
 
-#officer-birthdate-calendar .calendar-weekdays {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-weekdays {
   margin: 8px 0;
   color: var(--line-strong);
   font-size: 12px;
   font-weight: 700;
 }
 
-#officer-birthdate-calendar .calendar-days {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-days {
   row-gap: 4px;
 }
 
-#officer-birthdate-calendar .calendar-day,
-#officer-birthdate-calendar .calendar-empty {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-day,
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-empty {
   min-width: 0;
   width: 100%;
   height: 36px;
@@ -3482,7 +3482,7 @@ body:has(#officer-form-panel[open]) {
   place-items: center;
 }
 
-#officer-birthdate-calendar .calendar-day {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-day {
   padding: 0;
   border: 1px solid transparent;
   border-radius: 9px;
@@ -3491,30 +3491,30 @@ body:has(#officer-form-panel[open]) {
   font-size: 13px;
 }
 
-#officer-birthdate-calendar .calendar-day:hover:not(:disabled) {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-day:hover:not(:disabled) {
   background: var(--tint-2);
   border-color: var(--line);
   box-shadow: none;
 }
 
-#officer-birthdate-calendar .calendar-day.selected {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-day.selected {
   background: var(--forest);
   border-color: var(--forest);
   color: var(--on-accent);
 }
 
-#officer-birthdate-calendar .calendar-day.today:not(.selected) {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-day.today:not(.selected) {
   border-color: var(--forest);
 }
 
-#officer-birthdate-calendar .calendar-day:disabled {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-day:disabled {
   color: var(--line);
   opacity: .5;
   text-decoration: none;
   cursor: not-allowed;
 }
 
-#officer-birthdate-calendar .officer-calendar-footer {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -3524,7 +3524,7 @@ body:has(#officer-form-panel[open]) {
   border-top: 1px solid var(--tint);
 }
 
-#officer-birthdate-calendar .officer-calendar-footer button {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-footer button {
   border: 0;
   background: transparent;
   color: var(--accent-ink);
@@ -3533,7 +3533,7 @@ body:has(#officer-form-panel[open]) {
   padding: 7px 4px;
 }
 
-#officer-birthdate-calendar .officer-calendar-footer button:hover {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-footer button:hover {
   color: var(--accent-ink);
   text-decoration: underline;
   background: transparent;
@@ -3627,13 +3627,13 @@ body:has(#officer-form-panel[open]) {
   min-width: 0;
 }
 
-#officer-birthdate-calendar .calendar-days {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-days {
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 5px;
 }
 
-#officer-birthdate-calendar .calendar-day,
-#officer-birthdate-calendar .calendar-empty {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-day,
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .calendar-empty {
   width: 100%;
   aspect-ratio: 1 / 1;
   height: auto;
@@ -3641,14 +3641,14 @@ body:has(#officer-form-panel[open]) {
   box-sizing: border-box;
 }
 
-#officer-birthdate-calendar .officer-calendar-footer {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-footer {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 10px;
 }
 
-#officer-birthdate-calendar .officer-calendar-footer button {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-footer button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3670,7 +3670,7 @@ body:has(#officer-form-panel[open]) {
   white-space: normal;
 }
 
-#officer-birthdate-calendar .officer-calendar-footer button:hover {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-footer button:hover {
   border-color: var(--forest);
   background: var(--tint);
   text-decoration: none;
@@ -3743,7 +3743,7 @@ body:has(#officer-form-panel[open]) {
   position: relative;
 }
 
-#officer-form-panel #officer-birthdate-calendar {
+#officer-form-panel :is(#officer-birthdate-calendar, #member-birthdate-calendar) {
   position: absolute;
   left: 0;
   right: 0;
@@ -3754,7 +3754,7 @@ body:has(#officer-form-panel[open]) {
   z-index: var(--z-popover);
 }
 
-#officer-form-panel .officer-form-section:has(#officer-birthdate-calendar) {
+#officer-form-panel .officer-form-section:has(:is(#officer-birthdate-calendar, #member-birthdate-calendar)) {
   position: relative;
 }
 
@@ -3829,7 +3829,7 @@ body:has(#officer-form-panel[open]) {
 /* Custom dropdown triggers and the birthdate trigger */
 #officer-form-panel .officer-form-section .officer-basic-select .officer-select-trigger,
 #officer-form-panel .officer-position-row .officer-position-select .officer-select-trigger,
-#officer-form-panel #officer-birthdate-trigger {
+#officer-form-panel :is(#officer-birthdate-trigger, #member-date-trigger) {
   box-sizing: border-box;
   min-height: var(--control-h);
   height: var(--control-h);
@@ -3857,7 +3857,7 @@ body:has(#officer-form-panel[open]) {
 }
 
 /* ---------- 3. Birthdate month / year dropdowns ---------- */
-#officer-birthdate-calendar .officer-calendar-selectors select {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select {
   appearance: none;
   -webkit-appearance: none;
   box-sizing: border-box;
@@ -3878,12 +3878,12 @@ body:has(#officer-form-panel[open]) {
     box-shadow 180ms ease;
 }
 
-#officer-birthdate-calendar .officer-calendar-selectors select:hover {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select:hover {
   border-color: var(--forest);
   background-color: var(--tint);
 }
 
-#officer-birthdate-calendar .officer-calendar-selectors select:focus-visible {
+:is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select:focus-visible {
   border-color: var(--forest);
   box-shadow: 0 0 0 3px rgb(217 111 145 / 16%);
 }
@@ -3893,12 +3893,12 @@ body:has(#officer-form-panel[open]) {
    Other browsers keep the styled closed state above. */
 @supports (appearance: base-select) {
 
-  #officer-birthdate-calendar .officer-calendar-selectors select,
-  #officer-birthdate-calendar .officer-calendar-selectors select::picker(select) {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select,
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select::picker(select) {
     appearance: base-select;
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors select {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -3907,12 +3907,12 @@ body:has(#officer-form-panel[open]) {
     background-image: none;
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors select:open {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select:open {
     border-color: var(--forest);
     background-color: var(--tint);
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors select::picker-icon {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select::picker-icon {
     content: "";
     flex: 0 0 16px;
     width: 16px;
@@ -3921,11 +3921,11 @@ body:has(#officer-form-panel[open]) {
     transition: rotate 180ms ease;
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors select:open::picker-icon {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select:open::picker-icon {
     rotate: 180deg;
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors select::picker(select) {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select::picker(select) {
     box-sizing: border-box;
     min-width: anchor-size(width);
     max-height: min(240px, 50dvh);
@@ -3937,7 +3937,7 @@ body:has(#officer-form-panel[open]) {
     box-shadow: 0 12px 30px rgb(117 48 77 / 14%);
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors select option {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select option {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -3954,20 +3954,20 @@ body:has(#officer-form-panel[open]) {
     transition: background 150ms ease, color 150ms ease;
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors select option:hover,
-  #officer-birthdate-calendar .officer-calendar-selectors select option:focus-visible {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select option:hover,
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select option:focus-visible {
     outline: none;
     background: var(--pink-soft);
     color: var(--forest-dark);
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors select option:checked {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select option:checked {
     background: var(--tint-2);
     color: var(--forest-dark);
     font-weight: 700;
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors select option::checkmark {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select option::checkmark {
     content: "✓";
     order: 1;
     color: var(--accent-ink);
@@ -4033,29 +4033,29 @@ body:has(#officer-form-panel[open]) {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  #officer-form-panel #officer-birthdate-calendar {
+  #officer-form-panel :is(#officer-birthdate-calendar, #member-birthdate-calendar) {
     padding: 14px;
   }
 
-  #officer-birthdate-calendar .officer-calendar-heading {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-heading {
     flex-wrap: wrap;
     gap: 10px;
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors {
     flex: 1 1 100%;
   }
 
-  #officer-birthdate-calendar .officer-calendar-selectors select {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-selectors select {
     flex: 1 1 0;
   }
 
-  #officer-birthdate-calendar .officer-calendar-navigation {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-navigation {
     flex: 1 1 100%;
     justify-content: space-between;
   }
 
-  #officer-birthdate-calendar .officer-calendar-navigation button {
+  :is(#officer-birthdate-calendar, #member-birthdate-calendar) .officer-calendar-navigation button {
     flex: 0 0 40px;
     width: 40px;
     height: 40px;
@@ -4152,4 +4152,9 @@ body:has(#officer-form-panel[open]) {
 
 .overview-note-panel {
   margin-top: 24px;
+}
+/* Keep custom officer menus visible inside the officer dialog top layer. */
+#officer-form-panel .officer-select-menu {
+  z-index: 10050;
+  min-width: 0;
 }

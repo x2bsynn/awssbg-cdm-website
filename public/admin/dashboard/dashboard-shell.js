@@ -183,12 +183,10 @@ function applyTheme(themeName, animate = false) {
     ?.setAttribute("content", themeName === "dark" ? "#1b161c" : "#fdf6f8");
   const themeToggleButton = getElementById("theme-toggle");
   if (themeToggleButton) {
-    themeToggleButton.innerHTML = createIconSvg(themeName === "dark" ? "sun" : "moon");
-    themeToggleButton.setAttribute(
-      "aria-label",
-      `Switch to ${themeName === "dark" ? "light" : "dark"} mode`,
-    );
-    themeToggleButton.dataset.tip = `${themeName === "dark" ? "Light" : "Dark"} mode`;
+    const nextThemeLabel = themeName === "dark" ? "Light mode" : "Dark mode";
+    themeToggleButton.innerHTML = `${createIconSvg(themeName === "dark" ? "sun" : "moon")}<span class="nav-text">${nextThemeLabel}</span>`;
+    themeToggleButton.setAttribute("aria-label", `Switch to ${themeName === "dark" ? "light" : "dark"} mode`);
+    themeToggleButton.dataset.tip = nextThemeLabel;
   }
   if (currentViewName === "settings") renderSettings();
 }
@@ -203,8 +201,9 @@ function applySidebarState(sidebarState) {
   if (sidebarToggleButton) {
     const open = sidebarState === "expanded";
     sidebarToggleButton.setAttribute("aria-expanded", String(open));
+    sidebarToggleButton.setAttribute("aria-label", open ? "Collapse sidebar" : "Expand sidebar");
     sidebarToggleButton.dataset.tip = open ? "Collapse sidebar" : "Expand sidebar";
-    sidebarToggleButton.innerHTML = `${createIconSvg(open ? "panel-left-close" : "panel-left-open")}<span class="nav-text">${open ? "Collapse" : "Expand"}</span>`;
+    sidebarToggleButton.innerHTML = createIconSvg(open ? "panel-left-close" : "panel-left-open");
   }
   if (currentViewName === "settings") renderSettings();
 }
@@ -619,6 +618,16 @@ function initializeDashboardShell() {
   getElementById("sidebar-toggle").addEventListener("click", () =>
     applySidebarState(rootElement.dataset.sidebar === "collapsed" ? "expanded" : "collapsed"),
   );
+  const brandToggle = getElementById("sidebar-brand-toggle");
+  const toggleSidebarFromBrand = () =>
+    applySidebarState(rootElement.dataset.sidebar === "collapsed" ? "expanded" : "collapsed");
+  brandToggle?.addEventListener("click", toggleSidebarFromBrand);
+  brandToggle?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      toggleSidebarFromBrand();
+    }
+  });
   getElementById("ay-select").addEventListener("change", (changeEvent) => {
     academicYearSelection.selected = changeEvent.target.value;
     document.dispatchEvent(new Event("sbg:ay"));
@@ -732,7 +741,8 @@ function enhanceNativeDropdown(select) {
   if (
     select.id === "ay-select" ||
     select.closest("#officer-form-panel") ||
-    select.closest(".officer-select")
+    select.closest(".officer-select") ||
+    select.closest(".officer-birthdate-calendar")
   )
     return;
   if (select.classList.contains("custom-select-source-hidden")) return;
@@ -775,7 +785,7 @@ function enhanceNativeDropdown(select) {
   const position = () => {
     if (menu.hidden) return;
     const rect = trigger.getBoundingClientRect();
-    const width = Math.max(rect.width, 190);
+    const width = rect.width;
     const height = Math.min(menu.scrollHeight || 280, 280);
     let top = rect.bottom + 8;
     if (top + height > window.innerHeight - 8)
@@ -845,7 +855,7 @@ function enhanceNativeDropdown(select) {
     trigger.setAttribute("aria-expanded", String(opening));
     if (opening) {
       renderOptions();
-      document.body.append(menu);
+      (wrap.closest("dialog") || document.body).append(menu);
       position();
       if (event.detail === 0)
         menu
@@ -900,7 +910,8 @@ function enhanceNativeDropdowns(root = document) {
 }
 
 document.addEventListener("click", (event) => {
-  if (event.target.closest(".generic-select-wrap")) return;
+  if (event.target.closest(".generic-select-wrap") ||
+      [...document.querySelectorAll(".generic-select-menu")].some((menu) => menu.contains(event.target))) return;
   document.querySelectorAll(".generic-select-menu").forEach((menu) => {
     menu.hidden = true;
     const wrap = menu._ownerWrap;
