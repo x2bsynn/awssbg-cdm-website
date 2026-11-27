@@ -46,13 +46,12 @@
 
       <div class="sidebar-bottom">
         <div class="profile-wrap sidebar-profile-wrap">
-          <button id="profile-button" class="profile-button sidebar-profile-button" type="button" aria-expanded="false" aria-haspopup="true" data-tip="Account">
+          <button id="profile-button" class="profile-button sidebar-profile-button" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="profile-menu" aria-label="Account menu" data-tip="Account">
             <span class="avatar" id="profile-avatar"><i data-icon="user-round"></i></span>
             <span class="sidebar-profile-copy">
               <span class="profile-name" id="profile-name">Administrator</span>
               <span class="profile-role" id="profile-role">Administrator</span>
             </span>
-            <span class="profile-chevron"><i data-icon="chevron-down"></i></span>
           </button>
           <div id="profile-menu" class="profile-menu" hidden>
             <div class="profile-email" id="profile-email">Signed-in account</div>
@@ -60,9 +59,7 @@
             <button id="logout-button" class="signout" type="button">Sign out</button>
           </div>
         </div>
-        <div class="sidebar-utility-row">
-          <button id="sidebar-toggle" class="nav-item nav-collapse" type="button" aria-expanded="true" data-tip="Collapse sidebar" aria-label="Collapse sidebar"></button>
-        </div>
+        <button id="sidebar-toggle" class="nav-item nav-collapse" type="button" aria-controls="sidebar" aria-expanded="true" data-tip="Collapse sidebar" aria-label="Collapse sidebar"></button>
       </div>
     </aside>
     <div class="scrim" id="nav-scrim"></div>

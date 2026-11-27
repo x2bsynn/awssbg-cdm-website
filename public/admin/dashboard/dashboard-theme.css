@@ -4304,3 +4304,100 @@ html.theme-anim *::after {
   }
   html[data-sidebar="collapsed"] .sidebar > .sidebar-theme-toggle .nav-text { display: none; }
 }
+
+
+/* Account and collapse are separate adjacent controls. The account itself opens
+   the account menu; the collapse icon never triggers sign-out or profile actions. */
+.sidebar-bottom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sidebar-bottom .sidebar-profile-wrap {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+}
+.sidebar-bottom .sidebar-profile-button {
+  width: 100%;
+  gap: 8px;
+  padding: 5px 4px;
+}
+.sidebar-bottom > .nav-collapse {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+  border-radius: 12px;
+}
+.sidebar-bottom > .nav-collapse .ico {
+  width: 20px;
+  height: 20px;
+  transform: none;
+}
+.sidebar-bottom > .nav-collapse:hover::after,
+.sidebar-bottom > .nav-collapse:focus-visible::after {
+  opacity: 1;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+@media (min-width: 901px) {
+  html[data-sidebar="collapsed"] .sidebar-bottom {
+    flex-direction: column;
+    gap: 8px;
+  }
+  html[data-sidebar="collapsed"] .sidebar-bottom .sidebar-profile-wrap {
+    flex: none;
+    width: var(--nav-icon-box);
+  }
+  html[data-sidebar="collapsed"] .sidebar-bottom .sidebar-profile-button {
+    width: var(--nav-icon-box);
+    height: var(--nav-icon-box);
+    padding: 0;
+  }
+  html[data-sidebar="collapsed"] .sidebar-bottom > .nav-collapse {
+    flex: none;
+    width: var(--nav-icon-box);
+    height: var(--nav-icon-box);
+    border-radius: 14px;
+  }
+}
+@media (max-width: 900px) {
+  .sidebar-bottom { display: flex !important; }
+  .sidebar-bottom .sidebar-profile-copy { display: block; }
+}
+
+/* Reveal the new theme as a circular wave from the viewport's upper-left.
+   Keep the old snapshot stationary; no cross-fade or independent color fades. */
+html.theme-wave,
+html.theme-wave *,
+html.theme-wave *::before,
+html.theme-wave *::after {
+  transition: none !important;
+}
+html.theme-wave::view-transition-group(root) {
+  animation: none;
+}
+html.theme-wave::view-transition-image-pair(root) {
+  isolation: isolate;
+}
+html.theme-wave::view-transition-old(root),
+html.theme-wave::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.theme-wave::view-transition-old(root) { z-index: 1; }
+html.theme-wave::view-transition-new(root) {
+  z-index: 2;
+  animation: dashboard-theme-wave 700ms cubic-bezier(.35, 0, .25, 1) both;
+}
+@keyframes dashboard-theme-wave {
+  from { clip-path: circle(0% at 0 0); }
+  to { clip-path: circle(150% at 0 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.theme-wave::view-transition-new(root) { animation: none; }
+}

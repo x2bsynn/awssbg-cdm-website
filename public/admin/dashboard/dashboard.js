@@ -2557,7 +2557,8 @@ function positionSidebarProfileMenu() {
   const buttonRect = button.getBoundingClientRect();
   const menuWidth = Math.min(250, window.innerWidth - 24);
   const menuHeight = Math.min(menu.scrollHeight || 180, window.innerHeight - 24);
-  const left = Math.min(window.innerWidth - menuWidth - 12, buttonRect.right + 10);
+  const sidebarRect = getElementById("sidebar").getBoundingClientRect();
+  const left = Math.min(window.innerWidth - menuWidth - 12, sidebarRect.right + 10);
   const top = Math.max(12, Math.min(window.innerHeight - menuHeight - 12, buttonRect.bottom - menuHeight));
   menu.style.position = "fixed";
   menu.style.left = `${Math.max(12, left)}px`;

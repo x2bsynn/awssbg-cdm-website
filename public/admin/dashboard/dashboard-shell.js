@@ -161,23 +161,40 @@ new MutationObserver(() => {
 
 /* ---------- theme & sidebar (persisted) ---------- */
 /*
-  Applies and persists the light/dark theme, including the mobile theme animation.
+  Applies and persists the light/dark theme, including the viewport wave animation.
   It also updates the theme icon and browser theme-color meta value.
 */
+let activeThemeTransition = null;
+
 function applyTheme(themeName, animate = false) {
-  if (animate) {
-    rootElement.classList.add("theme-anim");
-    void rootElement.offsetWidth;
+  if (themeName !== "dark" && themeName !== "light") return;
+  if (activeThemeTransition) return;
+  if (animate && themeName !== rootElement.dataset.theme &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+      typeof document.startViewTransition === "function") {
+    rootElement.classList.add("theme-wave");
+    try {
+      const transition = document.startViewTransition(() => commitTheme(themeName));
+      activeThemeTransition = transition;
+      const cleanUp = () => {
+        activeThemeTransition = null;
+        rootElement.classList.remove("theme-wave");
+      };
+      // A skipped transition still commits the theme in the update callback.
+      transition.ready.catch(() => {});
+      transition.finished.then(cleanUp, cleanUp);
+      return;
+    } catch {
+      rootElement.classList.remove("theme-wave");
+    }
   }
+  // Older browsers and reduced-motion users can still switch themes immediately.
+  commitTheme(themeName);
+}
+
+function commitTheme(themeName) {
   rootElement.dataset.theme = themeName;
   browserStorage.set("sbg-theme", themeName);
-  if (animate) {
-    clearTimeout(rootElement._themeTimer);
-    rootElement._themeTimer = setTimeout(
-      () => rootElement.classList.remove("theme-anim"),
-      650,
-    );
-  }
   document
     .querySelector('meta[name="theme-color"]')
     ?.setAttribute("content", themeName === "dark" ? "#1b161c" : "#fdf6f8");
@@ -689,7 +706,7 @@ function initializeDashboardShell() {
         searchInput.value = clickedElement.dataset.event;
         searchInput.dispatchEvent(new Event("input", { bubbles: true }));
       });
-    } else if (clickedElement.dataset.set === "theme") applyTheme(clickedElement.dataset.val);
+    } else if (clickedElement.dataset.set === "theme") applyTheme(clickedElement.dataset.val, true);
     else if (clickedElement.dataset.set === "sidebar") applySidebarState(clickedElement.dataset.val);
     else if (clickedElement.dataset.act === "new-event") {
       navigateToView("events");
