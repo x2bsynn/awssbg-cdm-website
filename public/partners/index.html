@@ -1,13 +1,120 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+
+<html data-theme="light" lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta http-equiv="refresh" content="0;url=/#partners">
-    <title>AWSSBG-CDM</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <meta content="AWS Student Builder Group – Colegio de Muntinlupa. Learn. Build. Collaborate. Innovate."
+        name="description" />
+    <meta content="#e6f0f5" name="theme-color" />
+    <link href="/assets/awssbg-cdm-logo.svg" rel="icon" />
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('awssbg-theme') === 'dark' ? 'dark' : 'light' } catch { }</script>
+    <script src="/js/site-config.js"></script>
+    <link href="/css/style.css" rel="stylesheet" />
+    <script src="/js/script.js" type="module"></script>
+    <script src="/js/polar.js" type="module"></script>
+    <title>Partners &amp; sponsors | AWS Student Builder Group – Colegio de Muntinlupa</title>
 </head>
 
-<body><a href="/#partners">Continue to the website</a></body>
+<body data-page="partners">
+    <div aria-hidden="true" class="polar-scene">
+        <div class="polar-sky"></div>
+        <div class="polar-aurora"></div>
+        <div class="polar-landscape"></div><canvas id="snowCanvas"></canvas>
+    </div><a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+        <div class="shell nav"><a class="brand" href="/"><img alt="" height="48" src="/assets/awssbg-cdm-logo.svg"
+                    width="48" /><span><strong>AWS Student Builder Group</strong><small>Colegio de
+                        Muntinlupa</small></span></a><button aria-controls="navMenu" aria-expanded="false"
+                aria-label="Open navigation" class="icon-button mobile-toggle" id="menuToggle"><svg fill="none"
+                    stroke="currentColor" stroke-width="1.7" viewbox="0 0 24 24">
+                    <path d="M4 7h16M4 12h16M4 17h16"></path>
+                </svg></button>
+            <nav aria-label="Main navigation" id="navMenu"><a href="/">Home</a><a href="/about/"
+                    data-public-page="about">About us</a><a href="/events/" data-public-page="events">Events</a><a
+                    href="/directors/" data-public-page="directors">Directors</a><a href="/people/"
+                    data-public-page="officers">Officers</a><a aria-current="page" href="/partners/"
+                    data-public-page="partners">Partners</a><a href="/contact/" data-public-page="contact">Contact</a><a
+                    href="/#join" data-public-section="join">Join us</a></nav><button aria-label="Switch to dark mode"
+                aria-pressed="false" class="icon-button" id="themeToggle"><svg class="moon" fill="none"
+                    stroke="currentColor" stroke-width="1.7" viewbox="0 0 24 24">
+                    <path d="M20.5 15.3A9 9 0 0 1 8.7 3.5 9 9 0 1 0 20.5 15.3Z"></path>
+                </svg><svg class="sun" fill="none" stroke="currentColor" stroke-width="1.7" viewbox="0 0 24 24">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"></path>
+                </svg></button>
+        </div>
+    </header>
+    <main id="main-content">
+        <section class="shell section route-section v19-section" id="partners">
+            <div class="v19-heading">
+                <h1>Partners &amp; <em>sponsors.</em></h1>
+                <p>Meaningful connections make our community stronger.</p>
+            </div>
+            <div aria-label="Partner organizations" class="partner-grid" id="partnerGalaxy"></div>
+            <p class="v21-empty" id="partnerEmpty">Our partner directory will be updated as collaborations are
+                confirmed. </p>
+        </section>
+    </main>
+    <footer class="site-footer" id="contact">
+        <div class="shell footer-main v19-footer">
+            <div class="footer-branding">
+                <div class="footer-brand-line"><img alt="" height="64" loading="lazy"
+                        src="/assets/awssbg-cdm-mascot.png" width="64" />
+                    <h3><span class="footer-wordmark">AWS<span>SBG</span><i>–</i>CDM</span><span
+                            class="footer-full-name">AWS Student Builder Group<br />Colegio de Muntinlupa</span></h3>
+                </div>
+                <p>Learn. Build. Collaborate. Innovate.</p><a class="footer-email"
+                    href="mailto:contact@awssbg-cdm.live"><svg aria-hidden="true" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24">
+                        <path d="M3 5h18v14H3zM3 6l9 7 9-7"></path>
+                    </svg> contact@awssbg-cdm.live</a>
+                <div class="social-icons"><a aria-label="Facebook" href="https://www.facebook.com/awssbg.cdm/"
+                        title="Facebook"><svg aria-hidden="true" fill="none" stroke="currentColor"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24">
+                            <path d="M14 21v-8h3l.5-4H14V7c0-1 .5-2 2-2h2V2h-3c-4 0-5 2-5 5v2H7v4h3v8"></path>
+                        </svg></a><a aria-label="Instagram" href="https://www.instagram.com/awssbg_cdm/"
+                        title="Instagram"><svg aria-hidden="true" fill="none" stroke="currentColor"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24">
+                            <path
+                                d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4m5 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8m5.5-2h.01">
+                            </path>
+                        </svg></a><a aria-label="LinkedIn" href="https://www.linkedin.com/company/awssbg-cdm/"
+                        title="LinkedIn"><svg aria-hidden="true" fill="none" stroke="currentColor"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24">
+                            <path d="M5 9v12M5 3v2M10 21V9m0 5a5 5 0 0 1 10 0v7"></path>
+                        </svg></a><a aria-label="Meetup" href="https://www.meetup.com/aws-sbg-at-colegio-de-muntinlupa/"
+                        title="Meetup"><img alt="Meetup" class="meetup-mark" height="21"
+                            src="https://secure.meetupstatic.com/s/img/0/logo/svg/logo--mSwarm.svg" width="21" /><span
+                            class="meetup-fallback" hidden="">Meetup</span></a></div>
+            </div>
+            <div class="footer-links-block">
+                <h4>Explore</h4>
+                <div class="footer-social"><a href="/">Home</a><a href="/about/" data-public-page="about">About us</a><a
+                        href="/events/" data-public-page="events">Events</a><a href="/#mascots"
+                        data-public-section="mascots">Mascots</a><a href="/partners/"
+                        data-public-page="partners">Partners</a><a href="/contact/"
+                        data-public-page="contact">Contact</a></div>
+            </div>
+            <div class="footer-links-block">
+                <h4>Organization</h4>
+                <div class="footer-social"><a href="/about/#mission" data-public-page="about">Mission &amp; vision</a><a
+                        href="/about/#timeline" data-public-page="about">Timeline</a><a href="/about/#offices"
+                        data-public-page="about">Offices</a><a href="/directors/"
+                        data-public-page="directors">Directors</a><a href="/people/"
+                        data-public-page="officers">Officers</a></div>
+            </div>
+        </div>
+        <div class="shell footer-credits"><span>© <span id="currentYear">2026</span> AWS Student Builder Group – Colegio
+                de Muntinlupa</span>
+            <div class="footer-credits-actions"><button aria-pressed="false" class="motion-toggle" id="motionToggle"
+                    type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"
+                        viewbox="0 0 24 24">
+                        <path d="M9 5v14M15 5v14"></path>
+                    </svg><span>Pause motion</span></button><a class="nav-login" href="/admin/">Admin portal</a></div>
+        </div>
+    </footer>
+</body>
 
 </html>

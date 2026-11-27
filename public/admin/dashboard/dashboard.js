@@ -1,3 +1,4 @@
+import { createPubmatControl } from "./event-pubmat.js";
 import { bindBirthdatePicker, formatBirthdate } from "./birthdate-picker.js";
 /*
   Dashboard operations module.
@@ -36,6 +37,7 @@ const OFFICERS_API_BASE_URL =
 const getElementById = (elementId) => document.getElementById(elementId);
 let noticeElement = getElementById("notice");
 const eventFormPanel = getElementById("event-form-panel");
+const eventPubmat = createPubmatControl();
 const eventsBody = getElementById("events-body");
 
 let idToken = null;
@@ -107,7 +109,9 @@ function openCustomPopup(triggerElement, popupElement) {
   document.body.append(popupElement);
   popupElement.hidden = false;
   triggerElement?.setAttribute("aria-expanded", "true");
-  requestAnimationFrame(() => positionCustomPopup(triggerElement, popupElement));
+  requestAnimationFrame(() =>
+    positionCustomPopup(triggerElement, popupElement),
+  );
 }
 
 /**
@@ -251,6 +255,7 @@ function eventFormSnapshot() {
     date: getElementById("date").value,
     location: getElementById("location").value,
     time: getElementById("time").value,
+    pubmat: eventPubmat.snapshot(),
   });
 }
 
@@ -413,10 +418,16 @@ getElementById("time-clear").addEventListener("click", () => {
 getElementById("time-cancel").addEventListener("click", closeTimePicker);
 
 document.addEventListener("click", (event) => {
-  if (!event.target.closest("#date-picker") && !calendarPopup.contains(event.target)) {
+  if (
+    !event.target.closest("#date-picker") &&
+    !calendarPopup.contains(event.target)
+  ) {
     closeCustomPopup(dateTrigger, calendarPopup);
   }
-  if (!event.target.closest("#time-picker") && !timePopup.contains(event.target)) {
+  if (
+    !event.target.closest("#time-picker") &&
+    !timePopup.contains(event.target)
+  ) {
     closeCustomPopup(timeTrigger, timePopup);
   }
 });
@@ -529,6 +540,7 @@ async function apiRequest(url, options = {}) {
 
 function resetForm(hide = true) {
   getElementById("event-form").reset();
+  eventPubmat.reset();
   getElementById("event-id").value = "";
   getElementById("form-heading").textContent = "Create event";
   getElementById("save-draft-button").textContent = "Save as Draft";
@@ -590,6 +602,7 @@ function discardEventForm() {
     !window.confirm("Discard unsaved event changes?")
   )
     return;
+  eventPubmat.reset();
   closeEventForm();
   getElementById("new-event-button").focus({ preventScroll: true });
 }
@@ -602,10 +615,16 @@ function openCreateForm() {
   eventFormPanel.hidden = false;
   eventFormPanel.classList.remove("event-form-leave");
   eventFormPanel.classList.add("event-form-enter");
-  window.setTimeout(() => eventFormPanel.classList.remove("event-form-enter"), 260);
+  window.setTimeout(
+    () => eventFormPanel.classList.remove("event-form-enter"),
+    260,
+  );
   eventFormPanel.classList.remove("event-form-leave");
   eventFormPanel.classList.add("event-form-enter");
-  window.setTimeout(() => eventFormPanel.classList.remove("event-form-enter"), 260);
+  window.setTimeout(
+    () => eventFormPanel.classList.remove("event-form-enter"),
+    260,
+  );
   getElementById("title").focus();
   eventFormPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -709,6 +728,7 @@ function renderEvents() {
     edit.type = "button";
     edit.textContent = "Edit";
     edit.addEventListener("click", () => {
+      eventPubmat.reset(event);
       getElementById("event-id").value = event.eventId;
       getElementById("title").value = event.title ?? "";
       getElementById("date").value = event.date ?? "";
@@ -753,9 +773,12 @@ function renderEvents() {
       if (!confirm(`Delete "${event.title}"? This cannot be undone.`)) return;
 
       try {
-        await apiRequest(`${EVENTS_API_BASE_URL}/${encodeURIComponent(event.eventId)}`, {
-          method: "DELETE",
-        });
+        await apiRequest(
+          `${EVENTS_API_BASE_URL}/${encodeURIComponent(event.eventId)}`,
+          {
+            method: "DELETE",
+          },
+        );
         showNotice("Event deleted successfully.", "success");
         await loadEvents();
       } catch (error) {
@@ -897,7 +920,11 @@ function setOrgMode(mode, animate = true) {
       tab.setAttribute("aria-selected", String(tab.dataset.tab === mode)),
     );
   if (animate)
-    restartEntranceAnimation(getElementById(mode === "structure" ? "structure-panel" : "directory-panel"));
+    restartEntranceAnimation(
+      getElementById(
+        mode === "structure" ? "structure-panel" : "directory-panel",
+      ),
+    );
 }
 
 /**
@@ -912,7 +939,8 @@ function showWorkspace(view = "overview") {
   });
   restartEntranceAnimation(getElementById(VIEWS[view]));
   if (VIEWS[view] === "officers-management") {
-    const current = getElementById("officers-management").dataset.mode || "structure";
+    const current =
+      getElementById("officers-management").dataset.mode || "structure";
     setOrgMode(
       view === "officers"
         ? "directory"
@@ -1107,7 +1135,9 @@ const byRank = (office) => (firstItem, secondItem) =>
  */
 const officeIndex = (officer) => {
   const idx = getOfficerPositions(officer)
-    .map((position) => OFFICE_ORDER.indexOf(String(position.office ?? "").trim()))
+    .map((position) =>
+      OFFICE_ORDER.indexOf(String(position.office ?? "").trim()),
+    )
     .filter((officeIndexValue) => officeIndexValue >= 0);
   return idx.length ? Math.min(...idx) : 99;
 };
@@ -1387,7 +1417,9 @@ function renderOfficerTree() {
 
   const setNode = (treeNode, open) => {
     treeNode.classList.toggle("is-open", open);
-    treeNode.querySelector(".tn-head").setAttribute("aria-expanded", String(open));
+    treeNode
+      .querySelector(".tn-head")
+      .setAttribute("aria-expanded", String(open));
     open
       ? closedOrgNodes.delete(treeNode.dataset.key)
       : closedOrgNodes.add(treeNode.dataset.key);
@@ -1401,12 +1433,16 @@ function renderOfficerTree() {
   tree
     .querySelector('[data-tree="expand"]')
     .addEventListener("click", () =>
-      tree.querySelectorAll(".tn").forEach((treeNode) => setNode(treeNode, true)),
+      tree
+        .querySelectorAll(".tn")
+        .forEach((treeNode) => setNode(treeNode, true)),
     );
   tree
     .querySelector('[data-tree="collapse"]')
     .addEventListener("click", () =>
-      tree.querySelectorAll(".tn").forEach((treeNode) => setNode(treeNode, false)),
+      tree
+        .querySelectorAll(".tn")
+        .forEach((treeNode) => setNode(treeNode, false)),
     );
 }
 
@@ -1928,7 +1964,9 @@ function enhanceOfficerFormSelect(select) {
       .forEach((menuElement) => (menuElement.hidden = true));
     document
       .querySelectorAll(".officer-select-trigger")
-      .forEach((triggerElement) => triggerElement.setAttribute("aria-expanded", "false"));
+      .forEach((triggerElement) =>
+        triggerElement.setAttribute("aria-expanded", "false"),
+      );
     menu.hidden = !opening;
     trigger.setAttribute("aria-expanded", String(opening));
     if (opening) {
@@ -2012,7 +2050,10 @@ function enhanceOfficerFormSelect(select) {
  * Refreshes the styled program and year-level dropdowns after the form values were changed by code.
  */
 function syncOfficerFormSelects() {
-  [getElementById("officer-program"), getElementById("officer-year-level")].forEach((select) => {
+  [
+    getElementById("officer-program"),
+    getElementById("officer-year-level"),
+  ].forEach((select) => {
     select?._customDropdownSync?.();
   });
 }
@@ -2031,7 +2072,6 @@ document.addEventListener("click", (event) => {
     });
   }
 });
-
 
 // ==========================================
 // OFFICER FORM DIALOG
@@ -2065,7 +2105,8 @@ function openOfficerModal(officer = null) {
 
   // Clear the custom birthdate value and display.
   getElementById("officer-birthdate").value = "";
-  getElementById("officer-birthdate-display").textContent = "Choose a birthdate";
+  getElementById("officer-birthdate-display").textContent =
+    "Choose a birthdate";
 
   officerBirthdatePicker.reset();
 
@@ -2081,10 +2122,12 @@ function openOfficerModal(officer = null) {
     getElementById("officer-id").value = officer.officerId ?? officer.id ?? "";
     getElementById("officer-name").value = officer.name ?? "";
     getElementById("officer-program").value = officer.program ?? "";
-    getElementById("officer-student-number").value = officer.studentNumber ?? "";
+    getElementById("officer-student-number").value =
+      officer.studentNumber ?? "";
     getElementById("officer-year-level").value = officer.yearLevel ?? "";
     getElementById("officer-cdm-email").value = officer.cdmEmail ?? "";
-    getElementById("officer-personal-email").value = officer.personalEmail ?? "";
+    getElementById("officer-personal-email").value =
+      officer.personalEmail ?? "";
     getElementById("officer-contact").value = officer.contactNumber ?? "";
 
     const birthdate = String(officer.birthdate ?? "");
@@ -2157,8 +2200,14 @@ function restoreOfficerModalFocus() {
 
 const officerModal = getElementById("officer-form-panel");
 
-getElementById("officer-form-cancel").addEventListener("click", closeOfficerModal);
-getElementById("officer-modal-close").addEventListener("click", closeOfficerModal);
+getElementById("officer-form-cancel").addEventListener(
+  "click",
+  closeOfficerModal,
+);
+getElementById("officer-modal-close").addEventListener(
+  "click",
+  closeOfficerModal,
+);
 
 officerModal.addEventListener("close", restoreOfficerModalFocus);
 
@@ -2166,7 +2215,9 @@ officerModal.addEventListener("close", restoreOfficerModalFocus);
    OFFICER FORM VALIDATION
 ======================================== */
 
-const officerBirthdatePicker = bindBirthdatePicker(getElementById("officer-birthdate-trigger").closest(".birthdate-picker-wrap"));
+const officerBirthdatePicker = bindBirthdatePicker(
+  getElementById("officer-birthdate-trigger").closest(".birthdate-picker-wrap"),
+);
 const formatOfficerBirthdate = formatBirthdate;
 
 // Photo selection only. No image preview is shown; persistent upload storage is separate.
@@ -2351,9 +2402,12 @@ getElementById("officer-list").addEventListener("click", async (event) => {
     return;
   button.disabled = true;
   try {
-    await apiRequest(`${OFFICERS_API_BASE_URL}/${encodeURIComponent(officerId)}`, {
-      method: "DELETE",
-    });
+    await apiRequest(
+      `${OFFICERS_API_BASE_URL}/${encodeURIComponent(officerId)}`,
+      {
+        method: "DELETE",
+      },
+    );
     showNotice(`Deleted ${officer.name}.`, "success");
     await loadOfficers();
   } catch (error) {
@@ -2376,7 +2430,9 @@ getElementById("officer-form").addEventListener("submit", async (event) => {
 
   // Read the dynamically generated position rows.
   const positionRows = [
-    ...getElementById("officer-positions-list").querySelectorAll(".officer-position-row"),
+    ...getElementById("officer-positions-list").querySelectorAll(
+      ".officer-position-row",
+    ),
   ];
 
   const positions = positionRows.map((row) => ({
@@ -2481,7 +2537,10 @@ getElementById("officer-form").addEventListener("submit", async (event) => {
   }
 
   const officerId = getElementById("officer-id").value;
-  const buttons = [getElementById("officer-save-draft"), getElementById("officer-publish")];
+  const buttons = [
+    getElementById("officer-save-draft"),
+    getElementById("officer-publish"),
+  ];
   const clickedButton = event.submitter;
 
   const originalLabels = buttons.map((button) => button.textContent);
@@ -2548,7 +2607,6 @@ getElementById("profile-refresh").addEventListener("click", async () => {
   await loadEvents();
 });
 
-
 function positionSidebarProfileMenu() {
   const button = getElementById("profile-button");
   const menu = getElementById("profile-menu");
@@ -2556,10 +2614,22 @@ function positionSidebarProfileMenu() {
 
   const buttonRect = button.getBoundingClientRect();
   const menuWidth = Math.min(250, window.innerWidth - 24);
-  const menuHeight = Math.min(menu.scrollHeight || 180, window.innerHeight - 24);
+  const menuHeight = Math.min(
+    menu.scrollHeight || 180,
+    window.innerHeight - 24,
+  );
   const sidebarRect = getElementById("sidebar").getBoundingClientRect();
-  const left = Math.min(window.innerWidth - menuWidth - 12, sidebarRect.right + 10);
-  const top = Math.max(12, Math.min(window.innerHeight - menuHeight - 12, buttonRect.bottom - menuHeight));
+  const left = Math.min(
+    window.innerWidth - menuWidth - 12,
+    sidebarRect.right + 10,
+  );
+  const top = Math.max(
+    12,
+    Math.min(
+      window.innerHeight - menuHeight - 12,
+      buttonRect.bottom - menuHeight,
+    ),
+  );
   menu.style.position = "fixed";
   menu.style.left = `${Math.max(12, left)}px`;
   menu.style.top = `${top}px`;
@@ -2571,7 +2641,10 @@ function positionSidebarProfileMenu() {
 getElementById("profile-button").addEventListener("click", () => {
   const menu = getElementById("profile-menu");
   menu.hidden = !menu.hidden;
-  getElementById("profile-button").setAttribute("aria-expanded", String(!menu.hidden));
+  getElementById("profile-button").setAttribute(
+    "aria-expanded",
+    String(!menu.hidden),
+  );
   if (!menu.hidden) requestAnimationFrame(positionSidebarProfileMenu);
 });
 
@@ -2588,6 +2661,7 @@ document.addEventListener("click", (event) => {
 getElementById("event-form").addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  if (!eventPubmat.validate()) return;
   if (!validateOptionalTimeRange()) {
     return;
   }
@@ -2622,6 +2696,14 @@ getElementById("event-form").addEventListener("submit", async (event) => {
     return;
   }
 
+  // Until the image storage/API contract is implemented, never imply that the local file will be saved.
+  if (
+    eventPubmat.needsStorage() &&
+    !window.confirm(
+      "The 16:9 pubmat is valid, but image storage is not connected. Save event details only? The selected image will NOT be uploaded or saved.",
+    )
+  )
+    return;
   const draftButton = getElementById("save-draft-button");
   const publishButton = getElementById("publish-button");
 
@@ -2630,10 +2712,13 @@ getElementById("event-form").addEventListener("submit", async (event) => {
 
   try {
     if (eventId) {
-      await apiRequest(`${EVENTS_API_BASE_URL}/${encodeURIComponent(eventId)}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      });
+      await apiRequest(
+        `${EVENTS_API_BASE_URL}/${encodeURIComponent(eventId)}`,
+        {
+          method: "PUT",
+          body: JSON.stringify(payload),
+        },
+      );
 
       showNotice(
         action === "published"
@@ -2771,7 +2856,12 @@ async function validateAuthenticatedUserSession() {
     return { status: "forbidden" };
   }
 
-  return { status: "authorized", authenticatedUser, idTokenValue, tokenPayload };
+  return {
+    status: "authorized",
+    authenticatedUser,
+    idTokenValue,
+    tokenPayload,
+  };
 }
 
 /**

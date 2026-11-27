@@ -33,3 +33,5 @@ infrastructure/lambda/admin-recovery/function.zip
 # Generated local Admin Portal dependency bundles
 public/admin/amplify.js
 public/admin/auth.js
+
+README.txt
